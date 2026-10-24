@@ -793,7 +793,7 @@
         if (up.error) {
           btn.disabled = false;
           console.error(up.error.message);
-          return alert('Chưa tải được tệp lên. Hãy kiểm tra đã chạy SQL tạo kho "documents" trong Supabase chưa');
+          return alert('Chưa tải được tệp lên. Hãy kiểm tra đã chạy SQL tạo kho "documents" trong Supabase chưa\n\nChi tiết lỗi: ' + up.error.message);
         }
         row.file_path = uploadedPath;
         row.file_name = file.name;
@@ -806,7 +806,7 @@
       if (res.error) {
         console.error(res.error.message);
         if (uploadedPath) sb.storage.from('documents').remove([uploadedPath]);
-        return alert('Chưa đăng được. Hãy kiểm tra đã chạy SQL trong Supabase và đang đăng nhập bằng tài khoản admin');
+        return alert('Chưa đăng được. Hãy kiểm tra đã chạy SQL trong Supabase và đang đăng nhập bằng tài khoản admin\n\nChi tiết lỗi: ' + res.error.message);
       }
       $(px + '-title').value = '';
       $(px + '-body').value = '';
