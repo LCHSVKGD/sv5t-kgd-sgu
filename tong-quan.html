@@ -19,12 +19,16 @@
     .poster-card h3 { font-size: 17px; margin-bottom: 4px; overflow-wrap: anywhere; }
     .poster-card p { color: var(--muted); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
 
-    /* Khung thời gian xét duyệt danh hiệu */
-    .rv-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 18px 22px; background: #fff7e6; border: 2px solid var(--accent); border-radius: 14px; }
-    .rv-box h2 { font-size: 18px; margin: 0; color: #9a4f06; }
-    .rv-time { flex: 1; min-width: 220px; font-size: 18px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
-    .rv-time small { display: block; font-size: 14px; font-weight: 600; color: var(--muted); }
-    .rv-tag { flex: none; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: #fff; border: 1px solid var(--footer-line); color: #9a4f06; }
+    /* Hero chia đôi: chữ bên trái, khung thời gian xét duyệt (hình vuông bo góc) bên phải */
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: center; }
+    @media (min-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+    .rv-box { justify-self: center; width: 100%; max-width: 380px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; background: #fff7e6; border: 3px solid var(--accent); border-radius: 32px; box-shadow: 0 8px 24px rgba(154, 79, 6, 0.12); }
+    .rv-icon { width: 44px; height: 44px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .rv-box h2 { font-size: 19px; line-height: 1.3; margin: 0; color: #9a4f06; }
+    .rv-time { font-size: 20px; line-height: 1.4; font-weight: 800; color: var(--ink); overflow-wrap: anywhere; }
+    .rv-time small { display: block; margin: 2px 0; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .rv-tag { padding: 3px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: #fff; border: 1px solid var(--footer-line); color: #9a4f06; }
+    .rv-tag[hidden] { display: none; }
     .rv-tag.is-open { background: #e5f6ea; border-color: #b7e2c3; color: #1c6b36; }
     .rv-tag.is-closed { background: #fdecec; border-color: #f3c4c4; color: #9b1c1c; }
   </style>
@@ -59,6 +63,11 @@
       Phản hồi xét duyệt
     </a>
 
+    <a href="hoat-dong.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>
+      Hoạt động
+    </a>
+
     <a href="thong-bao.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
       Thông báo
@@ -89,23 +98,21 @@
 
   <main>
     <section class="hero">
-      <div class="wrap">
+      <div class="wrap hero-grid">
+       <div class="hero-text">
         <h1>Sinh viên 5 tốt cấp Khoa Giáo dục</h1>
         <p>Nộp hồ sơ, theo dõi kết quả và trao đổi trực tiếp với Ban chấp hành Liên chi hội ngay trên một trang web.</p>
         <div class="actions">
           <a class="btn btn-primary" href="ho-so.html" data-needs-verified>Đăng ký xét danh hiệu</a>
           <a class="btn btn-line" href="#tieu-chuan">Xem 5 tiêu chuẩn</a>
         </div>
-      </div>
-    </section>
-
-    <section class="section" style="padding: 24px 0 0">
-      <div class="wrap">
-        <div class="rv-box" id="rv-box">
-          <h2>Thời gian xét duyệt danh hiệu</h2>
-          <div class="rv-time" id="rv-time">Đang tải...</div>
-          <span class="rv-tag" id="rv-tag" hidden></span>
-        </div>
+       </div>
+       <aside class="rv-box" id="rv-box" aria-label="Thời gian xét duyệt danh hiệu">
+         <svg class="rv-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+         <h2>Thời gian xét duyệt danh hiệu</h2>
+         <div class="rv-time" id="rv-time">Đang tải...</div>
+         <span class="rv-tag" id="rv-tag" hidden></span>
+       </aside>
       </div>
     </section>
 
