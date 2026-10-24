@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phản hồi xét duyệt | SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/ho-so.css">
+  <style>
+    body { visibility: hidden; }
+    .posters { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .poster-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .poster-card a { display: block; background: var(--bg); }
+    .poster-card img { display: block; width: 100%; height: auto; }
+    .poster-card .pc-text { padding: 14px 16px 18px; }
+    .poster-card h3 { font-size: 17px; margin-bottom: 4px; overflow-wrap: anywhere; }
+    .poster-card p { color: var(--muted); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+
+    <header class="site-header has-sidebar">
+    <div class="wrap">
+      <button class="menu-btn" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <a class="brand" href="index.html">
+        <span class="logo">5</span>
+        <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
+      </a>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="nav" aria-label="Menu chính">
+    <p class="sidebar-label">Góc của bạn</p>
+
+    <a href="tong-quan.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Tổng quan
+    </a>
+
+    <a href="ho-so.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+      Hồ sơ của tôi
+    </a>
+
+    <a href="phan-hoi.html" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+      Phản hồi xét duyệt
+    </a>
+
+    <a href="thong-bao.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      Thông báo
+    </a>
+
+    <a href="hoi-dap.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+      Hỏi đáp
+    </a>
+
+    <a href="#">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      Thông tin &amp; Tài khoản
+    </a>  
+    <div class="sidebar-bottom">
+      <a href="tai-lieu.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+        Tài liệu &amp; hướng dẫn
+      </a>
+
+      <a href="#" class="logout" id="logout">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Đăng xuất
+      </a>
+    </div>  
+  </nav>
+  <div class="sidebar-overlay"></div>
+
+  <main>
+    <div class="wrap page-title">
+      <h1><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>Phản hồi xét duyệt</h1>
+      <p>Chọn từng tiêu chí để xem tệp bạn đã nộp (bên trái) và giải trình của Ban Chấp hành (bên phải). Kết quả chỉ hiện sau khi Ban Chấp hành bấm "Hoàn thành".</p>
+    </div>
+    <section class="hs-section">
+      <div class="wrap">
+        <div class="hs-tabs" id="fb-tabs" role="tablist" aria-label="Năm tiêu chí"></div>
+        <div class="hs-grid">
+          <section class="hs-box" aria-label="Tệp đã nộp">
+            <h2>Phản hồi minh chứng đã nộp</h2>
+            <div class="hs-files" id="fb-files"><p class="hs-none">Đang tải...</p></div>
+          </section>
+          <section class="hs-box" aria-label="Giải trình của Ban Chấp hành">
+            <h2>Giải trình của Ban Chấp hành</h2>
+            <div class="hs-files" id="fb-answers"><p class="hs-none">Đang tải...</p></div>
+          </section>
+        </div>
+        <div class="fb-edit-row">
+          <a class="btn btn-primary" id="fb-edit" href="ho-so.html">Chỉnh sửa / Nộp bổ sung</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">Liên Chi hội Sinh viên khoa Giáo dục, Trường Đại học Sài Gòn</div>
+  </footer>
+
+  <script src="js/menu.js"></script>
+  <script src="js/footer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+<script src="js/supabase.js"></script>
+<script>
+  document.getElementById('logout').addEventListener('click', async function (e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    location.href = 'index.html';
+  });
+</script>  
+  <script src="js/auth-guard.js"></script>
+<script src="js/criteria.js"></script>
+<script src="js/phan-hoi.js"></script>
+
+</body>
+</html>

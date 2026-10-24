@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hỏi đáp | SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/hoi-dap.css">
+  <style>body { visibility: hidden; }</style>
+</head>
+<body>
+
+  <header class="site-header has-sidebar">
+    <div class="wrap">
+      <button class="menu-btn" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <a class="brand" href="index.html">
+        <span class="logo">5</span>
+        <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
+      </a>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="nav" aria-label="Menu chính">
+    <p class="sidebar-label">Góc của bạn</p>
+    <a href="tong-quan.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Tổng quan</a>
+    <a href="ho-so.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Hồ sơ của tôi</a>
+    <a href="phan-hoi.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>Phản hồi xét duyệt</a>
+    <a href="thong-bao.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Thông báo</a>
+    <a href="hoi-dap.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>Hỏi đáp</a>
+    <a href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Thông tin &amp; Tài khoản</a>
+    <div class="sidebar-bottom">
+      <a href="tai-lieu.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>Tài liệu &amp; hướng dẫn</a>
+      <a href="#" class="logout" id="logout"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Đăng xuất</a>
+    </div>
+  </nav>
+  <div class="sidebar-overlay"></div>
+
+  <main>
+    <div class="wrap page-title"><h1><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>Hỏi đáp</h1></div>
+
+    <section class="qa-section">
+      <div class="wrap">
+        <div class="qa-layout">
+
+          <!-- Trái: câu hỏi gợi ý (chỉ 3 câu) -->
+          <section class="qa-box qa-faq" aria-labelledby="h-faq">
+            <h2 id="h-faq">CÂU HỎI THƯỜNG GẶP</h2>
+            <div class="faq-list" id="faq-list" data-limit="3"></div>
+            <a class="faq-more" href="cau-hoi-thuong-gap.html">Xem thêm câu hỏi khác</a>
+          </section>
+
+          <!-- Phải: khung chat kiểu Messenger -->
+          <section class="chat" aria-label="Trò chuyện với Ban Chấp hành">
+            <header class="chat-head">
+              <img class="chat-avatar" src="images/logokhoa.png" alt="Logo Liên chi hội Khoa Giáo dục">
+              <div>
+                <strong>Ban Chấp hành</strong>
+                <small>Liên Chi hội Sinh viên khoa Giáo dục</small>
+              </div>
+              <span class="chat-private" title="Cuộc trò chuyện riêng với Ban Chấp hành">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                Riêng tư
+              </span>
+            </header>
+
+            <div class="chat-body" id="chat-body" aria-live="polite">
+              <p class="chat-empty" id="chat-empty">Chưa có tin nhắn. Hãy gửi câu hỏi đầu tiên cho Ban Chấp hành.</p>
+            </div>
+
+            <form class="chat-form" id="chat-form">
+              <textarea id="chat-input" rows="1" maxlength="3000" placeholder="Nhập điều bạn muốn trao đổi..." aria-label="Nội dung tin nhắn"></textarea>
+              <button class="chat-send" id="chat-send" type="submit" aria-label="Gửi tin nhắn" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+              </button>
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">Liên Chi hội Sinh viên khoa Giáo dục, Trường Đại học Sài Gòn</div>
+  </footer>
+
+  <script src="js/menu.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/faq-data.js"></script>
+  <script src="js/faq.js"></script>
+  <script src="js/hoi-dap.js"></script>
+  <script src="js/auth-guard.js"></script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { visibility: hidden; }
+    .posters { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .poster-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .poster-card a { display: block; background: var(--bg); }
+    .poster-card img { display: block; width: 100%; height: auto; }
+    .poster-card .pc-text { padding: 14px 16px 18px; }
+    .poster-card h3 { font-size: 17px; margin-bottom: 4px; overflow-wrap: anywhere; }
+    .poster-card p { color: var(--muted); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+
+    <header class="site-header has-sidebar">
+    <div class="wrap">
+      <button class="menu-btn" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <a class="brand" href="index.html">
+        <span class="logo">5</span>
+        <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
+      </a>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="nav" aria-label="Menu chính">
+    <p class="sidebar-label">Góc của bạn</p>
+
+    <a href="tong-quan.html" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Tổng quan
+    </a>
+
+    <a href="ho-so.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+      Hồ sơ của tôi
+    </a>
+
+    <a href="phan-hoi.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+      Phản hồi xét duyệt
+    </a>
+
+    <a href="thong-bao.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      Thông báo
+    </a>
+
+    <a href="hoi-dap.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+      Hỏi đáp
+    </a>
+
+    <a href="#">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      Thông tin &amp; Tài khoản
+    </a>  
+    <div class="sidebar-bottom">
+      <a href="tai-lieu.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+        Tài liệu &amp; hướng dẫn
+      </a>
+
+      <a href="#" class="logout" id="logout">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Đăng xuất
+      </a>
+    </div>  
+  </nav>
+  <div class="sidebar-overlay"></div>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <h1>Sinh viên 5 tốt cấp Khoa Giáo dục</h1>
+        <p>Nộp hồ sơ, theo dõi kết quả và trao đổi trực tiếp với Ban chấp hành Liên chi hội ngay trên một trang web.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="ho-so.html" data-needs-verified>Đăng ký xét danh hiệu</a>
+          <a class="btn btn-line" href="#tieu-chuan">Xem 5 tiêu chuẩn</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="tieu-chuan" class="criteria" aria-label="Năm tiêu chuẩn">
+      <div><h3>Đạo đức tốt</h3></div>
+      <div><h3>Học tập tốt</h3></div>
+      <div><h3>Thể lực tốt</h3></div>
+      <div><h3>Tình nguyện tốt</h3></div>
+      <div><h3>Hội nhập tốt</h3></div>
+    </section>
+
+    <section id="poster" class="section" style="padding-bottom:0" hidden>
+      <div class="wrap">
+        <h2>Poster &amp; bài đăng</h2>
+        <p class="lead">Thông tin mới nhất về danh hiệu Sinh viên 5 tốt.</p>
+        <div class="posters" id="posters"></div>
+      </div>
+    </section>
+
+    <section id="quy-trinh" class="section">
+      <div class="wrap">
+        <h2>Nộp hồ sơ trong 3 bước</h2>
+        <p class="lead">Bạn có thể quay lại bất cứ lúc nào để xem hồ sơ và tin nhắn của mình.</p>
+        <ol class="steps">
+          <li><h3>Tạo tài khoản</h3></li>
+          <li><h3>Nộp hồ sơ</h3></li>
+          <li><h3>Nhận phản hồi</h3></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <h2>Thông báo mới</h2>
+        <p class="lead">Tin từ Ban chấp hành Liên chi hội.</p>
+        <div class="list" id="tb-moi">
+          <div class="row"><span>Đang tải thông báo...</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">Liên Chi hội Sinh viên khoa Giáo dục, Trường Đại học Sài Gòn</div>
+  </footer>
+
+  <script src="js/menu.js"></script>
+  <script src="js/footer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+<script src="js/supabase.js"></script>
+<script>
+  document.getElementById('logout').addEventListener('click', async function (e) {
+    e.preventDefault();
+    await sb.auth.signOut();
+    location.href = 'index.html';
+  });
+</script>  
+  <script src="js/auth-guard.js"></script>
+<script>
+// Nội dung do admin chỉnh. Nếu chưa tải được thì giữ nguyên nội dung có sẵn trong trang.
+(async function () {
+  var r = await sb.from('site_content').select('*').order('sort_order', { ascending: true });
+  if (r.error || !r.data) return;
+  var by = { poster: [], criterion: [], step: [] };
+  r.data.forEach(function (x) { if (by[x.kind]) by[x.kind].push(x); });
+
+  function item(tag, x) {
+    var li = document.createElement(tag);
+    var h = document.createElement('h3'); h.textContent = x.title;
+    li.appendChild(h);
+    if (x.body) { var p = document.createElement('p'); p.textContent = x.body; li.appendChild(p); }
+    return li;
+  }
+  if (by.criterion.length) {
+    document.getElementById('tieu-chuan').replaceChildren.apply(
+      document.getElementById('tieu-chuan'), by.criterion.map(function (x) { return item('div', x); }));
+  }
+  if (by.step.length) {
+    var ol = document.querySelector('#quy-trinh .steps');
+    ol.replaceChildren.apply(ol, by.step.map(function (x) { return item('li', x); }));
+  }
+  if (by.poster.length) {
+    var box = document.getElementById('posters');
+    box.replaceChildren.apply(box, by.poster.map(function (x) {
+      var card = document.createElement('article');
+      card.className = 'poster-card';
+      if (x.image_url) {
+        var a = document.createElement('a');
+        a.href = x.image_url; a.target = '_blank'; a.rel = 'noopener';
+        var im = document.createElement('img');
+        im.src = x.image_url; im.alt = x.title; im.loading = 'lazy';
+        a.appendChild(im); card.appendChild(a);
+      }
+      var t = document.createElement('div'); t.className = 'pc-text';
+      var h = document.createElement('h3'); h.textContent = x.title;
+      t.appendChild(h);
+      if (x.body) { var p = document.createElement('p'); p.textContent = x.body; t.appendChild(p); }
+      card.appendChild(t);
+      return card;
+    }));
+    document.getElementById('poster').hidden = false;
+  }
+})();
+</script>
+<script>
+// "Thông báo mới": 3 thông báo gần nhất (không gồm bài loại Tài liệu), bấm vào mở trang Thông báo
+(async function () {
+  var box = document.getElementById('tb-moi');
+  function note(text) {
+    var d = document.createElement('div');
+    d.className = 'row';
+    var sp = document.createElement('span');
+    sp.textContent = text;
+    d.appendChild(sp);
+    box.replaceChildren(d);
+  }
+  var s = await sb.auth.getSession();
+  if (!s.data.session) return;
+  var uid = s.data.session.user.id;
+  var r = await sb.from('announcements').select('id, title, created_at, target_student_id')
+    .neq('kind', 'document')
+    .or('target_student_id.is.null,target_student_id.eq.' + uid)
+    .order('created_at', { ascending: false })
+    .limit(3);
+  if (r.error) { console.error(r.error.message); return note('Không tải được thông báo. Hãy tải lại trang.'); }
+  if (!r.data.length) return note('Chưa có thông báo');
+  box.replaceChildren.apply(box, r.data.map(function (a) {
+    var link = document.createElement('a');
+    link.className = 'row';
+    link.href = 'thong-bao.html';
+    var h = document.createElement('h3');
+    h.textContent = a.title;
+    var d = document.createElement('span');
+    d.textContent = new Date(a.created_at).toLocaleDateString('vi-VN') + (a.target_student_id ? ' · Dành riêng cho bạn' : '');
+    link.append(h, d);
+    return link;
+  }));
+})();
+</script>
+</body>
+</html>

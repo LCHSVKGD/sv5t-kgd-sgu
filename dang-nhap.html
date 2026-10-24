@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập | SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <header class="auth-top">
+    <a class="brand" href="index.html">
+      <span class="logo">5</span>
+      <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
+    </a>
+    <a class="btn btn-small" href="dang-ky.html">Đăng ký</a>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card narrow">
+      <h1 style="margin-bottom: 24px;">Đăng nhập</h1>
+      
+      <form id="f" novalidate>
+        <div class="form-grid one">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" autocomplete="email" placeholder="ten@gmail.com">
+          </div>
+          <div class="field">
+            <label for="pw">Mật khẩu</label>
+            <input id="pw" type="password" autocomplete="current-password" placeholder="Mật khẩu của bạn">
+          </div>
+        </div>
+        <p class="msg error" id="m" role="alert" hidden></p>
+        <button class="btn btn-primary" id="b" type="submit">Đăng nhập</button>
+      </form>
+      <p class="alt">Chưa có tài khoản? <a href="dang-ky.html">Đăng ký</a></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function msg(text) { $('m').textContent = text || ''; $('m').hidden = !text; }
+
+    // Đã đăng nhập sẵn thì vào thẳng trang tổng quan
+    var s = await sb.auth.getSession();
+    if (s.data.session) { location.replace('tong-quan.html'); return; }
+
+    $('f').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      msg('');
+      var email = $('email').value.trim().toLowerCase();
+      var pw = $('pw').value;
+      if (!email || !pw) return msg('Vui lòng nhập email và mật khẩu.');
+
+      var b = $('b');
+      b.disabled = true; b.textContent = 'Đang đăng nhập...';
+      var r = await sb.auth.signInWithPassword({ email: email, password: pw });
+      b.disabled = false; b.textContent = 'Đăng nhập';
+
+      if (r.error) {
+        var t = (r.error.message || '').toLowerCase();
+        if (t.indexOf('not confirmed') > -1) return msg('Email này chưa được xác thực. Hãy đăng ký lại bằng email đó để nhận mã mới.');
+        if (t.indexOf('invalid') > -1) return msg('Email hoặc mật khẩu chưa đúng.');
+        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại.');
+      }
+      location.href = 'tong-quan.html';
+    });
+  })();
+  </script>
+</body>
+</html>

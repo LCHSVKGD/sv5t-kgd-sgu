@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin | SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/hoi-dap.css">
+  <style>
+    body { visibility: hidden; }
+    .dt-section { padding: 16px 0 40px; }
+    .page-title { padding-top: 20px; }
+    .page-title h1 { font-weight: 800; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .tabs .btn.on { background: var(--primary); color: #fff; }
+    .note { color: var(--muted); padding: 18px 24px; }
+    .demo-note { margin-bottom: 16px; padding: 12px 16px; border-radius: 10px; background: #fff7e6; border: 1px solid #f6d9b8; color: #9a4f06; font-size: 14px; }
+
+    /* Thanh chức năng của trang Admin */
+    .admin-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 20px; padding: 8px; background: var(--footer-1); border: 1px solid var(--footer-line); border-radius: 14px; }
+    .admin-tabs .btn { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 6px 4px; font-size: 13px; line-height: 1.25; text-align: center; border-color: var(--accent); color: #c2660a; }
+    .admin-tabs .btn:hover { background: var(--footer-2); color: #c2660a; }
+    .admin-tabs .btn.on, .admin-tabs .btn.on:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .admin-tabs .btn.on:hover { background: #d97a18; border-color: #d97a18; }
+    @media (min-width: 700px) {
+      .admin-tabs { gap: 10px; padding: 10px; grid-template-columns: repeat(6, 1fr); }
+      .admin-tabs .btn { min-height: 52px; font-size: 15px; padding: 8px 8px; }
+    }
+    .panel[hidden] { display: none; }
+
+    /* Thông tin từng sinh viên: 3 dòng (Tên / MSSV + Lớp / Ngành + Email) */
+    .acc-info { flex: 1; }
+    .acc-grid { display: grid; grid-template-columns: minmax(300px, max-content) 1fr; gap: 6px 28px; margin-top: 8px; }
+    .acc-line { display: contents; }
+    .acc-line > span { color: var(--ink); font-size: 15px; overflow-wrap: anywhere; }
+    .acc-line b { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+    @media (max-width: 600px) { .acc-grid { grid-template-columns: 1fr; } }
+
+    /* Form đăng thông báo */
+    .tb-form { padding: 20px 24px; display: grid; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 24px; }
+    .tb-form h3 { font-size: 18px; }
+    .tb-form label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .tb-form input, .tb-form select, .tb-form textarea { width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+    .tb-form textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
+    .tb-form input:focus, .tb-form select:focus, .tb-form textarea:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+    .tb-form .btn { justify-self: start; }
+    .sub-title { font-size: 18px; margin: 0 0 10px; }
+    .row .tb-meta { display: block; margin-top: 4px; }
+    .kind-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+    .kind-switch button { font: inherit; font-size: 15px; font-weight: 600; padding: 10px 22px; border: 0; background: none; color: var(--ink); cursor: pointer; }
+    .kind-switch button + button { border-left: 1px solid var(--line); }
+    .kind-switch button.on { background: var(--primary); color: #fff; }
+    .kind-tag { font-style: normal; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; margin-right: 8px; background: #e1ecfb; color: var(--primary-dark); vertical-align: middle; white-space: nowrap; }
+    .kind-tag.is-doc { background: #e3f3e8; color: #1e6b36; }
+
+    /* Chức năng Tin nhắn: kiểu Messenger (máy tính: 2 cột, điện thoại: 1 cột) */
+    .msgr [hidden] { display: none !important; }
+    .msgr { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 16px; height: clamp(480px, 74vh, 720px); }
+    .msgr-list { display: flex; flex-direction: column; min-height: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .msgr-title { padding: 14px 18px; font-size: 18px; font-weight: 800; border-bottom: 1px solid var(--line); }
+    .inbox { flex: 1; min-height: 0; overflow-y: auto; }
+    .inbox .row { display: flex; flex-direction: row; justify-content: space-between; cursor: pointer; width: 100%; padding: 12px 16px; gap: 10px; background: none; border: 0; border-bottom: 1px solid var(--line); text-align: left; font: inherit; color: inherit; align-items: center; }
+    .inbox .row:hover { background: var(--bg); }
+    .inbox .row.active { background: #e1ecfb; }
+    .inbox .row h3 { font-size: 15.5px; }
+    .inbox .preview { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .inbox .when { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .inbox .row > div:last-child { flex: none; text-align: right; }
+    .inbox .row.unread { background: #e3e7ee; }
+    .inbox .row.unread:hover { background: #d9dee8; }
+    .inbox .row.unread.active { background: #cfe0f8; }
+    .inbox .row.unread h3, .inbox .row.unread .preview { font-weight: 800; color: var(--ink); }
+    .dot-wait { display: inline-block; width: 10px; height: 10px; margin-left: 8px; border-radius: 50%; background: var(--accent); vertical-align: middle; }
+    .badge-wait { display: inline-block; margin-top: 4px; padding: 2px 10px; border-radius: 999px; background: #fff7e6; border: 1px solid var(--footer-line); color: var(--footer-label); font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .mssv { color: #8a94a6; font-weight: 400; font-size: 0.9em; margin-left: 6px; }
+    .conv { min-height: 0; height: auto; }
+    .conv-main { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .conv-empty { margin: auto; padding: 20px; text-align: center; color: var(--muted); }
+    .conv .chat-head strong { overflow-wrap: anywhere; }
+    .back { display: none; flex: none; width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--primary); font-size: 24px; line-height: 1; cursor: pointer; }
+    .back:hover { background: var(--panel-bg); }
+    @media (max-width: 800px) {
+      .msgr { grid-template-columns: minmax(0, 1fr); height: 74vh; min-height: 460px; }
+      .msgr.open .msgr-list { display: none; }
+      .msgr:not(.open) .conv { display: none; }
+      .back { display: grid; place-items: center; }
+    }
+
+    /* Chức năng Trang Tổng quan */
+    .ck-info { display: flex; gap: 14px; align-items: center; }
+    .ck-info > div { min-width: 0; }
+    .ck-thumb { flex: none; width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+    .ck-snip { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ck-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .ck-preview { display: block; max-width: 260px; max-height: 260px; margin-top: 10px; border-radius: 10px; border: 1px solid var(--line); }
+    .ck-preview[hidden] { display: none; }
+    .ck-hint { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+    .ck-btns { display: flex; gap: 10px; }
+    .ck-btns .btn-line { padding: 8px 16px; }
+    .btn-mini { padding: 8px 12px; min-width: 40px; }
+
+    /* Chức năng Duyệt hồ sơ */
+    .hs-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+    .hs-filters select, .hs-filters input { font: inherit; font-size: 15px; padding: 9px 12px; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+    .hs-filters input { flex: 1; min-width: 180px; }
+    .sub-row { flex-wrap: wrap; align-items: flex-start; }
+    .sub-info { flex: 1; min-width: 220px; }
+    .sub-file { display: inline-block; max-width: 100%; text-align: left; font: inherit; font-size: 16px; font-weight: 700; color: var(--primary); background: none; border: 0; padding: 0; cursor: pointer; overflow-wrap: anywhere; }
+    .sub-file:hover { text-decoration: underline; }
+    .sub-meta { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+    .sub-meta b { color: var(--ink); }
+    .sub-reject { flex-basis: 100%; display: grid; gap: 8px; padding: 12px; border-radius: 10px; background: #fdecec; border: 1px solid #f3c4c4; }
+    .sub-reject textarea { width: 100%; min-height: 80px; resize: vertical; font: inherit; font-size: 15px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+    .sub-reject label { font-size: 14px; font-weight: 700; color: #7a1818; }
+    .sub-reject .acc-actions { justify-content: flex-start; }
+    .sub-reason { flex-basis: 100%; padding: 8px 12px; border-radius: 8px; background: #fdecec; border: 1px solid #f3c4c4; color: #7a1818; font-size: 14.5px; white-space: pre-line; overflow-wrap: anywhere; }
+    .st { display: inline-block; margin-left: 8px; padding: 1px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; vertical-align: middle; }
+    .st-approved { background: #e5f6ea; border: 1px solid #b7e2c3; color: #1c6b36; }
+    .st-rejected { background: #fdecec; border: 1px solid #f3c4c4; color: #9b1c1c; }
+    .st-pending { background: #fff7e6; border: 1px solid var(--footer-line); color: var(--footer-label); }
+    .tab-count { display: inline-block; margin-left: 6px; min-width: 20px; padding: 0 6px; border-radius: 999px; background: #fff; color: #c2660a; font-size: 12px; line-height: 20px; }
+    .admin-tabs .btn:not(.on) .tab-count:empty, .tab-count[hidden] { display: none; }
+
+    /* Danh sách sinh viên đã nộp + chi tiết hồ sơ */
+    .hs-count { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+    .hs-table { display: grid; gap: 8px; }
+    .hs-tr { display: grid; grid-template-columns: minmax(0, 1.3fr) 130px minmax(0, 2.2fr) 130px; gap: 12px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+    .hs-th { background: transparent; border: 0; padding: 0 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .hs-name b { display: block; overflow-wrap: anywhere; }
+    .hs-name small { display: block; font-size: 12.5px; font-weight: 600; }
+    .tag-wait { color: #c2660a; } .tag-unsent { color: var(--primary); } .tag-done { color: #1c6b36; }
+    .hs-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { padding: 2px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+    .chip-pending { background: #fff7e6; border: 1px solid var(--footer-line); color: var(--footer-label); }
+    .chip-approved { background: #e5f6ea; border: 1px solid #b7e2c3; color: #1c6b36; }
+    .chip-rejected { background: #fdecec; border: 1px solid #f3c4c4; color: #9b1c1c; }
+    .st-none { background: #eef1f6; border: 1px solid var(--line); color: var(--muted); }
+    @media (max-width: 800px) {
+      .hs-th { display: none; }
+      .hs-tr { grid-template-columns: 1fr; gap: 6px; }
+    }
+    .hd-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .hd-who { padding: 14px 18px; margin-bottom: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+    .hd-who h3 { font-size: 20px; }
+    .hd-who p { color: var(--muted); font-size: 15px; }
+    .hd-crit { margin-bottom: 14px; background: #e1ecfb; border: 2px solid var(--primary); border-radius: 14px; padding: 14px 16px; }
+    .hd-crit-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .hd-crit-head h4 { font-size: 17px; color: var(--primary-dark); }
+    .hd-crit-head .st { margin-left: 0; }
+    .hd-file { margin-top: 8px; padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; display: grid; gap: 8px; }
+    .hd-file-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+    .hd-file-top .sub-info { min-width: 200px; }
+    .hd-file .acc-actions { flex-wrap: wrap; }
+    @media (max-width: 700px) { .hd-bar .btn { flex: 1; } }
+
+    /* Nút thao tác */
+    .acc-actions { display: flex; gap: 8px; flex: none; }
+    .row .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+    .row .btn-line { padding: 8px 16px; }
+    .btn-danger { padding: 8px 16px; border-color: #9b1c1c; color: #9b1c1c; background: transparent; }
+    .btn-danger:hover { background: #9b1c1c; color: #fff; }
+    @media (max-width: 700px) {
+      .acc-actions { width: 100%; }
+      .acc-actions .btn { flex: 1; width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header has-sidebar">
+    <div class="wrap">
+      <button class="menu-btn" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <a class="brand" href="index.html">
+        <span class="logo">5</span>
+        <span>SV5T Khoa Giáo dục<small>Liên chi hội sinh viên</small></span>
+      </a>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="nav" aria-label="Menu chính">
+    <p class="sidebar-label">Góc của bạn</p>
+
+    <a href="tong-quan.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Tổng quan
+    </a>
+
+    <a href="ho-so.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+      Hồ sơ của tôi
+    </a>
+
+    <a href="phan-hoi.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+      Phản hồi xét duyệt
+    </a>
+
+    <a href="thong-bao.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      Thông báo
+    </a>
+
+    <a href="hoi-dap.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+      Hỏi đáp
+    </a>
+
+    <a href="#">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      Thông tin &amp; Tài khoản
+    </a>
+
+    <a href="admin.html" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+      Admin
+    </a>
+
+    <div class="sidebar-bottom">
+      <a href="tai-lieu.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+        Tài liệu &amp; hướng dẫn
+      </a>
+
+      <a href="#" class="logout" id="logout">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Đăng xuất
+      </a>
+    </div>
+  </nav>
+  <div class="sidebar-overlay"></div>
+
+  <main id="main" hidden>
+    <div class="wrap page-title">
+      <h1><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Admin</h1>
+      <p>Khu vực dành cho Ban Chấp hành: duyệt tài khoản, trả lời tin nhắn, đăng thông báo và duyệt hồ sơ.</p>
+    </div>
+
+    <section class="dt-section">
+      <div class="wrap">
+
+        <!-- Thanh chọn chức năng -->
+        <div class="admin-tabs" id="admin-tabs">
+          <button class="btn btn-line on" type="button" data-p="tai-khoan">Duyệt tài khoản</button>
+          <button class="btn btn-line" type="button" data-p="tin-nhan">Tin nhắn</button>
+          <button class="btn btn-line" type="button" data-p="thong-bao">Đăng thông báo</button>
+          <button class="btn btn-line" type="button" data-p="tai-lieu">Đăng tài liệu</button>
+          <button class="btn btn-line" type="button" data-p="ho-so">Duyệt hồ sơ<span class="tab-count" id="n-hoso" hidden></span></button>
+          <button class="btn btn-line" type="button" data-p="tong-quan">Trang Tổng quan</button>
+        </div>
+
+        <!-- Chức năng 1: Duyệt tài khoản -->
+        <div class="panel" id="p-tai-khoan">
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chỉ tài khoản đã được duyệt mới được nộp hồ sơ xét danh hiệu. Hãy đối chiếu mã số sinh viên, họ tên và lớp với danh sách của Khoa trước khi duyệt.</p>
+          <div class="tabs">
+            <button class="btn btn-line on" type="button" data-f="pending">Chờ duyệt (<span id="n-pending">0</span>)</button>
+            <button class="btn btn-line" type="button" data-f="done">Đã duyệt (<span id="n-done">0</span>)</button>
+            <button class="btn btn-line" type="button" data-f="rejected">Đã từ chối (<span id="n-rejected">0</span>)</button>
+          </div>
+          <div class="list" id="list"></div>
+        </div>
+
+        <!-- Chức năng 2: Tin nhắn (kiểu Messenger) -->
+        <div class="panel" id="p-tin-nhan" hidden>
+          <div class="msgr" id="msgr">
+            <aside class="msgr-list" id="inbox-view" aria-label="Danh sách tin nhắn">
+              <div class="msgr-title">Tin nhắn</div>
+              <div class="inbox" id="inbox"></div>
+            </aside>
+            <section class="chat conv" id="conv-view" aria-label="Cuộc trò chuyện">
+              <div class="conv-empty" id="conv-empty">Chọn một sinh viên ở danh sách bên trái để đọc và trả lời.</div>
+              <div class="conv-main" id="conv-main" hidden>
+                <header class="chat-head">
+                  <button class="back" type="button" id="conv-back" aria-label="Quay lại danh sách">←</button>
+                  <div>
+                    <strong><span id="conv-name"></span><span class="mssv" id="conv-mssv"></span></strong>
+                  </div>
+                </header>
+                <div class="chat-body" id="conv-body"></div>
+                <form class="chat-form" id="conv-form">
+                  <textarea id="conv-input" rows="1" maxlength="3000" placeholder="Nhập nội dung trả lời..." aria-label="Nội dung trả lời"></textarea>
+                  <button class="chat-send" id="conv-send" type="submit" aria-label="Gửi" disabled>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+                  </button>
+                </form>
+              </div>
+            </section>
+          </div>
+        </div>
+
+           <!-- Chức năng 3: Đăng thông báo -->
+        <div class="panel" id="p-thong-bao" hidden>
+          <div class="tb-form">
+            <h3>Đăng thông báo mới</h3>
+            <div>
+              <label for="tb-target">Gửi cho</label>
+              <select id="tb-target"><option value="">Tất cả sinh viên (thông báo chung)</option></select>
+            </div>
+            <div>
+              <label for="tb-title">Tiêu đề</label>
+              <input id="tb-title" type="text" maxlength="200" placeholder="Ví dụ: Thông báo mở đăng ký xét SV5T cấp Khoa">
+            </div>
+            <div>
+              <label for="tb-body">Nội dung</label>
+              <textarea id="tb-body" maxlength="5000" placeholder="Nhập nội dung thông báo. Bấm Enter để xuống dòng."></textarea>
+            </div>
+            <div>
+              <label for="tb-file">Tệp đính kèm (không bắt buộc)</label>
+              <input id="tb-file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
+              <p class="ck-hint">PDF, Word, Excel, PowerPoint hoặc ảnh PNG/JPG, tối đa 20 MB. Tệp đính kèm sẽ tự động hiển thị thêm ở trang Tài liệu &amp; hướng dẫn.</p>
+            </div>
+            <button class="btn btn-small" type="button" id="tb-post">Đăng thông báo</button>
+          </div>
+
+          <h3 class="sub-title">Thông báo đã đăng</h3>
+          <div class="list" id="tb-list"></div>
+        </div>
+
+        <!-- Chức năng 3b: Đăng tài liệu -->
+        <div class="panel" id="p-tai-lieu" hidden>
+          <div class="tb-form">
+            <h3>Đăng tài liệu mới</h3>
+            <p class="ck-hint" style="margin:0">Tài liệu chỉ hiển thị ở trang Tài liệu &amp; hướng dẫn, dành cho tất cả sinh viên (không hiện ở trang Thông báo).</p>
+            <div>
+              <label for="td-title">Tiêu đề</label>
+              <input id="td-title" type="text" maxlength="200" placeholder="Ví dụ: Bộ tiêu chuẩn SV5T cấp Khoa">
+            </div>
+            <div>
+              <label for="td-body">Mô tả (không bắt buộc)</label>
+              <textarea id="td-body" maxlength="5000" style="min-height:90px" placeholder="Mô tả ngắn về tài liệu."></textarea>
+            </div>
+            <div>
+              <label for="td-file">Tệp tài liệu</label>
+              <input id="td-file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
+              <p class="ck-hint">PDF, Word, Excel, PowerPoint hoặc ảnh PNG/JPG, tối đa 20 MB.</p>
+            </div>
+            <button class="btn btn-small" type="button" id="td-post">Đăng tài liệu</button>
+          </div>
+
+          <h3 class="sub-title">Tài liệu đã đăng</h3>
+          <p class="ck-hint" style="margin:-6px 0 10px">Tệp đính kèm trong thông báo sẽ nằm ở mục Đăng thông báo (xóa thông báo thì tệp cũng biến mất khỏi trang Tài liệu).</p>
+          <div class="list" id="td-list"></div>
+        </div>
+
+
+        <!-- Chức năng 4: Duyệt hồ sơ -->
+        <div class="panel" id="p-ho-so" hidden>
+          <div id="hs-list-wrap">
+            <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Danh sách sinh viên đã nộp hồ sơ. Bấm "Xem hồ sơ" để xem chi tiết từng tiêu chí, duyệt hoặc từ chối (từ chối bắt buộc có giải trình), rồi bấm "Hoàn thành" để gửi kết quả về mục Phản hồi xét duyệt của sinh viên.</p>
+            <div class="hs-filters">
+              <input id="hs-search" type="search" placeholder="Tìm theo tên hoặc MSSV sinh viên..." aria-label="Tìm sinh viên">
+            </div>
+            <p class="hs-count" id="hs-count"></p>
+            <div class="hs-table" id="hs-list"></div>
+          </div>
+          <div id="hs-detail" hidden></div>
+        </div>
+
+        <!-- Chức năng 5: Chỉnh trang Tổng quan -->
+        <div class="panel" id="p-tong-quan" hidden>
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chỉnh nội dung hiển thị ở trang Tổng quan của sinh viên. Thay đổi có hiệu lực ngay khi lưu.</p>
+          <div class="tabs" id="ck-tabs">
+            <button class="btn btn-line on" type="button" data-k="poster">Poster / bài đăng</button>
+            <button class="btn btn-line" type="button" data-k="criterion">5 tiêu chuẩn</button>
+            <button class="btn btn-line" type="button" data-k="step">3 bước nộp hồ sơ</button>
+          </div>
+
+          <div class="tb-form" id="ck-form" hidden>
+            <h3 id="ck-form-title">Thêm mới</h3>
+            <div>
+              <label for="ck-title">Tiêu đề</label>
+              <input id="ck-title" type="text" maxlength="200">
+            </div>
+            <div>
+              <label for="ck-body">Nội dung / mô tả</label>
+              <textarea id="ck-body" maxlength="3000" style="min-height:100px"></textarea>
+            </div>
+            <div id="ck-req-wrap" hidden>
+              <label for="ck-req">Yêu cầu chi tiết của tiêu chí (hiện ở trang "Hồ sơ của tôi" của sinh viên)</label>
+              <textarea id="ck-req" maxlength="5000" style="min-height:160px" placeholder="Ví dụ: điều kiện cần đạt, minh chứng cần nộp..."></textarea>
+            </div>
+            <div id="ck-img-wrap">
+              <label for="ck-file">Ảnh poster</label>
+              <input id="ck-file" type="file" accept="image/png,image/jpeg,image/webp">
+              <p class="ck-hint">Ảnh PNG, JPG hoặc WEBP, tối đa 5 MB.</p>
+              <img id="ck-preview" class="ck-preview" alt="Xem trước poster" hidden>
+            </div>
+            <div class="ck-btns">
+              <button class="btn btn-small" type="button" id="ck-save">Lưu</button>
+              <button class="btn btn-line" type="button" id="ck-cancel">Hủy</button>
+            </div>
+          </div>
+
+          <div class="ck-bar">
+            <h3 class="sub-title" id="ck-list-title" style="margin:0"></h3>
+            <button class="btn btn-small" type="button" id="ck-add">+ Thêm poster</button>
+          </div>
+          <div class="list" id="ck-list"></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">Liên Chi hội Sinh viên khoa Giáo dục, Trường Đại học Sài Gòn</div>
+  </footer>
+
+  <script src="js/menu.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/criteria.js"></script>
+  <script>
+    // Đăng xuất
+    document.getElementById('logout').addEventListener('click', async function (e) {
+      e.preventDefault();
+      await sb.auth.signOut();
+      location.href = 'index.html';
+    });
+  </script>
+  <script src="js/auth-guard.js"></script>
+  <script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var all = [];
+    var filter = 'pending';
+    var DEMO = location.hash === '#xem-thu';   // xem thử bằng dữ liệu mẫu, không lưu gì vào hệ thống
+
+    var APPROVE = { verified: true,  rejected: false };   // Duyệt
+    var REJECT  = { verified: false, rejected: true  };   // Từ chối
+    var RESET   = { verified: false, rejected: false };   // Thu hồi / Hoàn tác (về lại "chờ duyệt")
+
+    // Chỉ admin được xem trang này (dữ liệu vẫn được khóa thêm ở Supabase)
+    var s = await sb.auth.getSession();
+    if (!s.data.session) return;
+    var me = await sb.from('profiles').select('role').eq('id', s.data.session.user.id).maybeSingle();
+    if (!me.data || me.data.role !== 'admin') { location.replace('tong-quan.html'); return; }
+    $('main').hidden = false;
+
+    // ===== Chuyển qua lại giữa các chức năng của trang Admin =====
+    document.querySelectorAll('#admin-tabs [data-p]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('#admin-tabs [data-p]').forEach(function (x) {
+          x.classList.toggle('on', x === b);
+        });
+        document.querySelectorAll('.panel').forEach(function (p) {
+          p.hidden = (p.id !== 'p-' + b.dataset.p);
+        });
+      });
+    });
+
+    // ===== Chức năng 1: Duyệt tài khoản =====
+    function note(text) {
+      var p = document.createElement('p');
+      p.className = 'note';
+      p.textContent = text;
+      $('list').replaceChildren(p);
+    }
+
+    function statusOf(p) { return p.verified ? 'done' : (p.rejected ? 'rejected' : 'pending'); }
+
+    function makeBtn(label, cls, onClick) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = cls;
+      b.textContent = label;
+      b.addEventListener('click', onClick);
+      return b;
+    }
+
+    async function change(p, patch, ask, box) {
+      if (ask && !confirm(ask)) return;
+      if (DEMO) { Object.assign(p, patch); render(); return; }
+      var btns = box.querySelectorAll('button');
+      btns.forEach(function (x) { x.disabled = true; });
+      var u = await sb.from('profiles').update(patch).eq('id', p.id).select('id, verified, rejected').maybeSingle();
+      if (u.error || !u.data) {
+        btns.forEach(function (x) { x.disabled = false; });
+        return alert('Không cập nhật được. Hãy kiểm tra lại quyền admin và các policy trong Supabase (và đã chạy SQL thêm cột rejected chưa).');
+      }
+      p.verified = u.data.verified === true;
+      p.rejected = u.data.rejected === true;
+      render();
+    }
+
+    var EMPTY = {
+      pending: 'Không có tài khoản nào đang chờ duyệt.',
+      done: 'Chưa có tài khoản nào được duyệt.',
+      rejected: 'Chưa có tài khoản nào bị từ chối.'
+    };
+
+    function render() {
+      var groups = { pending: [], done: [], rejected: [] };
+      all.forEach(function (p) { groups[statusOf(p)].push(p); });
+      $('n-pending').textContent = groups.pending.length;
+      $('n-done').textContent = groups.done.length;
+      $('n-rejected').textContent = groups.rejected.length;
+      document.querySelectorAll('.tabs [data-f]').forEach(function (b) {
+        b.classList.toggle('on', b.dataset.f === filter);
+      });
+
+      var rows = groups[filter];
+      if (!rows.length) return note(EMPTY[filter]);
+
+      var box = document.createDocumentFragment();
+      rows.forEach(function (p) {
+        var row = document.createElement('div');
+        row.className = 'row';
+
+        var info = document.createElement('div');
+        info.className = 'acc-info';
+        var h = document.createElement('h3');
+        h.textContent = p.full_name || '(chưa có tên)';
+        info.appendChild(h);
+        var g = document.createElement('div');
+        g.className = 'acc-grid';
+        [[['MSSV', p.mssv], ['Lớp', p.class_name]], [['Ngành', p.major], ['Email', p.email]]].forEach(function (line) {
+          var ln = document.createElement('div');
+          ln.className = 'acc-line';
+          line.forEach(function (f) {
+            var item = document.createElement('span');
+            var label = document.createElement('b');
+            label.textContent = f[0];
+            item.append(label, f[1] || '—');
+            ln.appendChild(item);
+          });
+          g.appendChild(ln);
+        });
+        info.appendChild(g);
+
+        var act = document.createElement('div');
+        act.className = 'acc-actions';
+        var st = statusOf(p);
+        var who = p.full_name || 'tài khoản này';
+        if (st === 'pending') {
+          act.appendChild(makeBtn('Duyệt', 'btn btn-small', function () { change(p, APPROVE, null, act); }));
+          act.appendChild(makeBtn('Từ chối', 'btn btn-danger', function () { change(p, REJECT, 'Từ chối tài khoản của ' + who + '?', act); }));
+        }
+        if (st === 'done') {
+          act.appendChild(makeBtn('Thu hồi', 'btn btn-line', function () { change(p, RESET, 'Thu hồi xác thực của ' + who + '?', act); }));
+        }
+        if (st === 'rejected') {
+          act.appendChild(makeBtn('Hoàn tác', 'btn btn-line', function () { change(p, RESET, null, act); }));
+        }
+
+        row.append(info, act);
+        box.appendChild(row);
+      });
+      $('list').replaceChildren(box);
+    }
+
+    document.querySelectorAll('.tabs [data-f]').forEach(function (b) {
+      b.addEventListener('click', function () { filter = b.dataset.f; render(); });
+    });
+
+        // ===== Chức năng 3: Đăng thông báo =====
+    var notices = [];
+
+    function fillTargets() {
+      var sel = $('tb-target');
+      while (sel.options.length > 1) sel.remove(1);
+      all.slice().sort(function (a, b) { return String(a.full_name || '').localeCompare(String(b.full_name || ''), 'vi'); })
+        .forEach(function (p) {
+          var o = document.createElement('option');
+          o.value = p.id;
+          o.textContent = (p.full_name || '(chưa có tên)') + (p.mssv ? ' - ' + p.mssv : '');
+          sel.appendChild(o);
+        });
+    }
+
+    function nameOf(id) {
+      var p = all.filter(function (x) { return x.id === id; })[0];
+      return p ? (p.full_name || '(chưa có tên)') : 'một sinh viên';
+    }
+
+    function renderList(listId, items, emptyText) {
+      var list = $(listId);
+      if (!items.length) {
+        var p = document.createElement('p');
+        p.className = 'note';
+        p.textContent = emptyText;
+        return list.replaceChildren(p);
+      }
+      var box = document.createDocumentFragment();
+      items.forEach(function (n) {
+        var row = document.createElement('div');
+        row.className = 'row';
+        var info = document.createElement('div');
+        info.className = 'acc-info';
+        var isDoc = n.kind === 'document';
+        var h = document.createElement('h3');
+        var tag = document.createElement('em');
+        tag.className = 'kind-tag' + (isDoc ? ' is-doc' : '');
+        tag.textContent = isDoc ? 'Tài liệu' : 'Thông báo';
+        h.append(tag, document.createTextNode(n.title));
+        var meta = document.createElement('span');
+        meta.className = 'tb-meta';
+        meta.textContent = new Date(n.created_at).toLocaleString('vi-VN') + ' · ' +
+          (isDoc ? 'Hiển thị ở trang Tài liệu' : (n.target_student_id ? 'Gửi riêng cho ' + nameOf(n.target_student_id) : 'Thông báo chung'));
+        info.append(h, meta);
+        if (n.file_path) {
+          var fl = document.createElement('span');
+          fl.className = 'tb-meta';
+          fl.textContent = 'Tệp: ' + n.file_name + (n.file_size ? ' (' + fmtSize(n.file_size) + ')' : '') +
+            (isDoc ? '' : ' · cũng hiển thị ở trang Tài liệu');
+          info.appendChild(fl);
+        }
+        var act = document.createElement('div');
+        act.className = 'acc-actions';
+        act.appendChild(makeBtn('Xóa', 'btn btn-danger', async function () {
+          if (!confirm('Xóa "' + n.title + '"? Sinh viên sẽ không còn thấy mục này' + (n.file_path ? ' (tệp đính kèm cũng bị xóa khỏi trang Tài liệu)' : '') + '.')) return;
+          if (DEMO) return;
+          var d = await sb.from('announcements').delete().eq('id', n.id);
+          if (d.error) return alert('Chưa xóa được. Hãy thử lại.');
+          if (n.file_path) sb.storage.from('documents').remove([n.file_path]);
+          notices = notices.filter(function (x) { return x.id !== n.id; });
+          renderNotices();
+        }));
+        row.append(info, act);
+        box.appendChild(row);
+      });
+      list.replaceChildren(box);
+    }
+
+    // Thông báo ở tab "Đăng thông báo", tài liệu ở tab "Đăng tài liệu"
+    function renderNotices() {
+      renderList('tb-list', notices.filter(function (n) { return n.kind !== 'document'; }), 'Chưa đăng thông báo nào.');
+      renderList('td-list', notices.filter(function (n) { return n.kind === 'document'; }), 'Chưa đăng tài liệu nào.');
+    }
+
+    async function loadNotices() {
+      var r = await sb.from('announcements').select('*').order('created_at', { ascending: false });
+      if (r.error) {
+        var p = document.createElement('p');
+        p.className = 'note';
+        p.textContent = 'Không tải được thông báo: ' + r.error.message + ' (đã chạy SQL tạo bảng announcements chưa?)';
+        $('td-list').replaceChildren(p.cloneNode(true));        
+        return $('tb-list').replaceChildren(p);
+      }
+      notices = r.data;
+      renderNotices();
+    }
+
+    // --- Đăng thông báo (tab 1) và đăng tài liệu (tab 2) dùng chung một hàm ---
+    var TB_MAX_FILE = 20 * 1024 * 1024;
+    var TB_EXT = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'png', 'jpg', 'jpeg'];
+    var pickedPost = { announcement: null, document: null };
+
+    function bindPostFile(inputId, kind) {
+      $(inputId).addEventListener('change', function () {
+        var f = this.files[0];
+        pickedPost[kind] = null;
+        if (!f) return;
+        var ext = (f.name.split('.').pop() || '').toLowerCase();
+        if (TB_EXT.indexOf(ext) === -1) { this.value = ''; return alert('Chỉ nhận PDF, Word, Excel, PowerPoint hoặc ảnh PNG/JPG.'); }
+        if (f.size > TB_MAX_FILE) { this.value = ''; return alert('Tệp lớn hơn 20 MB. Hãy chọn tệp nhỏ hơn.'); }
+        pickedPost[kind] = f;
+      });
+    }
+    bindPostFile('tb-file', 'announcement');
+    bindPostFile('td-file', 'document');
+
+    async function postItem(kind) {
+      var isDoc = kind === 'document';
+      var px = isDoc ? 'td' : 'tb';
+      var title = $(px + '-title').value.trim();
+      var body = $(px + '-body').value.trim();
+      var file = pickedPost[kind];
+      var target = isDoc ? null : ($('tb-target').value || null);
+      if (!title) return alert('Hãy nhập tiêu đề.');
+      if (!isDoc && !body) return alert('Hãy nhập đủ tiêu đề và nội dung.');
+      if (isDoc && !file) return alert('Hãy chọn tệp tài liệu.');
+      if (DEMO) return alert('Đang ở chế độ xem thử nên chưa đăng được.');
+      var ask = isDoc ? 'Đăng tài liệu "' + title + '" cho tất cả sinh viên?'
+        : (target ? 'Gửi thông báo riêng cho ' + nameOf(target) + '?' : 'Đăng thông báo chung cho tất cả sinh viên?') +
+          (file ? '\nTệp đính kèm cũng sẽ hiển thị ở trang Tài liệu.' : '');
+      if (!confirm(ask)) return;
+      var btn = $(px + '-post');
+      btn.disabled = true;
+
+      var row = { kind: kind, title: title, body: body || null, target_student_id: target };
+      var uploadedPath = null;
+      if (file) {
+        var ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+        uploadedPath = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        var up = await sb.storage.from('documents').upload(uploadedPath, file, { contentType: file.type || 'application/octet-stream', cacheControl: '3600' });
+        if (up.error) {
+          btn.disabled = false;
+          console.error(up.error.message);
+          return alert('Chưa tải được tệp lên. Hãy kiểm tra đã chạy SQL tạo kho "documents" trong Supabase chưa.');
+        }
+        row.file_path = uploadedPath;
+        row.file_name = file.name;
+        row.file_size = file.size;
+        row.file_type = file.type || null;
+      }
+
+      var res = await sb.from('announcements').insert(row).select().single();
+      btn.disabled = false;
+      if (res.error) {
+        console.error(res.error.message);
+        if (uploadedPath) sb.storage.from('documents').remove([uploadedPath]);
+        return alert('Chưa đăng được. Hãy kiểm tra đã chạy SQL trong Supabase và đang đăng nhập bằng tài khoản admin.');
+      }
+      $(px + '-title').value = '';
+      $(px + '-body').value = '';
+      $(px + '-file').value = '';
+      if (!isDoc) $('tb-target').value = '';
+      pickedPost[kind] = null;
+      notices.unshift(res.data);
+      renderNotices();
+    }
+    $('tb-post').addEventListener('click', function () { postItem('announcement'); });
+    $('td-post').addEventListener('click', function () { postItem('document'); });
+
+
+    // ===== Chức năng 2: Tin nhắn =====
+    var msgs = [];            // mọi tin nhắn đã tải (mới nhất trước)
+    var msgSeen = {};
+    var openId = null;        // sinh viên đang mở cuộc trò chuyện
+    var inbox = {};
+
+    function fmtTime(t) {
+      var d = new Date(t);
+      return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · ' + d.toLocaleDateString('vi-VN');
+    }
+    function profileOf(id) { return all.filter(function (x) { return x.id === id; })[0]; }
+
+    function buildInbox() {
+      inbox = {};
+      msgs.forEach(function (m) {
+        var c = inbox[m.student_id];
+        if (!c || m.created_at > c.last.created_at) inbox[m.student_id] = { id: m.student_id, last: m };
+      });
+      return Object.keys(inbox).map(function (k) { return inbox[k]; })
+        .sort(function (a, b) { return a.last.created_at < b.last.created_at ? 1 : -1; });
+    }
+
+    function renderInbox() {
+      var list = $('inbox');
+      var rows = buildInbox();
+      if (!rows.length) {
+        var p = document.createElement('p');
+        p.className = 'note';
+        p.textContent = 'Chưa có sinh viên nào nhắn tin.';
+        return list.replaceChildren(p);
+      }
+      var box = document.createDocumentFragment();
+      rows.forEach(function (c) {
+        var pf = profileOf(c.id);
+        var row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'row';
+        var info = document.createElement('div');
+        info.className = 'acc-info';
+        var h = document.createElement('h3');
+        h.textContent = pf ? (pf.full_name || '(chưa có tên)') : 'Sinh viên';
+        if (c.last.sender === 'student') {
+          row.classList.add('unread');
+          var dot = document.createElement('span');
+          dot.className = 'dot-wait';
+          dot.title = 'Chờ trả lời';
+          h.appendChild(dot);
+        }
+        if (c.id === openId) row.classList.add('active');
+        var pre = document.createElement('span');
+        pre.className = 'preview';
+        pre.textContent = (c.last.sender === 'admin' ? 'BCH: ' : '') + c.last.body;
+        info.append(h, pre);
+        var side = document.createElement('div');
+        var when = document.createElement('span');
+        when.className = 'when';
+        when.textContent = fmtTime(c.last.created_at);
+        side.appendChild(when);
+        row.append(info, side);
+        row.addEventListener('click', function () { openConv(c.id); });
+        box.appendChild(row);
+      });
+      list.replaceChildren(box);
+    }
+
+    function addBubble(m) {
+      var body = $('conv-body');
+      var empty = body.querySelector('.chat-empty');
+      if (empty) empty.remove();
+      var row = document.createElement('div');
+      row.className = 'msg ' + (m.sender === 'admin' ? 'me' : 'them');
+      var bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = m.body;
+      var time = document.createElement('span');
+      time.className = 'msg-time';
+      time.textContent = fmtTime(m.created_at);
+      row.append(bubble, time);
+      body.appendChild(row);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function openConv(id) {
+      openId = id;
+      var pf = profileOf(id);
+      $('conv-name').textContent = pf ? (pf.full_name || '(chưa có tên)') : 'Sinh viên';
+      $('conv-mssv').textContent = pf && pf.mssv ? pf.mssv : '';
+      var body = $('conv-body');
+      body.replaceChildren();
+      msgs.filter(function (m) { return m.student_id === id; })
+        .sort(function (a, b) { return a.created_at < b.created_at ? -1 : 1; })
+        .forEach(addBubble);
+      $('conv-empty').hidden = true;
+      $('conv-main').hidden = false;
+      $('msgr').classList.add('open');     // điện thoại: ẩn danh sách, chỉ hiện cuộc trò chuyện
+      renderInbox();                       // tô sáng người đang mở
+      body.scrollTop = body.scrollHeight;
+      if (window.matchMedia('(min-width: 801px)').matches) $('conv-input').focus();
+    }
+
+    $('conv-back').addEventListener('click', function () {
+      openId = null;
+      $('conv-main').hidden = true;
+      $('conv-empty').hidden = false;
+      $('msgr').classList.remove('open');
+      renderInbox();
+    });
+
+    function takeMsg(m) {
+      if (msgSeen[m.id]) return;
+      msgSeen[m.id] = true;
+      msgs.push(m);
+      if (openId === m.student_id) addBubble(m);
+      renderInbox();
+    }
+
+    var cin = $('conv-input'), csend = $('conv-send');
+    function cresize() {
+      cin.style.height = 'auto';
+      cin.style.height = Math.min(cin.scrollHeight, 120) + 'px';
+      csend.disabled = !cin.value.trim();
+    }
+    cin.addEventListener('input', cresize);
+
+    async function reply() {
+      var text = cin.value.trim();
+      if (!text || !openId) return;
+      csend.disabled = true;
+      cin.value = ''; cresize();
+      if (DEMO) { takeMsg({ id: 'd' + Date.now(), student_id: openId, sender: 'admin', body: text, created_at: new Date().toISOString() }); return; }
+      var res = await sb.from('messages').insert({ student_id: openId, sender: 'admin', body: text }).select().single();
+      if (res.error) {
+        console.error('Không gửi được trả lời:', res.error.message);
+        cin.value = text; cresize();
+        return alert('Chưa gửi được tin trả lời. Hãy kiểm tra đã chạy SQL quyền admin cho bảng messages chưa.');
+      }
+      takeMsg(res.data);
+    }
+    $('conv-form').addEventListener('submit', function (e) { e.preventDefault(); reply(); });
+    cin.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); reply(); }
+    });
+
+    async function loadMessages() {
+      var r = await sb.from('messages').select('*').order('created_at', { ascending: false }).limit(1000);
+      if (r.error) {
+        var p = document.createElement('p');
+        p.className = 'note';
+        p.textContent = 'Không tải được tin nhắn: ' + r.error.message + ' (đã chạy SQL quyền admin cho bảng messages chưa?)';
+        return $('inbox').replaceChildren(p);
+      }
+      r.data.forEach(function (m) { msgSeen[m.id] = true; });
+      msgs = r.data;
+      renderInbox();
+      // Tin mới của sinh viên hiện ngay, không cần tải lại trang
+      sb.channel('admin-messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, function (p) { takeMsg(p.new); })
+        .subscribe();
+    }
+
+    if (DEMO) {
+      msgs = [
+        { id: 'm1', student_id: 'demo1', sender: 'student', body: 'Chào BCH, em muốn hỏi hạn nộp hồ sơ SV5T cấp Khoa ạ?', created_at: new Date(Date.now() - 3600e3).toISOString() },
+        { id: 'm2', student_id: 'demo2', sender: 'student', body: 'Em cần bổ sung minh chứng nghiên cứu khoa học.', created_at: new Date(Date.now() - 7200e3).toISOString() },
+        { id: 'm3', student_id: 'demo2', sender: 'admin', body: 'Bạn gửi bản scan giấy chứng nhận nhé.', created_at: new Date(Date.now() - 3000e3).toISOString() }
+      ];
+      msgs.forEach(function (m) { msgSeen[m.id] = true; });
+    }
+
+
+
+    // ===== Chức năng 4: Duyệt hồ sơ =====
+    var subs = [];
+    var hsView = null;         // student_id đang xem chi tiết (null = đang ở danh sách)
+    var hsOpenReject = null;   // id tệp đang mở ô nhập lý do từ chối
+    var CRIT_NAME = {};
+    CRITERIA.forEach(function (c) { CRIT_NAME[c.key] = c.name; });
+    // Lấy tên tiêu chí do BCH đã chỉnh ở trang Tổng quan (nếu có)
+    loadCriteria().then(function (list) {
+      list.forEach(function (c) { CRIT_NAME[c.key] = c.name; });
+      hsRender();
+    });
+    var HS_STATUS = { pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Bị từ chối' };
+
+    function fmtSize(n) {
+      if (!n) return '';
+      return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+    }
+    function subsOf(studentId) { return subs.filter(function (x) { return x.student_id === studentId; }); }
+    // Trạng thái gộp của một nhóm tệp: còn tệp chờ -> chờ duyệt; có tệp bị từ chối -> từ chối; còn lại -> đã duyệt
+    function groupStatus(list) {
+      if (list.some(function (x) { return x.status === 'pending'; })) return 'pending';
+      if (list.some(function (x) { return x.status === 'rejected'; })) return 'rejected';
+      return 'approved';
+    }
+
+    function hsStatusCounts() {
+      var n = subs.filter(function (x) { return x.status === 'pending'; }).length;
+      var tag = $('n-hoso');
+      tag.textContent = n;
+      tag.hidden = !n;
+    }
+
+    async function hsOpenFile(x) {
+      if (DEMO) return alert('Đang ở chế độ xem thử nên chưa mở được tệp.');
+      var w = window.open('', '_blank');
+      var r = await sb.storage.from('evidence').createSignedUrl(x.file_path, 3600);
+      if (r.error || !r.data) { if (w) w.close(); return alert('Chưa mở được tệp. Hãy kiểm tra đã chạy SQL đợt 5 chưa.'); }
+      if (w) w.location = r.data.signedUrl; else location.href = r.data.signedUrl;
+    }
+
+    // Duyệt / Từ chối / Hoàn tác một tệp. Mọi thay đổi đều thu hồi "đã gửi phản hồi" của tệp đó,
+    // để BCH bấm Hoàn thành lại thì sinh viên mới thấy kết quả mới.
+    async function hsReview(x, patch, box) {
+      patch = Object.assign({ released_at: null }, patch);
+      if (DEMO) { Object.assign(x, patch, { reviewed_at: patch.status === 'pending' ? null : new Date().toISOString() }); hsOpenReject = null; return hsRender(); }
+      box.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+      var u = await sb.from('submissions').update(patch).eq('id', x.id).select().maybeSingle();
+      if (u.error || !u.data) {
+        console.error(u.error && u.error.message);
+        box.querySelectorAll('button').forEach(function (b) { b.disabled = false; });
+        return alert('Chưa cập nhật được. Hãy kiểm tra đã chạy SQL đợt 5 + SQL "released_at" và đang đăng nhập bằng tài khoản admin. (Từ chối bắt buộc có lý do.)');
+      }
+      Object.assign(x, u.data);
+      hsOpenReject = null;
+      hsRender();
+    }
+
+    // Nút Hoàn thành: gửi kết quả (các tệp đã duyệt/từ chối) về cho sinh viên
+    async function hsFinish(studentId, btn) {
+      var list = subsOf(studentId);
+      var pend = list.filter(function (x) { return x.status === 'pending'; }).length;
+      var todo = list.filter(function (x) { return x.status !== 'pending' && !x.released_at; });
+      if (!todo.length) return alert(pend ? 'Chưa có tệp nào được duyệt hoặc từ chối để gửi phản hồi.' : 'Mọi kết quả đã được gửi cho sinh viên rồi.');
+      var pf = profileOf(studentId);
+      var msg = 'Gửi kết quả ' + todo.length + ' tệp cho ' + (pf && pf.full_name ? pf.full_name : 'sinh viên') + '?';
+      if (pend) msg += '\n\nCòn ' + pend + ' tệp chưa duyệt, các tệp này vẫn hiện "Chờ duyệt" với sinh viên.';
+      if (!confirm(msg)) return;
+      var now = new Date().toISOString();
+      if (DEMO) { todo.forEach(function (x) { x.released_at = now; }); return hsRender(); }
+      btn.disabled = true;
+      var u = await sb.from('submissions').update({ released_at: now }).in('id', todo.map(function (x) { return x.id; })).select();
+      btn.disabled = false;
+      if (u.error) {
+        console.error(u.error.message);
+        return alert('Chưa gửi được phản hồi. Hãy chạy file SQL/submissions-released.sql trong Supabase (thêm cột released_at) rồi thử lại.');
+      }
+      u.data.forEach(function (row) {
+        var cur = subs.filter(function (x) { return x.id === row.id; })[0];
+        if (cur) Object.assign(cur, row);
+      });
+      hsRender();
+      alert('Đã gửi phản hồi cho sinh viên.');
+    }
+
+    // ----- Danh sách sinh viên đã nộp hồ sơ -----
+    function hsRenderList() {
+      $('hs-list-wrap').hidden = false;
+      $('hs-detail').hidden = true;
+      var q = $('hs-search').value.trim().toLowerCase();
+      var ids = [];
+      subs.forEach(function (x) { if (ids.indexOf(x.student_id) < 0) ids.push(x.student_id); });
+      var rows = ids.map(function (id) {
+        var list = subsOf(id);
+        return { id: id, pf: profileOf(id) || {}, list: list,
+                 pending: list.filter(function (x) { return x.status === 'pending'; }).length,
+                 unsent: list.filter(function (x) { return x.status !== 'pending' && !x.released_at; }).length,
+                 last: list.reduce(function (m, x) { return String(x.created_at) > m ? String(x.created_at) : m; }, '') };
+      }).filter(function (r) {
+        if (!q) return true;
+        return String(r.pf.full_name || '').toLowerCase().indexOf(q) >= 0 || String(r.pf.mssv || '').toLowerCase().indexOf(q) >= 0;
+      });
+      // Người còn tệp chờ duyệt lên trước, rồi tới người nộp gần nhất
+      rows.sort(function (a, b) { return (b.pending > 0) - (a.pending > 0) || b.last.localeCompare(a.last); });
+      $('hs-count').textContent = rows.length + ' sinh viên đã nộp hồ sơ';
+      var list = $('hs-list');
+      if (!rows.length) {
+        var p = document.createElement('p'); p.className = 'note';
+        p.textContent = q ? 'Không tìm thấy sinh viên phù hợp.' : 'Chưa có sinh viên nào nộp hồ sơ.';
+        return list.replaceChildren(p);
+      }
+      var frag = document.createDocumentFragment();
+      var head = document.createElement('div');
+      head.className = 'hs-tr hs-th';
+      ['Họ và tên', 'MSSV', 'Tiêu chí đã nộp', 'Hồ sơ'].forEach(function (t) { var d = document.createElement('div'); d.textContent = t; head.appendChild(d); });
+      frag.appendChild(head);
+      rows.forEach(function (r) {
+        var tr = document.createElement('div'); tr.className = 'hs-tr';
+        var c1 = document.createElement('div'); c1.className = 'hs-name';
+        var nm = document.createElement('b'); nm.textContent = r.pf.full_name || '(chưa có tên)';
+        var sub = document.createElement('small');
+        sub.textContent = r.pending ? r.pending + ' tệp chờ duyệt' : (r.unsent ? 'Chưa gửi phản hồi' : 'Đã gửi phản hồi');
+        sub.className = r.pending ? 'tag-wait' : (r.unsent ? 'tag-unsent' : 'tag-done');
+        c1.append(nm, sub);
+        var c2 = document.createElement('div'); c2.textContent = r.pf.mssv || '—'; c2.dataset.label = 'MSSV';
+        var c3 = document.createElement('div'); c3.className = 'hs-chips'; c3.dataset.label = 'Tiêu chí';
+        CRITERIA.forEach(function (c) {
+          var fl = r.list.filter(function (x) { return x.criterion === c.key; });
+          if (!fl.length) return;
+          var chip = document.createElement('span');
+          chip.className = 'chip chip-' + groupStatus(fl);
+          chip.textContent = CRIT_NAME[c.key] + ' (' + fl.length + ')';
+          chip.title = HS_STATUS[groupStatus(fl)];
+          c3.appendChild(chip);
+        });
+        var c4 = document.createElement('div');
+        c4.appendChild(makeBtn('Xem hồ sơ', 'btn btn-small', function () { hsView = r.id; hsOpenReject = null; hsRender(); window.scrollTo({ top: 0 }); }));
+        tr.append(c1, c2, c3, c4);
+        frag.appendChild(tr);
+      });
+      list.replaceChildren(frag);
+    }
+
+    // ----- Chi tiết hồ sơ một sinh viên, chia theo 5 tiêu chí -----
+    function hsRenderDetail() {
+      $('hs-list-wrap').hidden = true;
+      var box = $('hs-detail');
+      box.hidden = false;
+      var pf = profileOf(hsView) || {};
+      var mine = subsOf(hsView);
+      var frag = document.createDocumentFragment();
+
+      var bar = document.createElement('div'); bar.className = 'hd-bar';
+      bar.appendChild(makeBtn('← Quay lại danh sách', 'btn btn-line', function () { hsView = null; hsOpenReject = null; hsRender(); }));
+      var fin = makeBtn('Hoàn thành & gửi phản hồi', 'btn btn-primary', function () { hsFinish(hsView, fin); });
+      bar.appendChild(fin);
+      frag.appendChild(bar);
+
+      var who = document.createElement('div'); who.className = 'hd-who';
+      var h = document.createElement('h3'); h.textContent = pf.full_name || '(chưa có tên)';
+      var info = document.createElement('p');
+      info.textContent = [pf.mssv ? 'MSSV: ' + pf.mssv : '', pf.class_name ? 'Lớp: ' + pf.class_name : '', pf.major ? 'Ngành: ' + pf.major : ''].filter(Boolean).join(' · ');
+      who.append(h, info);
+      frag.appendChild(who);
+
+      CRITERIA.forEach(function (c) {
+        var fl = mine.filter(function (x) { return x.criterion === c.key; })
+                     .sort(function (a, b) { return String(a.created_at).localeCompare(String(b.created_at)); });
+        var sec = document.createElement('section'); sec.className = 'hd-crit';
+        var hd = document.createElement('div'); hd.className = 'hd-crit-head';
+        var t = document.createElement('h4'); t.textContent = CRIT_NAME[c.key];
+        hd.appendChild(t);
+        var st = document.createElement('span');
+        if (fl.length) { var g = groupStatus(fl); st.className = 'st st-' + g; st.textContent = fl.length + ' tệp · ' + HS_STATUS[g]; }
+        else { st.className = 'st st-none'; st.textContent = 'Chưa nộp'; }
+        hd.appendChild(st);
+        sec.appendChild(hd);
+        fl.forEach(function (x) { sec.appendChild(hsFileCard(x)); });
+        if (!fl.length) { var e = document.createElement('p'); e.className = 'note'; e.textContent = 'Sinh viên chưa nộp minh chứng cho tiêu chí này.'; sec.appendChild(e); }
+        frag.appendChild(sec);
+      });
+      box.replaceChildren(frag);
+    }
+
+    function hsFileCard(x) {
+      var row = document.createElement('div'); row.className = 'hd-file';
+      var top = document.createElement('div'); top.className = 'hd-file-top';
+      var inf = document.createElement('div'); inf.className = 'sub-info';
+      var fb = document.createElement('button');
+      fb.type = 'button'; fb.className = 'sub-file'; fb.textContent = x.file_name; fb.title = 'Bấm để mở tệp';
+      fb.addEventListener('click', function () { hsOpenFile(x); });
+      var meta = document.createElement('span'); meta.className = 'sub-meta';
+      meta.textContent = 'Nộp ' + fmtTime(x.created_at) + (x.file_size ? ' · ' + fmtSize(x.file_size) : '') + (x.reviewed_at ? ' · xử lý ' + fmtTime(x.reviewed_at) : '') + (x.status !== 'pending' ? (x.released_at ? ' · đã gửi phản hồi' : ' · chưa gửi phản hồi') : '');
+      inf.append(fb, meta);
+      var st = document.createElement('span'); st.className = 'st st-' + x.status; st.textContent = HS_STATUS[x.status] || x.status;
+      var act = document.createElement('div'); act.className = 'acc-actions';
+      act.appendChild(makeBtn('Mở tệp', 'btn btn-line', function () { hsOpenFile(x); }));
+      if (x.status === 'pending') {
+        act.appendChild(makeBtn('Duyệt', 'btn btn-small', function () { hsReview(x, { status: 'approved' }, act); }));
+        act.appendChild(makeBtn('Từ chối', 'btn btn-danger', function () { hsOpenReject = (hsOpenReject === x.id ? null : x.id); hsRender(); }));
+      } else {
+        act.appendChild(makeBtn('Hoàn tác', 'btn btn-line', function () {
+          if (confirm('Đưa tệp này về trạng thái chờ duyệt?')) hsReview(x, { status: 'pending' }, act);
+        }));
+      }
+      top.append(inf, st, act);
+      row.appendChild(top);
+
+      if (x.status === 'rejected' && x.reason) {
+        var rs = document.createElement('div'); rs.className = 'sub-reason'; rs.textContent = 'Giải trình: ' + x.reason;
+        row.appendChild(rs);
+      }
+      if (x.status === 'pending' && hsOpenReject === x.id) {
+        var rj = document.createElement('div'); rj.className = 'sub-reject';
+        var lb = document.createElement('label'); lb.textContent = 'Giải trình chi tiết (bắt buộc khi từ chối, sinh viên sẽ đọc được)';
+        var ta = document.createElement('textarea'); ta.maxLength = 2000; ta.placeholder = 'Ví dụ: Ảnh bị mờ, chưa thấy dấu xác nhận. Vui lòng nộp lại bản rõ nét.';
+        lb.htmlFor = ta.id = 'rj-' + x.id;
+        var ra = document.createElement('div'); ra.className = 'acc-actions';
+        ra.appendChild(makeBtn('Xác nhận từ chối', 'btn btn-danger', function () {
+          var reason = ta.value.trim();
+          if (!reason) { ta.focus(); return alert('Hãy nhập giải trình chi tiết để sinh viên nắm thông tin.'); }
+          hsReview(x, { status: 'rejected', reason: reason }, ra);
+        }));
+        ra.appendChild(makeBtn('Hủy', 'btn btn-line', function () { hsOpenReject = null; hsRender(); }));
+        rj.append(lb, ta, ra);
+        row.appendChild(rj);
+        setTimeout(function () { ta.focus(); }, 0);
+      }
+      return row;
+    }
+
+    function hsRender() {
+      hsStatusCounts();
+      if (hsView && !subsOf(hsView).length) hsView = null;   // sinh viên đã xóa hết tệp
+      if (hsView) hsRenderDetail(); else hsRenderList();
+    }
+
+    $('hs-search').addEventListener('input', hsRender);
+
+    async function refreshSubs() {
+      var r = await sb.from('submissions').select('*').order('created_at', { ascending: false }).limit(2000);
+      if (r.error) {
+        var p = document.createElement('p'); p.className = 'note';
+        p.textContent = 'Không tải được hồ sơ: ' + r.error.message + ' (đã chạy SQL đợt 5 chưa?)';
+        return $('hs-list').replaceChildren(p);
+      }
+      subs = r.data;
+      hsRender();
+    }
+
+    async function loadSubs() {
+      await refreshSubs();
+      // Sinh viên nộp thêm / xóa tệp là cập nhật ngay (không làm mất ô giải trình đang gõ dở)
+      sb.channel('admin-subs')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'submissions' }, function () { if (!hsOpenReject) refreshSubs(); })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'submissions' }, function () { if (!hsOpenReject) refreshSubs(); })
+        .subscribe();
+    }
+
+    // ===== Chức năng 5: Chỉnh trang Tổng quan =====
+    var content = [];
+    var ckKind = 'poster';
+    var editing = null;       // null = không sửa; {} = thêm mới; object = đang sửa mục đó
+    var pickedFile = null;
+    var KIND_NAME = { poster: 'Poster / bài đăng', criterion: '5 tiêu chuẩn', step: '3 bước nộp hồ sơ' };
+    var MAX_IMG = 5 * 1024 * 1024;
+
+    function ckItems() {
+      return content.filter(function (x) { return x.kind === ckKind; })
+        .sort(function (a, b) { return a.sort_order - b.sort_order || String(a.created_at).localeCompare(String(b.created_at)); });
+    }
+
+    function ckNote(text) {
+      var p = document.createElement('p');
+      p.className = 'note';
+      p.textContent = text;
+      $('ck-list').replaceChildren(p);
+    }
+
+    function ckCloseForm() {
+      editing = null; pickedFile = null;
+      $('ck-form').hidden = true;
+      $('ck-file').value = '';
+    }
+
+    function ckOpenForm(item) {
+      editing = item;
+      pickedFile = null;
+      $('ck-form-title').textContent = item.id ? 'Sửa nội dung' : 'Thêm poster mới';
+      $('ck-title').value = item.title || '';
+      $('ck-body').value = item.body || '';
+      $('ck-file').value = '';
+      $('ck-img-wrap').hidden = ckKind !== 'poster';
+      $('ck-req-wrap').hidden = ckKind !== 'criterion';
+      $('ck-req').value = item.requirements || '';
+      var pv = $('ck-preview');
+      pv.hidden = !item.image_url;
+      pv.src = item.image_url || '';
+      $('ck-form').hidden = false;
+      $('ck-title').focus();
+    }
+
+    $('ck-file').addEventListener('change', function () {
+      var f = this.files[0];
+      if (!f) { pickedFile = null; return; }
+      if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { this.value = ''; return alert('Chỉ nhận ảnh PNG, JPG hoặc WEBP.'); }
+      if (f.size > MAX_IMG) { this.value = ''; return alert('Ảnh lớn hơn 5 MB. Hãy chọn ảnh nhỏ hơn.'); }
+      pickedFile = f;
+      var pv = $('ck-preview');
+      pv.src = URL.createObjectURL(f);
+      pv.hidden = false;
+    });
+
+    function ckRender() {
+      document.querySelectorAll('#ck-tabs [data-k]').forEach(function (b) { b.classList.toggle('on', b.dataset.k === ckKind); });
+      $('ck-list-title').textContent = KIND_NAME[ckKind];
+      $('ck-add').hidden = ckKind !== 'poster';
+      var items = ckItems();
+      if (!items.length) return ckNote(ckKind === 'poster' ? 'Chưa có poster nào. Bấm "+ Thêm poster" để đăng.' : 'Chưa có nội dung. Hãy chạy SQL đợt 4 trong Supabase.');
+      var box = document.createDocumentFragment();
+      items.forEach(function (it, idx) {
+        var row = document.createElement('div');
+        row.className = 'row';
+        var info = document.createElement('div');
+        info.className = 'acc-info ck-info';
+        if (it.image_url) {
+          var im = document.createElement('img');
+          im.className = 'ck-thumb';
+          im.src = it.image_url;
+          im.alt = '';
+          info.appendChild(im);
+        }
+        var tx = document.createElement('div');
+        var h = document.createElement('h3');
+        h.textContent = it.title;
+        var sn = document.createElement('span');
+        sn.className = 'ck-snip';
+        sn.textContent = it.body || '';
+        tx.append(h, sn);
+        info.appendChild(tx);
+
+        var act = document.createElement('div');
+        act.className = 'acc-actions';
+        var up = makeBtn('↑', 'btn btn-line btn-mini', function () { ckMove(items, idx, -1, act); });
+        var dn = makeBtn('↓', 'btn btn-line btn-mini', function () { ckMove(items, idx, 1, act); });
+        up.title = 'Đưa lên'; dn.title = 'Đưa xuống';
+        up.disabled = idx === 0; dn.disabled = idx === items.length - 1;
+        act.append(up, dn, makeBtn('Sửa', 'btn btn-line', function () { ckOpenForm(it); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+        if (ckKind === 'poster') act.appendChild(makeBtn('Xóa', 'btn btn-danger', function () { ckDelete(it); }));
+        row.append(info, act);
+        box.appendChild(row);
+      });
+      $('ck-list').replaceChildren(box);
+    }
+
+    async function ckMove(items, idx, dir, act) {
+      var a = items[idx], b = items[idx + dir];
+      if (!b) return;
+      // đổi chỗ thứ tự; nếu trùng số thì tách ra để đổi chỗ có tác dụng
+      var sa = a.sort_order, sb2 = b.sort_order;
+      if (sa === sb2) { sb2 = sa + dir; }
+      if (DEMO) { a.sort_order = sb2; b.sort_order = sa; return ckRender(); }
+      act.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+      var r1 = await sb.from('site_content').update({ sort_order: sb2 }).eq('id', a.id);
+      var r2 = await sb.from('site_content').update({ sort_order: sa }).eq('id', b.id);
+      if (r1.error || r2.error) { alert('Chưa đổi được thứ tự. Hãy thử lại.'); return ckLoad(); }
+      a.sort_order = sb2; b.sort_order = sa;
+      ckRender();
+    }
+
+    async function ckDelete(it) {
+      if (!confirm('Xóa "' + it.title + '"? Sinh viên sẽ không còn thấy mục này.')) return;
+      if (DEMO) { content = content.filter(function (x) { return x !== it; }); return ckRender(); }
+      var d = await sb.from('site_content').delete().eq('id', it.id);
+      if (d.error) return alert('Chưa xóa được. Hãy kiểm tra quyền admin trong Supabase.');
+      if (it.image_url) {
+        var m = it.image_url.match(/\/posters\/(.+)$/);
+        if (m) sb.storage.from('posters').remove([decodeURIComponent(m[1])]);   // dọn ảnh, lỗi cũng không sao
+      }
+      content = content.filter(function (x) { return x.id !== it.id; });
+      ckRender();
+    }
+
+    $('ck-save').addEventListener('click', async function () {
+      if (!editing) return;
+      var title = $('ck-title').value.trim();
+      var body = $('ck-body').value.trim();
+      if (!title) return alert('Hãy nhập tiêu đề.');
+      var isPoster = ckKind === 'poster';
+      if (isPoster && !pickedFile && !editing.image_url) return alert('Hãy chọn ảnh poster.');
+      var btn = $('ck-save');
+      btn.disabled = true;
+      var imageUrl = editing.image_url || null;
+
+      if (DEMO) {
+        if (pickedFile) imageUrl = URL.createObjectURL(pickedFile);
+        if (editing.id) { Object.assign(editing, { title: title, body: body, image_url: imageUrl, requirements: $('ck-req').value.trim() }); }
+        else content.push({ id: 'c' + Date.now(), kind: ckKind, title: title, body: body, image_url: imageUrl, sort_order: -Date.now(), created_at: new Date().toISOString() });
+        btn.disabled = false; ckCloseForm(); return ckRender();
+      }
+
+      if (isPoster && pickedFile) {
+        var ext = pickedFile.type === 'image/png' ? 'png' : (pickedFile.type === 'image/webp' ? 'webp' : 'jpg');
+        var path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        var up = await sb.storage.from('posters').upload(path, pickedFile, { contentType: pickedFile.type, cacheControl: '3600' });
+        if (up.error) {
+          btn.disabled = false;
+          console.error(up.error.message);
+          return alert('Chưa tải được ảnh lên. Hãy kiểm tra đã chạy SQL đợt 4 (kho ảnh posters) chưa.');
+        }
+        imageUrl = sb.storage.from('posters').getPublicUrl(path).data.publicUrl;
+      }
+
+      var res;
+      if (editing.id) {
+        var upd = { title: title, body: body, image_url: imageUrl };
+        if (ckKind === 'criterion') upd.requirements = $('ck-req').value.trim();
+        res = await sb.from('site_content').update(upd).eq('id', editing.id).select().maybeSingle();
+      } else {
+        var mn = content.filter(function (x) { return x.kind === ckKind; }).reduce(function (m, x) { return Math.min(m, x.sort_order); }, 0);
+        res = await sb.from('site_content').insert({ kind: ckKind, title: title, body: body, image_url: imageUrl, sort_order: mn - 1 }).select().single();
+      }
+      btn.disabled = false;
+      if (res.error || !res.data) {
+        console.error(res.error && res.error.message);
+        return alert('Chưa lưu được. Hãy kiểm tra đã chạy SQL đợt 4 và đang đăng nhập bằng tài khoản admin.');
+      }
+      var old = editing.image_url;
+      if (editing.id) Object.assign(editing, res.data); else content.push(res.data);
+      if (old && pickedFile && old !== imageUrl) {
+        var mo = old.match(/\/posters\/(.+)$/);
+        if (mo) sb.storage.from('posters').remove([decodeURIComponent(mo[1])]);
+      }
+      ckCloseForm();
+      ckRender();
+    });
+
+    $('ck-cancel').addEventListener('click', ckCloseForm);
+    $('ck-add').addEventListener('click', function () { ckOpenForm({}); });
+    document.querySelectorAll('#ck-tabs [data-k]').forEach(function (b) {
+      b.addEventListener('click', function () { ckKind = b.dataset.k; ckCloseForm(); ckRender(); });
+    });
+
+    async function ckLoad() {
+      var r = await sb.from('site_content').select('*').order('sort_order', { ascending: true });
+      if (r.error) return ckNote('Không tải được nội dung: ' + r.error.message + ' (đã chạy SQL đợt 4 chưa?)');
+      content = r.data;
+      ckRender();
+    }
+
+    if (DEMO) {
+      content = [
+        { id: 'c1', kind: 'poster', title: 'Poster mở đăng ký xét SV5T 2027', body: 'Hạn nộp hồ sơ: 30/11.', image_url: '', sort_order: 1, created_at: '2026-10-01' },
+        { id: 'c2', kind: 'criterion', title: 'Đạo đức tốt', body: 'Nền tảng nhân cách của mỗi sinh viên.', image_url: null, sort_order: 1, created_at: '2026-10-01' },
+        { id: 'c3', kind: 'criterion', title: 'Học tập tốt', body: 'Kết quả học tập và tinh thần nghiên cứu.', image_url: null, sort_order: 2, created_at: '2026-10-01' },
+        { id: 'c4', kind: 'step', title: 'Tạo tài khoản', body: 'Nhập mã số sinh viên, lớp, ngành và xác thực email.', image_url: null, sort_order: 1, created_at: '2026-10-01' }
+      ];
+      ckRender();
+    }
+
+    if (DEMO) {
+      var bn = document.createElement('p');
+      bn.className = 'demo-note';
+      bn.textContent = 'Đang xem thử bằng dữ liệu mẫu. Các nút chỉ thay đổi trên màn hình, không lưu vào hệ thống.';
+      document.querySelector('#admin-tabs').before(bn);
+      all = [
+        { id: 'demo1', mssv: '3122530001', full_name: 'Nguyễn Văn An', class_name: 'DTL1221', major: 'Tâm lý học', email: 'nguyenvanan@gmail.com', verified: false, rejected: false },
+        { id: 'demo2', mssv: '3122530002', full_name: 'Trần Thị Bích Ngọc', class_name: 'DQL1221', major: 'Quản lý giáo dục', email: 'tranthibichngoc@gmail.com', verified: false, rejected: false },
+        { id: 'demo3', mssv: '3122530003', full_name: 'Lê Hoàng Minh Khôi', class_name: 'DTL1221', major: 'Tâm lý học', email: 'lehoangminhkhoi@gmail.com', verified: true, rejected: false },
+        { id: 'demo4', mssv: '3122530004', full_name: 'Phạm Quốc Bảo', class_name: 'DQL1221', major: 'Quản lý giáo dục', email: 'phamquocbao.sgu@gmail.com', verified: false, rejected: true }
+      ];
+      subs = [
+        { id: 's1', student_id: 'demo1', criterion: 'hoc-tap', file_name: 'bang-diem-hk1.pdf', file_path: 'x', status: 'pending', reason: null, created_at: new Date(Date.now() - 5400e3).toISOString() },
+        { id: 's2', student_id: 'demo1', criterion: 'tinh-nguyen', file_name: 'giay-chung-nhan-mua-he-xanh.jpg', file_path: 'x', status: 'pending', reason: null, created_at: new Date(Date.now() - 4800e3).toISOString() },
+        { id: 's3', student_id: 'demo2', criterion: 'dao-duc', file_name: 'diem-ren-luyen.docx', file_path: 'x', status: 'rejected', reason: 'File thiếu dấu xác nhận của Khoa.', created_at: new Date(Date.now() - 9000e3).toISOString(), reviewed_at: new Date(Date.now() - 3000e3).toISOString() }
+      ];
+      hsRender();
+      renderInbox();
+      return render();
+    }
+
+    note('Đang tải...');
+    var r = await sb.from('profiles').select('*');
+    if (r.error) return note('Không tải được danh sách: ' + r.error.message);
+    all = r.data.filter(function (p) { return p.role !== 'admin'; });
+    all.sort(function (a, b) { return String(a.created_at || '').localeCompare(String(b.created_at || '')); });
+    render();
+    fillTargets();
+    loadNotices();
+    loadMessages();
+    ckLoad();
+    loadSubs();
+  })();
+  </script>
+
+</body>
+</html>
