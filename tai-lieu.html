@@ -78,7 +78,7 @@
   <main>
     <div class="wrap page-title">
       <h1><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V4.5M9 7h7"/></svg>Tài liệu</h1>
-      <p>Đọc kỹ tiêu chuẩn và hướng dẫn trước khi chuẩn bị hồ sơ.</p>
+      <p>Đọc kỹ tiêu chuẩn và hướng dẫn trước khi chuẩn bị hồ sơ</p>
     </div>
 
     <!-- Khung xem PDF: ẩn cho đến khi bấm nút Xem -->
@@ -157,14 +157,14 @@
         viewer.scrollIntoView({ behavior: 'smooth' });
       } catch (e) {
         console.error(e);
-        alert('Chưa mở được tài liệu. Hãy thử lại hoặc bấm Tải về.');
+        alert('Chưa mở được tài liệu. Hãy thử lại hoặc bấm Tải về');
       }
       btn.disabled = false;
       btn.textContent = old;
     }
 
     function renderDocs(items) {
-      if (!items.length) return note('Chưa có tài liệu nào.');
+      if (!items.length) return note('Chưa có tài liệu nào');
       var frag = document.createDocumentFragment();
       items.forEach(function (d) {
         var row = document.createElement('div');
@@ -213,7 +213,7 @@
         .order('created_at', { ascending: false });
       if (r.error) {
         console.error('Không tải được tài liệu:', r.error.message);
-        return note('Không tải được tài liệu. Hãy tải lại trang.');
+        return note('Không tải được tài liệu. Hãy tải lại trang');
       }
       renderDocs(r.data);
     })();

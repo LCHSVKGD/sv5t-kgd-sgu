@@ -7,7 +7,7 @@ var CRITERIA = [
   { key: 'tinh-nguyen', name: 'Tình nguyện tốt' },
   { key: 'hoi-nhap',    name: 'Hội nhập tốt' }
 ];
-var DEFAULT_REQ = 'Yêu cầu chi tiết của tiêu chí này do Ban Chấp hành cập nhật theo hướng dẫn xét Sinh viên 5 tốt hiện hành.\n\nHãy chuẩn bị minh chứng rõ ràng (ảnh chụp, file PDF hoặc file Word) rồi nộp ở khung bên phải.';
+var DEFAULT_REQ = 'Yêu cầu chi tiết của tiêu chí này do Ban Chấp hành cập nhật theo hướng dẫn xét Sinh viên 5 tốt hiện hành.\n\nHãy chuẩn bị minh chứng rõ ràng (ảnh chụp, file PDF hoặc file Word) rồi nộp ở khung bên phải';
 
 // Lấy tên + yêu cầu từ site_content; trả về mảng cùng thứ tự CRITERIA
 async function loadCriteria() {

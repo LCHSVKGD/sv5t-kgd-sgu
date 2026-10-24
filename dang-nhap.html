@@ -60,7 +60,7 @@
       msg('');
       var email = $('email').value.trim().toLowerCase();
       var pw = $('pw').value;
-      if (!email || !pw) return msg('Vui lòng nhập email và mật khẩu.');
+      if (!email || !pw) return msg('Vui lòng nhập email và mật khẩu');
 
       var b = $('b');
       b.disabled = true; b.textContent = 'Đang đăng nhập...';
@@ -69,9 +69,9 @@
 
       if (r.error) {
         var t = (r.error.message || '').toLowerCase();
-        if (t.indexOf('not confirmed') > -1) return msg('Email này chưa được xác thực. Hãy đăng ký lại bằng email đó để nhận mã mới.');
-        if (t.indexOf('invalid') > -1) return msg('Email hoặc mật khẩu chưa đúng.');
-        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại.');
+        if (t.indexOf('not confirmed') > -1) return msg('Email này chưa được xác thực. Hãy đăng ký lại bằng email đó để nhận mã mới');
+        if (t.indexOf('invalid') > -1) return msg('Email hoặc mật khẩu chưa đúng');
+        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại');
       }
       location.href = 'tong-quan.html';
     });

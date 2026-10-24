@@ -86,8 +86,8 @@
       }
       e.preventDefault();
       alert(p.rejected
-        ? 'Tài khoản của bạn chưa được xác thực. Vui lòng liên hệ Ban Chấp hành qua mục Hỏi đáp để được hỗ trợ.'
-        : 'Tài khoản của bạn cần được Ban Chấp hành xác thực trước khi nộp hồ sơ xét danh hiệu.');
+        ? 'Tài khoản của bạn chưa được xác thực. Vui lòng liên hệ Ban Chấp hành qua mục Hỏi đáp để được hỗ trợ'
+        : 'Tài khoản của bạn cần được Ban Chấp hành xác thực trước khi nộp hồ sơ xét danh hiệu');
     });
   });
 

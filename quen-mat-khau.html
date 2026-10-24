@@ -24,7 +24,7 @@
   <main class="auth-main">
     <div class="auth-card narrow">
       <h1>Quên mật khẩu</h1>
-      <p class="sub">Nhập email bạn đã dùng để đăng ký. Hệ thống sẽ gửi một liên kết để bạn đặt mật khẩu mới.</p>
+      <p class="sub">Nhập email bạn đã dùng để đăng ký. Hệ thống sẽ gửi một liên kết để bạn đặt mật khẩu mới</p>
 
       <form id="f" novalidate>
         <div class="form-grid one">
@@ -68,7 +68,7 @@
       e.preventDefault();
       msg('');
       var email = $('email').value.trim().toLowerCase();
-      if (!email || email.indexOf('@') < 1) return msg('Vui lòng nhập email hợp lệ.');
+      if (!email || email.indexOf('@') < 1) return msg('Vui lòng nhập email hợp lệ');
 
       var b = $('b');
       b.disabled = true; b.textContent = 'Đang gửi...';
@@ -79,11 +79,11 @@
       if (r.error) {
         b.disabled = false; b.textContent = 'Gửi liên kết đặt lại mật khẩu';
         var t = (r.error.message || '').toLowerCase();
-        if (t.indexOf('rate') > -1 || t.indexOf('seconds') > -1) return msg('Bạn gửi quá nhiều lần. Hãy chờ vài phút rồi thử lại.');
-        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại.');
+        if (t.indexOf('rate') > -1 || t.indexOf('seconds') > -1) return msg('Bạn gửi quá nhiều lần. Hãy chờ vài phút rồi thử lại');
+        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại');
       }
       // Luôn báo giống nhau dù email có tồn tại hay không (để không lộ email nào đã đăng ký)
-      msg('Nếu email này đã đăng ký, bạn sẽ nhận được thư trong vài phút. Hãy mở thư và bấm vào liên kết. Nếu không thấy, kiểm tra cả mục Spam.', true);
+      msg('Nếu email này đã đăng ký, bạn sẽ nhận được thư trong vài phút. Hãy mở thư và bấm vào liên kết. Nếu không thấy, kiểm tra cả mục Spam', true);
       cooldown(b);
     });
   })();

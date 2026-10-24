@@ -29,7 +29,7 @@
       <!-- Bước 1: thông tin sinh viên -->
       <section class="panel" id="p1">
         <h1>Thông tin của bạn</h1>
-        <p class="sub">Các trường có dấu * là bắt buộc.</p>
+        <p class="sub">Các trường có dấu * là bắt buộc</p>
         <form id="f1" novalidate>
           <div class="form-grid">
             <div class="field">
@@ -43,7 +43,7 @@
             <div class="field full">
               <label for="email">Email *</label>
               <input id="email" type="email" autocomplete="email" placeholder="ten@gmail.com">
-              <span class="hint">Mã xác thực sẽ gửi về email này, hãy kiểm tra kỹ trước khi tiếp tục.</span>
+              <span class="hint">Mã xác thực sẽ gửi về email này, hãy kiểm tra kỹ trước khi tiếp tục</span>
             </div>
             <div class="field">
               <label for="major">Ngành *</label>
@@ -68,7 +68,7 @@
             </div>
             <label class="check full">
               <input type="checkbox" id="agree">
-              <span>Tôi xác nhận thông tin trên là chính xác và đồng ý để Ban Chấp hành Liên Chi hội Sinh viên khoa Giáo dục xử lý dữ liệu nhằm xét danh hiệu.</span>
+              <span>Tôi xác nhận thông tin trên là chính xác và đồng ý để Ban Chấp hành Liên Chi hội Sinh viên khoa Giáo dục xử lý dữ liệu nhằm xét danh hiệu</span>
             </label>
           </div>
           <p class="msg error" id="m1" role="alert" hidden></p>
@@ -80,7 +80,7 @@
       <!-- Bước 2: nhập mã xác thực -->
       <section class="panel" id="p2" hidden>
         <h1>Xác thực email</h1>
-        <p class="sub">Mã xác thực đã được gửi đến <strong id="sent-to"></strong>. Nếu chưa thấy, hãy kiểm tra cả thư rác.</p>
+        <p class="sub">Mã xác thực đã được gửi đến <strong id="sent-to"></strong>. Nếu chưa thấy, hãy kiểm tra cả thư rác</p>
         <form id="f2" novalidate>
           <div class="field">
             <label for="otp">Mã xác thực</label>
@@ -95,7 +95,7 @@
       <!-- Bước 3: hoàn tất -->
       <section class="panel center" id="p3" hidden>
         <h1>Đăng ký thành công</h1>
-        <p class="sub">Tài khoản của bạn đã đăng ký thành công và đang chờ xác thực.</p>
+        <p class="sub">Tài khoản của bạn đã đăng ký thành công và đang chờ xác thực</p>
         <a class="btn btn-primary" href="tong-quan.html">Vào Trang chủ</a>
       </section>
     </div>
@@ -128,12 +128,12 @@
     }
     function translate(err) {
       var t = (err.message || '').toLowerCase();
-      if (t.indexOf('database error') > -1) return 'Mã số sinh viên này đã được đăng ký hoặc đang chờ xác thực. Nếu bạn nhập nhầm email lần trước, hãy liên hệ Ban Chấp hành để được hỗ trợ.';
-      if (t.indexOf('seconds') > -1) return 'Vui lòng đợi khoảng 1 phút rồi thử lại.';
-      if (t.indexOf('rate limit') > -1 || err.status === 429) return 'Hệ thống đang giới hạn số lần gửi email. Hãy thử lại sau ít phút.';
-      if (t.indexOf('not authorized') > -1) return 'Chưa gửi được email tới địa chỉ này. Hãy thử lại sau hoặc liên hệ Ban Chấp hành.';
-      if (t.indexOf('password') > -1) return 'Mật khẩu chưa đạt yêu cầu. Hãy dùng mật khẩu dài và khó đoán hơn.';
-      return 'Có lỗi xảy ra (' + err.message + '). Hãy thử lại.';
+      if (t.indexOf('database error') > -1) return 'Mã số sinh viên này đã được đăng ký hoặc đang chờ xác thực. Nếu bạn nhập nhầm email lần trước, hãy liên hệ Ban Chấp hành để được hỗ trợ';
+      if (t.indexOf('seconds') > -1) return 'Vui lòng đợi khoảng 1 phút rồi thử lại';
+      if (t.indexOf('rate limit') > -1 || err.status === 429) return 'Hệ thống đang giới hạn số lần gửi email. Hãy thử lại sau ít phút';
+      if (t.indexOf('not authorized') > -1) return 'Chưa gửi được email tới địa chỉ này. Hãy thử lại sau hoặc liên hệ Ban Chấp hành';
+      if (t.indexOf('password') > -1) return 'Mật khẩu chưa đạt yêu cầu. Hãy dùng mật khẩu dài và khó đoán hơn';
+      return 'Có lỗi xảy ra (' + err.message + '). Hãy thử lại';
     }
     function startCooldown() {
       var s = 60, b = $('resend');
@@ -158,14 +158,14 @@
       var cls = $('cls').value.trim();
       var pw = $('pw').value;
 
-      if (!/^[0-9]{8,12}$/.test(mssv)) return msg('m1', 'Mã số sinh viên gồm 8 đến 12 chữ số.');
-      if (!name) return msg('m1', 'Vui lòng nhập họ và tên.');
-      if (!/^\S+@\S+\.\S+$/.test(email)) return msg('m1', 'Email chưa đúng định dạng.');
-      if (!major) return msg('m1', 'Vui lòng chọn ngành.');
-      if (!cls) return msg('m1', 'Vui lòng nhập lớp.');
-      if (pw.length < 10) return msg('m1', 'Mật khẩu cần tối thiểu 10 ký tự.');
-      if (pw !== $('pw2').value) return msg('m1', 'Hai mật khẩu chưa giống nhau.');
-      if (!$('agree').checked) return msg('m1', 'Bạn cần tích vào ô xác nhận và đồng ý xử lý dữ liệu.');
+      if (!/^[0-9]{8,12}$/.test(mssv)) return msg('m1', 'Mã số sinh viên gồm 8 đến 12 chữ số');
+      if (!name) return msg('m1', 'Vui lòng nhập họ và tên');
+      if (!/^\S+@\S+\.\S+$/.test(email)) return msg('m1', 'Email chưa đúng định dạng');
+      if (!major) return msg('m1', 'Vui lòng chọn ngành');
+      if (!cls) return msg('m1', 'Vui lòng nhập lớp');
+      if (pw.length < 10) return msg('m1', 'Mật khẩu cần tối thiểu 10 ký tự');
+      if (pw !== $('pw2').value) return msg('m1', 'Hai mật khẩu chưa giống nhau');
+      if (!$('agree').checked) return msg('m1', 'Bạn cần tích vào ô xác nhận và đồng ý xử lý dữ liệu');
 
       busy($('b1'), true);
       var res = await sb.auth.signUp({
@@ -177,7 +177,7 @@
 
       if (res.error) return msg('m1', translate(res.error));
       var u = res.data.user;
-      if (u && u.identities && u.identities.length === 0) return msg('m1', 'Email này đã được đăng ký. Hãy đăng nhập.');
+      if (u && u.identities && u.identities.length === 0) return msg('m1', 'Email này đã được đăng ký. Hãy đăng nhập');
       if (res.data.session) return show(3);
 
       $('sent-to').textContent = email;
@@ -191,14 +191,14 @@
       e.preventDefault();
       msg('m2', '');
       var code = $('otp').value.replace(/\D/g, '');
-      if (code.length < 6 || code.length > 10) return msg('m2', 'Hãy nhập đủ mã gồm các chữ số trong email.');
+      if (code.length < 6 || code.length > 10) return msg('m2', 'Hãy nhập đủ mã gồm các chữ số trong email');
 
       busy($('b2'), true);
       var r = await sb.auth.verifyOtp({ email: email, token: code, type: 'signup' });
       if (r.error) r = await sb.auth.verifyOtp({ email: email, token: code, type: 'email' });
       busy($('b2'), false);
 
-      if (r.error) return msg('m2', 'Mã chưa đúng hoặc đã hết hạn. Hãy kiểm tra lại hoặc bấm "Gửi lại mã".');
+      if (r.error) return msg('m2', 'Mã chưa đúng hoặc đã hết hạn. Hãy kiểm tra lại hoặc bấm "Gửi lại mã"');
       show(3);
     });
 
@@ -208,7 +208,7 @@
       startCooldown();
       var r = await sb.auth.resend({ type: 'signup', email: email });
       if (r.error) msg('m2', translate(r.error));
-      else msg('m2', 'Đã gửi lại mã. Hãy kiểm tra email của bạn.', true);
+      else msg('m2', 'Đã gửi lại mã. Hãy kiểm tra email của bạn', true);
     });
   })();
   </script>

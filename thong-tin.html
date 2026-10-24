@@ -79,7 +79,7 @@
   <main>
     <div class="wrap page-title">
       <h1><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Thông tin &amp; Tài khoản</h1>
-      <p>Thông tin bạn đã nhập khi đăng ký. Nếu cần sửa, bấm "Chỉnh sửa hồ sơ".</p>
+      <p>Thông tin bạn đã nhập khi đăng ký. Nếu cần sửa, bấm "Chỉnh sửa hồ sơ"</p>
     </div>
 
     <section class="ttk-section">
@@ -121,7 +121,7 @@
               <div class="ttk-field full">
                 <label for="f-email">Email</label>
                 <input id="f-email" type="email" disabled>
-                <p class="ttk-hint">Email dùng để đăng nhập nên không sửa được ở đây. Cần đổi email, hãy nhắn Ban Chấp hành ở mục Hỏi đáp.</p>
+                <p class="ttk-hint">Email dùng để đăng nhập nên không sửa được ở đây. Cần đổi email, hãy nhắn Ban Chấp hành ở mục Hỏi đáp</p>
               </div>
               <div class="ttk-field">
                 <label for="f-major">Ngành *</label>
@@ -137,7 +137,7 @@
                 <input id="f-class" maxlength="50">
               </div>
             </div>
-            <p class="ttk-warn" id="warn">Lưu ý: nếu bạn thay đổi thông tin, tài khoản sẽ chuyển về trạng thái <b>chờ xác thực</b> để Ban Chấp hành duyệt lại. Trong thời gian chờ, bạn chưa nộp được hồ sơ xét danh hiệu.</p>
+            <p class="ttk-warn" id="warn">Lưu ý: nếu bạn thay đổi thông tin, tài khoản sẽ chuyển về trạng thái <b>chờ xác thực</b> để Ban Chấp hành duyệt lại. Trong thời gian chờ, bạn chưa nộp được hồ sơ xét danh hiệu</p>
             <p class="ttk-msg error" id="msg-form" role="alert" hidden></p>
             <div class="ttk-actions">
               <button class="btn btn-small" type="submit" id="btn-save">Lưu thay đổi</button>
@@ -195,11 +195,11 @@
           pill.className = 'ttk-pill ok'; pill.textContent = 'Đã xác thực';
         } else if (prof.rejected === true) {
           pill.className = 'ttk-pill bad'; pill.textContent = 'Chưa được xác thực';
-          note.textContent = 'Tài khoản của bạn chưa được xác thực. Hãy nhắn Ban Chấp hành ở mục Hỏi đáp để được hỗ trợ.';
+          note.textContent = 'Tài khoản của bạn chưa được xác thực. Hãy nhắn Ban Chấp hành ở mục Hỏi đáp để được hỗ trợ';
           note.hidden = false;
         } else {
           pill.className = 'ttk-pill wait'; pill.textContent = 'Chờ xác thực';
-          note.textContent = 'Ban Chấp hành đang kiểm tra thông tin của bạn. Sau khi được duyệt, bạn có thể nộp hồ sơ xét danh hiệu.';
+          note.textContent = 'Ban Chấp hành đang kiểm tra thông tin của bạn. Sau khi được duyệt, bạn có thể nộp hồ sơ xét danh hiệu';
           note.hidden = false;
         }
         $('warn').hidden = isAdmin();
@@ -242,10 +242,10 @@
 
       function translate(err) {
         var t = ((err && err.message) || '').toLowerCase();
-        if (err && err.code === '23505' || t.indexOf('duplicate') > -1) return 'Mã số sinh viên này đã được đăng ký cho tài khoản khác. Nếu bạn nhập đúng, hãy nhắn Ban Chấp hành ở mục Hỏi đáp.';
-        if (err && (err.code === 'PGRST202' || t.indexOf('update_my_profile') > -1)) return 'Chưa lưu được vì hệ thống chưa cài hàm cập nhật hồ sơ. Hãy chạy file SQL/thong-tin.sql trong Supabase.';
-        if (t.indexOf('mssv') > -1) return 'Mã số sinh viên chưa hợp lệ.';
-        return 'Chưa lưu được thay đổi. Hãy thử lại sau.';
+        if (err && err.code === '23505' || t.indexOf('duplicate') > -1) return 'Mã số sinh viên này đã được đăng ký cho tài khoản khác. Nếu bạn nhập đúng, hãy nhắn Ban Chấp hành ở mục Hỏi đáp';
+        if (err && (err.code === 'PGRST202' || t.indexOf('update_my_profile') > -1)) return 'Chưa lưu được vì hệ thống chưa cài hàm cập nhật hồ sơ. Hãy chạy file SQL/thong-tin.sql trong Supabase';
+        if (t.indexOf('mssv') > -1) return 'Mã số sinh viên chưa hợp lệ';
+        return 'Chưa lưu được thay đổi. Hãy thử lại sau';
       }
 
       $('btn-edit').addEventListener('click', openEdit);
@@ -259,14 +259,14 @@
         var major = $('f-major').value;
         var cls = $('f-class').value.trim();
 
-        if (!name) return setMsg('msg-form', 'Vui lòng nhập họ và tên.');
-        if (!/^[0-9]{8,12}$/.test(mssv)) return setMsg('msg-form', 'Mã số sinh viên gồm 8 đến 12 chữ số.');
-        if (!major) return setMsg('msg-form', 'Vui lòng chọn ngành.');
-        if (!cls) return setMsg('msg-form', 'Vui lòng nhập lớp.');
+        if (!name) return setMsg('msg-form', 'Vui lòng nhập họ và tên');
+        if (!/^[0-9]{8,12}$/.test(mssv)) return setMsg('msg-form', 'Mã số sinh viên gồm 8 đến 12 chữ số');
+        if (!major) return setMsg('msg-form', 'Vui lòng chọn ngành');
+        if (!cls) return setMsg('msg-form', 'Vui lòng nhập lớp');
 
         var changed = name !== (prof.full_name || '') || mssv !== String(prof.mssv || '') ||
                       major !== (prof.major || '') || cls !== (prof.class_name || '');
-        if (!changed) return setMsg('msg-form', 'Bạn chưa thay đổi thông tin nào.');
+        if (!changed) return setMsg('msg-form', 'Bạn chưa thay đổi thông tin nào');
 
         if (!isAdmin() && !confirm('Sau khi lưu, tài khoản của bạn sẽ chuyển về "chờ xác thực" để Ban Chấp hành duyệt lại, và bạn chưa nộp được hồ sơ trong thời gian chờ.\n\nBạn có chắc muốn lưu thay đổi?')) return;
 
@@ -301,7 +301,7 @@
         if (r.error) console.error(r.error.message);
         $('pill').className = 'ttk-pill bad';
         $('pill').textContent = 'Lỗi';
-        return setMsg('msg-top', 'Không tải được thông tin hồ sơ. Hãy tải lại trang.');
+        return setMsg('msg-top', 'Không tải được thông tin hồ sơ. Hãy tải lại trang');
       }
       prof = r.data;
       renderView();
@@ -312,7 +312,7 @@
         var flag = sessionStorage.getItem(SAVED_KEY);
         if (flag) {
           sessionStorage.removeItem(SAVED_KEY);
-          setMsg('msg-top', flag === 'admin' ? 'Đã lưu thay đổi.' : 'Đã lưu thay đổi. Tài khoản của bạn đang chờ Ban Chấp hành duyệt lại.', 'ok');
+          setMsg('msg-top', flag === 'admin' ? 'Đã lưu thay đổi' : 'Đã lưu thay đổi. Tài khoản của bạn đang chờ Ban Chấp hành duyệt lại', 'ok');
         }
       } catch (x) {}
     })();

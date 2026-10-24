@@ -100,8 +100,8 @@
     <section class="hero">
       <div class="wrap hero-grid">
        <div class="hero-text">
-        <h1>Sinh viên 5 tốt cấp Khoa Giáo dục</h1>
-        <p>Nộp hồ sơ, theo dõi kết quả và trao đổi trực tiếp với Ban chấp hành Liên chi hội ngay trên một trang web.</p>
+        <h1>Sinh viên 5 tốt khoa Giáo dục</h1>
+        <p>Nộp hồ sơ, theo dõi các thông tin liên quan đến Sinh viên 5 tốt các cấp và trao đổi trực tiếp với LCH khoa Giáo dục ngay trên một trang web</p>
         <div class="actions">
           <a class="btn btn-primary" href="ho-so.html" data-needs-verified>Đăng ký xét danh hiệu</a>
           <a class="btn btn-line" href="#tieu-chuan">Xem 5 tiêu chuẩn</a>
@@ -127,7 +127,7 @@
     <section id="poster" class="section" style="padding-bottom:0" hidden>
       <div class="wrap">
         <h2>Poster &amp; bài đăng</h2>
-        <p class="lead">Thông tin mới nhất về danh hiệu Sinh viên 5 tốt.</p>
+        <p class="lead">Thông tin mới nhất về danh hiệu Sinh viên 5 tốt</p>
         <div class="posters" id="posters"></div>
       </div>
     </section>
@@ -135,7 +135,7 @@
     <section id="quy-trinh" class="section">
       <div class="wrap">
         <h2>Nộp hồ sơ trong 3 bước</h2>
-        <p class="lead">Bạn có thể quay lại bất cứ lúc nào để xem hồ sơ và tin nhắn của mình.</p>
+        <p class="lead">Bạn có thể quay lại bất cứ lúc nào để xem hồ sơ và tin nhắn của mình</p>
         <ol class="steps">
           <li><h3>Tạo tài khoản</h3></li>
           <li><h3>Nộp hồ sơ</h3></li>
@@ -147,7 +147,7 @@
     <section class="section" style="padding-top:0">
       <div class="wrap">
         <h2>Thông báo mới</h2>
-        <p class="lead">Tin từ Ban chấp hành Liên chi hội.</p>
+        <p class="lead">Tin từ Ban chấp hành Liên chi hội</p>
         <div class="list" id="tb-moi">
           <div class="row"><span>Đang tải thông báo...</span></div>
         </div>
@@ -179,8 +179,8 @@
   var TAGS = { before: ['Sắp mở', ''], open: ['Đang mở', 'is-open'], after: ['Đã kết thúc', 'is-closed'] };
   function show() {
     var st = reviewState();
-    if (st === 'error') { time.textContent = 'Chưa tải được thời gian xét duyệt.'; tag.hidden = true; return; }
-    if (st === 'unset') { time.textContent = 'Chưa công bố. Ban Chấp hành sẽ thông báo sau.'; tag.hidden = true; return; }
+    if (st === 'error') { time.textContent = 'Chưa tải được thời gian xét duyệt'; tag.hidden = true; return; }
+    if (st === 'unset') { time.textContent = 'Chưa công bố. Ban Chấp hành sẽ thông báo sau'; tag.hidden = true; return; }
     time.replaceChildren(
       document.createTextNode(reviewFmt(svReview.start)),
       Object.assign(document.createElement('small'), { textContent: 'đến ' + reviewFmt(svReview.end) })
@@ -259,7 +259,7 @@
     .or('target_student_id.is.null,target_student_id.eq.' + uid)
     .order('created_at', { ascending: false })
     .limit(3);
-  if (r.error) { console.error(r.error.message); return note('Không tải được thông báo. Hãy tải lại trang.'); }
+  if (r.error) { console.error(r.error.message); return note('Không tải được thông báo. Hãy tải lại trang'); }
   if (!r.data.length) return note('Chưa có thông báo');
   box.replaceChildren.apply(box, r.data.map(function (a) {
     var link = document.createElement('a');

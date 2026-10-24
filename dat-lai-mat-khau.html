@@ -29,7 +29,7 @@
       <p class="sub" id="p-wait">Đang kiểm tra liên kết...</p>
 
       <div id="p-form" class="panel" hidden>
-        <p class="sub">Nhập mật khẩu mới cho tài khoản của bạn.</p>
+        <p class="sub">Nhập mật khẩu mới cho tài khoản của bạn</p>
         <form id="f" novalidate>
           <div class="form-grid one">
             <div class="field">
@@ -47,7 +47,7 @@
       </div>
 
       <div id="p-bad" class="panel" hidden>
-        <p class="msg error">Liên kết không hợp lệ hoặc đã hết hạn. Mỗi liên kết chỉ dùng được một lần và có hiệu lực trong thời gian ngắn.</p>
+        <p class="msg error">Liên kết không hợp lệ hoặc đã hết hạn. Mỗi liên kết chỉ dùng được một lần và có hiệu lực trong thời gian ngắn</p>
         <a class="btn btn-primary" href="quen-mat-khau.html">Gửi lại liên kết mới</a>
       </div>
 
@@ -89,8 +89,8 @@
       e.preventDefault();
       msg('');
       var pw = $('pw').value;
-      if (pw.length < 10) return msg('Mật khẩu cần tối thiểu 10 ký tự.');
-      if (pw !== $('pw2').value) return msg('Hai mật khẩu chưa giống nhau.');
+      if (pw.length < 10) return msg('Mật khẩu cần tối thiểu 10 ký tự');
+      if (pw !== $('pw2').value) return msg('Hai mật khẩu chưa giống nhau');
 
       var b = $('b');
       b.disabled = true; b.textContent = 'Đang lưu...';
@@ -99,9 +99,9 @@
 
       if (r.error) {
         var t = (r.error.message || '').toLowerCase();
-        if (t.indexOf('different') > -1) return msg('Mật khẩu mới phải khác mật khẩu cũ.');
-        if (t.indexOf('password') > -1) return msg('Mật khẩu chưa đạt yêu cầu. Hãy dùng mật khẩu dài và khó đoán hơn.');
-        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại.');
+        if (t.indexOf('different') > -1) return msg('Mật khẩu mới phải khác mật khẩu cũ');
+        if (t.indexOf('password') > -1) return msg('Mật khẩu chưa đạt yêu cầu. Hãy dùng mật khẩu dài và khó đoán hơn');
+        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại');
       }
       await sb.auth.signOut();   // đăng xuất để đăng nhập lại bằng mật khẩu mới
       show('p-ok');

@@ -73,15 +73,15 @@
   async function openFile(sub) {
     var w = window.open('', '_blank');           // mở cửa sổ ngay để không bị chặn pop-up
     var r = await sb.storage.from(BUCKET).createSignedUrl(sub.file_path, 3600);
-    if (r.error || !r.data) { if (w) w.close(); return alert('Chưa mở được tệp. Hãy thử lại.'); }
+    if (r.error || !r.data) { if (w) w.close(); return alert('Chưa mở được tệp. Hãy thử lại'); }
     if (w) w.location = r.data.signedUrl; else location.href = r.data.signedUrl;
   }
 
   async function delFile(sub) {
-    if (!canSubmit()) return alert('Đã ngoài thời gian xét duyệt nên không thể xóa tệp.');
+    if (!canSubmit()) return alert('Đã ngoài thời gian xét duyệt nên không thể xóa tệp');
     if (!confirm('Xóa tệp "' + sub.file_name + '"?')) return;
     var d = await sb.from('submissions').delete().eq('id', sub.id);
-    if (d.error) return alert('Chưa xóa được tệp. Hãy thử lại.');
+    if (d.error) return alert('Chưa xóa được tệp. Hãy thử lại');
     sb.storage.from(BUCKET).remove([sub.file_path]);
     subs = subs.filter(function (x) { return x.id !== sub.id; });
     render();
@@ -93,7 +93,7 @@
     if (!list.length) {
       var p = document.createElement('p');
       p.className = 'hs-none';
-      p.textContent = 'Bạn chưa nộp minh chứng nào cho tiêu chí này.';
+      p.textContent = 'Bạn chưa nộp minh chứng nào cho tiêu chí này';
       return box.replaceChildren(p);
     }
     var frag = document.createDocumentFragment();
@@ -162,7 +162,7 @@
 
   $('hs-send').addEventListener('click', async function () {
     if (busy || !picked.length) return;
-    if (!canSubmit()) return alert((svGate() || {}).msg || 'Hiện chưa nộp được hồ sơ.');
+    if (!canSubmit()) return alert((svGate() || {}).msg || 'Hiện chưa nộp được hồ sơ');
     busy = true; updateSend();
     var btn = $('hs-send');
     var failed = [];
@@ -185,7 +185,7 @@
     btn.textContent = 'Gửi minh chứng';
     picked = []; $('hs-file').value = ''; renderPicked();
     render();
-    if (failed.length) alert('Chưa gửi được: ' + failed.join(', ') + '.\nHãy kiểm tra mạng, định dạng tệp và đã chạy SQL đợt 5 trong Supabase chưa.');
+    if (failed.length) alert('Chưa gửi được: ' + failed.join(', ') + '.\nHãy kiểm tra mạng, định dạng tệp và đã chạy SQL đợt 5 trong Supabase chưa');
   });
 
   async function load() {

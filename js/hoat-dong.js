@@ -9,8 +9,8 @@
   }
 
   var r = await sb.from('activities').select('id, caption, image_url, created_at').order('created_at', { ascending: false }).limit(60);
-  if (r.error) { console.error(r.error.message); return note('Không tải được bài đăng. Hãy tải lại trang.'); }
-  if (!r.data.length) return note('Chưa có bài đăng nào.');
+  if (r.error) { console.error(r.error.message); return note('Không tải được bài đăng. Hãy tải lại trang'); }
+  if (!r.data.length) return note('Chưa có bài đăng nào');
 
   box.replaceChildren.apply(box, r.data.map(function (x) {
     var card = document.createElement('article');

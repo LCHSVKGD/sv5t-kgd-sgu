@@ -35,7 +35,7 @@ async function docDownload(path, name) {
     a.remove();
   } catch (e) {
     console.error(e);
-    alert('Chưa tải được tệp. Hãy thử lại.');
+    alert('Chưa tải được tệp. Hãy thử lại');
   }
 }
 
@@ -47,6 +47,6 @@ async function docOpenTab(path, name) {
   } catch (e) {
     console.error(e);
     if (w) w.close();
-    alert('Chưa mở được tệp. Hãy thử lại hoặc bấm Tải về.');
+    alert('Chưa mở được tệp. Hãy thử lại hoặc bấm Tải về');
   }
 }

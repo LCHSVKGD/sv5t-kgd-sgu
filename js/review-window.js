@@ -52,14 +52,14 @@ function reviewPageLocked(page) {
 // kind = 'feedback' cho trang Phản hồi xét duyệt (được xem thêm sau khi hết hạn), bỏ trống cho trang nộp hồ sơ.
 function reviewMessage(kind) {
   var st = reviewState();
-  if (st === 'error') return 'Chưa tải được thời gian xét duyệt. Hãy tải lại trang.';
+  if (st === 'error') return 'Chưa tải được thời gian xét duyệt. Hãy tải lại trang';
   if (st === 'before') return 'Chưa đến thời gian xét duyệt. Trang này sẽ mở từ ' + reviewFmt(svReview.start) + '.';
   if (st === 'after') {
     if (kind === 'feedback') {
       if (Date.now() <= new Date(reviewFeedbackEnd()).getTime()) return '';
-      return 'Đã hết thời gian xét duyệt và thời gian xem phản hồi (đến ' + reviewFmt(reviewFeedbackEnd()) + '). Trang này đã đóng.';
+      return 'Đã hết thời gian xét duyệt và thời gian xem phản hồi (đến ' + reviewFmt(reviewFeedbackEnd()) + '). Trang này đã đóng';
     }
-    return 'Đã hết thời gian xét duyệt (' + reviewFmt(svReview.start) + ' đến ' + reviewFmt(svReview.end) + '). Trang này đã đóng, bạn không thể nộp hồ sơ nữa.';
+    return 'Đã hết thời gian xét duyệt (' + reviewFmt(svReview.start) + ' đến ' + reviewFmt(svReview.end) + '). Trang này đã đóng, bạn không thể nộp hồ sơ nữa';
   }
   return '';   // 'unset' hoặc 'open'
 }
@@ -71,8 +71,8 @@ function svGate(kind) {
   if (!p || p.isAdmin) return null;
   if (!p.verified) {
     return { kind: 'account', msg: p.rejected
-      ? 'Tài khoản của bạn chưa được xác thực. Vui lòng liên hệ Ban Chấp hành qua mục Hỏi đáp để được hỗ trợ.'
-      : 'Tài khoản của bạn đang chờ Ban Chấp hành xác thực. Sau khi được xác thực, bạn mới dùng được trang này.' };
+      ? 'Tài khoản của bạn chưa được xác thực. Vui lòng liên hệ Ban Chấp hành qua mục Hỏi đáp để được hỗ trợ'
+      : 'Tài khoản của bạn đang chờ Ban Chấp hành xác thực. Sau khi được xác thực, bạn mới dùng được trang này' };
   }
   var m = reviewMessage(kind);
   return m ? { kind: 'time', msg: m } : null;

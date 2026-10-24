@@ -15,7 +15,7 @@
   if (!s.data.session) {
     ta.disabled = true;
     ta.placeholder = 'Đăng nhập để nhắn tin...';
-    empty.textContent = 'Bạn cần đăng nhập để nhắn tin với Ban Chấp hành. ';
+    empty.textContent = 'Bạn cần đăng nhập để nhắn tin với Ban Chấp hành ';
     var a = document.createElement('a');
     a.href = 'dang-nhap.html';
     a.className = 'chat-login';
@@ -52,7 +52,7 @@
   var r = await sb.from('messages').select('*').eq('student_id', uid).order('created_at', { ascending: true }).limit(200);
   if (r.error) {
     console.error('Không tải được bảng messages:', r.error.message);
-    empty.textContent = 'Không tải được tin nhắn. Hãy tải lại trang.';
+    empty.textContent = 'Không tải được tin nhắn. Hãy tải lại trang';
   } else {
     r.data.forEach(add);
   }
@@ -79,7 +79,7 @@
     if (res.error) {
       console.error('Không gửi được tin nhắn:', res.error.message);
       ta.value = text; resize();
-      alert('Chưa gửi được tin nhắn. Hãy thử lại.');
+      alert('Chưa gửi được tin nhắn. Hãy thử lại');
       return;
     }
     add(res.data);

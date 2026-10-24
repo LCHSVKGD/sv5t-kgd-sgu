@@ -40,10 +40,10 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
   }
 
   async function openFile(sub) {
-    if (DEMO) return alert('Đang xem thử nên chưa mở được tệp.');
+    if (DEMO) return alert('Đang xem thử nên chưa mở được tệp');
     var w = window.open('', '_blank');
     var r = await sb.storage.from(BUCKET).createSignedUrl(sub.file_path, 3600);
-    if (r.error || !r.data) { if (w) w.close(); return alert('Chưa mở được tệp. Hãy thử lại.'); }
+    if (r.error || !r.data) { if (w) w.close(); return alert('Chưa mở được tệp. Hãy thử lại'); }
     if (w) w.location = r.data.signedUrl; else location.href = r.data.signedUrl;
   }
 
@@ -79,7 +79,7 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
   // Bên trái: các tệp đã nộp (ảnh hiện xem trước, tệp khác bấm để mở)
   function renderFiles(list) {
     var box = $('fb-files');
-    if (!list.length) return empty(box, 'Bạn chưa nộp minh chứng nào cho tiêu chí này.');
+    if (!list.length) return empty(box, 'Bạn chưa nộp minh chứng nào cho tiêu chí này');
     var frag = document.createDocumentFragment();
     list.forEach(function (x, i) {
       var card = document.createElement('div');
@@ -116,8 +116,8 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
   // Bên phải: kết quả + giải trình của BCH cho từng tệp (đánh số khớp với bên trái)
   function renderAnswers(list) {
     var box = $('fb-answers');
-    if (!list.length) return empty(box, 'Chưa có hồ sơ ở tiêu chí này nên chưa có phản hồi.');
-    if (list.every(function (x) { return shownStatus(x) === 'approved'; })) return empty(box, 'Tiêu chí này đã được duyệt, không có giải trình nào cần xem.');
+    if (!list.length) return empty(box, 'Chưa có hồ sơ ở tiêu chí này nên chưa có phản hồi');
+    if (list.every(function (x) { return shownStatus(x) === 'approved'; })) return empty(box, 'Tiêu chí này đã được duyệt, không có giải trình nào cần xem');
     var frag = document.createDocumentFragment();
     list.forEach(function (x, i) {
       var sh = shownStatus(x);
@@ -135,10 +135,10 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
       var body = document.createElement('div');
       if (sh === 'pending') {
         body.className = 'fb-ans-wait';
-        body.textContent = 'Ban Chấp hành chưa gửi phản hồi cho tệp này. Kết quả sẽ hiện ở đây ngay khi có.';
+        body.textContent = 'Ban Chấp hành chưa gửi phản hồi cho tệp này. Kết quả sẽ hiện ở đây ngay khi có';
       } else if (sh === 'approved') {
         body.className = 'fb-ans-ok';
-        body.textContent = 'Minh chứng hợp lệ, đã được Ban Chấp hành duyệt.' + (x.reviewed_at ? ' (' + fmtDate(x.reviewed_at) + ')' : '');
+        body.textContent = 'Minh chứng hợp lệ, đã được Ban Chấp hành duyệt' + (x.reviewed_at ? ' (' + fmtDate(x.reviewed_at) + ')' : '');
       } else {
         body.className = 'hs-reason';
         var b = document.createElement('b');
@@ -159,7 +159,7 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
     var lock = $('fb-lock');
     lock.hidden = !g && !grace;
     if (g) lock.textContent = g.msg;
-    else if (grace) lock.textContent = 'Đã hết thời gian nộp hồ sơ. Bạn vẫn xem được phản hồi đến ' + reviewFmt(reviewFeedbackEnd()) + ', sau đó trang sẽ đóng.';
+    else if (grace) lock.textContent = 'Đã hết thời gian nộp hồ sơ. Bạn vẫn xem được phản hồi đến ' + reviewFmt(reviewFeedbackEnd()) + ', sau đó trang sẽ đóng';
     var off = !!g;   // chưa xác thực hoặc ngoài thời gian: khóa cả trang
     svSetDisabled($('fb-tabs'), off);
     svSetDisabled(document.querySelector('.hs-grid'), off);
@@ -183,9 +183,9 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
       subs = [
         { id: 'd1', criterion: 'dao-duc', file_name: 'diem-ren-luyen.pdf', file_size: 524288, status: 'approved', reason: null, created_at: ago(30), reviewed_at: ago(5), released_at: ago(4) },
         { id: 'd2', criterion: 'hoc-tap', file_name: 'bang-diem-hk1.pdf', file_size: 810000, status: 'approved', reason: null, created_at: ago(30), reviewed_at: ago(5), released_at: ago(4) },
-        { id: 'd3', criterion: 'hoc-tap', file_name: 'giay-khen-hoc-tap.docx', file_size: 230000, status: 'rejected', reason: 'File thiếu dấu xác nhận của Khoa. Vui lòng nộp lại bản có dấu đỏ.', created_at: ago(29), reviewed_at: ago(5), released_at: ago(4) },
+        { id: 'd3', criterion: 'hoc-tap', file_name: 'giay-khen-hoc-tap.docx', file_size: 230000, status: 'rejected', reason: 'File thiếu dấu xác nhận của Khoa. Vui lòng nộp lại bản có dấu đỏ', created_at: ago(29), reviewed_at: ago(5), released_at: ago(4) },
         { id: 'd4', criterion: 'the-luc', file_name: 'giay-chung-nhan-the-duc.pdf', file_size: 410000, status: 'pending', reason: null, created_at: ago(3), reviewed_at: null, released_at: null },
-        { id: 'd5', criterion: 'tinh-nguyen', file_name: 'mua-he-xanh.pdf', file_size: 650000, status: 'rejected', reason: 'Chưa thấy số giờ tình nguyện. Hãy bổ sung xác nhận từ đơn vị tổ chức.', created_at: ago(28), reviewed_at: ago(5), released_at: ago(4) }
+        { id: 'd5', criterion: 'tinh-nguyen', file_name: 'mua-he-xanh.pdf', file_size: 650000, status: 'rejected', reason: 'Chưa thấy số giờ tình nguyện. Hãy bổ sung xác nhận từ đơn vị tổ chức', created_at: ago(28), reviewed_at: ago(5), released_at: ago(4) }
       ];
       loaded = true;
       return render();
