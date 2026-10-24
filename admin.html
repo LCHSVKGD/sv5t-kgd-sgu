@@ -451,7 +451,7 @@
 
         <!-- Chức năng 6: Thời gian xét duyệt & nhận hồ sơ -->
         <div class="panel" id="p-thoi-gian" hidden>
-          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Đặt khoảng thời gian nhận hồ sơ và xét duyệt. Thời gian này hiển thị ở khung trên trang Tổng quan của sinh viên. Ngoài khoảng thời gian này, sinh viên không nộp được hồ sơ và trang "Hồ sơ của tôi" bị vô hiệu hóa; trang "Phản hồi xét duyệt" còn mở thêm 3 ngày sau khi hết hạn rồi mới bị vô hiệu hóa (tài khoản admin vẫn vào bình thường). Chưa đặt thời gian thì không giới hạn: sinh viên đã xác thực vẫn nộp hồ sơ và xem phản hồi như bình thường. Bấm "Xóa thời gian" để quay về trạng thái không giới hạn</p>
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Đặt khoảng thời gian nhận hồ sơ và xét duyệt. Thời gian này hiển thị ở khung trên trang Tổng quan của sinh viên. Ngoài khoảng thời gian này, sinh viên không nộp được hồ sơ và trang "Hồ sơ của tôi" bị vô hiệu hóa; trang "Phản hồi xét duyệt" còn mở thêm 3 ngày sau khi hết hạn rồi mới bị vô hiệu hóa (tài khoản admin vẫn vào bình thường). Chưa đặt thời gian thì sinh viên chưa nộp được hồ sơ và chưa xem được phản hồi. Bấm "Xóa thời gian" để quay về trạng thái chưa đặt thời gian</p>
           <div class="rw-status" id="rw-status"></div>
           <div class="tb-form">
             <h3>Đặt thời gian</h3>
@@ -1536,7 +1536,7 @@
       var d = new Date(iso), p = function (n) { return String(n).padStart(2, '0'); };
       return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
     }
-    var RW_TXT = { unset: 'Chưa đặt thời gian (không giới hạn: sinh viên đã xác thực vẫn nộp hồ sơ bình thường)', before: 'Sắp mở', open: 'Đang trong thời gian nhận hồ sơ / xét duyệt', after: 'Đã kết thúc. Sinh viên không nộp được hồ sơ nữa; trang Phản hồi xét duyệt còn mở thêm 3 ngày', error: 'Không tải được thời gian (đã chạy SQL đợt 6 chưa?)' };
+    var RW_TXT = { unset: 'Chưa đặt thời gian (sinh viên chưa nộp được hồ sơ và chưa xem được phản hồi)', before: 'Sắp mở', open: 'Đang trong thời gian nhận hồ sơ / xét duyệt', after: 'Đã kết thúc. Sinh viên không nộp được hồ sơ nữa; trang Phản hồi xét duyệt còn mở thêm 3 ngày', error: 'Không tải được thời gian (đã chạy SQL đợt 6 chưa?)' };
     function rwRender() {
       var st = reviewState();
       var el = $('rw-status');
@@ -1567,7 +1567,7 @@
       rwSave(da.toISOString(), db.toISOString());
     });
     $('rw-clear').addEventListener('click', function () {
-      if (confirm('Xóa thời gian? Hệ thống sẽ về trạng thái không giới hạn thời gian')) rwSave(null, null);
+      if (confirm('Xóa thời gian? Sinh viên sẽ chưa nộp được hồ sơ và chưa xem được phản hồi cho đến khi bạn đặt thời gian mới')) rwSave(null, null);
     });
     async function rwLoad() { if (!DEMO) await loadReviewWindow(); rwRender(); }
 

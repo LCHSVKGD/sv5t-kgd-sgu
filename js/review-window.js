@@ -1,7 +1,7 @@
 // Thời gian xét duyệt & nhận hồ sơ do admin đặt (bảng site_settings, dòng id = 1).
 // DÙNG CHUNG cho: tong-quan, ho-so, phan-hoi, admin. Cần nạp sau js/supabase.js.
 //
-// Quy ước: chưa đặt thời gian  = KHÔNG giới hạn (chạy như bình thường, chỉ cần tài khoản đã xác thực)
+// Quy ước: chưa đặt thời gian  = CHƯA MỞ (Hồ sơ và Phản hồi đều khóa cho đến khi admin đặt thời gian)
 //          trước giờ bắt đầu   = chưa mở
 //          trong khoảng         = mở
 //          sau giờ kết thúc    = "Hồ sơ của tôi" đóng ngay; "Phản hồi xét duyệt" còn mở thêm FEEDBACK_GRACE_DAYS ngày
@@ -40,10 +40,10 @@ function reviewFeedbackClosed() {
 }
 
 // Trang nào đang bị khóa theo THỜI GIAN? page = 'ho-so' | 'phan-hoi'
-// (chưa đặt thời gian hoặc lỗi tải thì KHÔNG khóa, để tránh khóa nhầm)
+// (chưa đặt thời gian thì khóa; riêng lỗi tải thì KHÔNG khóa, để tránh khóa nhầm)
 function reviewPageLocked(page) {
   var st = reviewState();
-  if (st === 'before') return true;
+  if (st === 'before' || st === 'unset') return true;
   if (st === 'after') return page === 'phan-hoi' ? reviewFeedbackClosed() : true;
   return false;
 }
@@ -61,7 +61,8 @@ function reviewMessage(kind) {
     }
     return 'Đã hết thời gian xét duyệt (' + reviewFmt(svReview.start) + ' đến ' + reviewFmt(svReview.end) + '). Trang này đã đóng, bạn không thể nộp hồ sơ nữa';
   }
-  return '';   // 'unset' hoặc 'open'
+  if (st === 'unset') return 'Ban Chấp hành chưa công bố thời gian xét duyệt. Trang này sẽ mở khi có thời gian';
+  return '';   // 'open'
 }
 
 // Trả về null nếu được dùng trang; ngược lại { kind: 'account' | 'time', msg }
@@ -133,7 +134,7 @@ function svUpdateMenuLock() {
         ? (p.rejected ? 'Tài khoản chưa được xác thực' : 'Tài khoản đang chờ Ban Chấp hành xác thực')
         : (page === 'phan-hoi' && reviewState() === 'after'
             ? 'Đã hết thời gian xem phản hồi'
-            : (reviewState() === 'before' ? 'Chưa đến thời gian xét duyệt' : 'Đã hết thời gian xét duyệt'));
+            : (reviewState() === 'unset' ? 'Ban Chấp hành chưa công bố thời gian xét duyệt' : (reviewState() === 'before' ? 'Chưa đến thời gian xét duyệt' : 'Đã hết thời gian xét duyệt')));
     } else {
       a.removeAttribute('aria-disabled');
       a.removeAttribute('tabindex');
