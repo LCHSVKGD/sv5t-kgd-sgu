@@ -11,6 +11,7 @@
   var uid = s.data.session.user.id;
 
   var criteria = await loadCriteria();
+  await loadReviewWindow();   // thời gian xét duyệt do admin đặt
   var subs = [];
   var cur = (location.hash || '').replace('#', '');
   if (!criteria.some(function (c) { return c.key === cur; })) cur = criteria[0].key;
@@ -30,21 +31,21 @@
   function shown(x) { return x.status !== 'pending' && x.released_at ? x.status : 'pending'; }
   function crit(key) { return criteria.filter(function (c) { return c.key === key; })[0]; }
 
-  // Chỉ tài khoản đã được BCH xác thực mới được nộp
-  function canSubmit() { var p = window.svProfile; return !!p && (p.verified || p.isAdmin); }
+  // Chỉ nộp được khi: tài khoản đã được BCH xác thực VÀ đang trong thời gian xét duyệt (admin thì luôn được)
+  function canSubmit() { var p = window.svProfile; return !!p && (p.isAdmin || !svGate()); }
   function refreshLock() {
-    var p = window.svProfile;
+    var g = svGate();
     var lock = $('hs-lock');
-    if (!p || canSubmit()) { lock.hidden = true; }
-    else {
-      lock.hidden = false;
-      lock.textContent = p.rejected
-        ? 'Tài khoản của bạn chưa được xác thực nên chưa nộp được hồ sơ. Vui lòng liên hệ Ban Chấp hành qua mục Hỏi đáp.'
-        : 'Tài khoản của bạn đang chờ Ban Chấp hành xác thực. Sau khi được xác thực, bạn mới nộp được minh chứng.';
-    }
+    lock.hidden = !g;
+    if (g) lock.textContent = g.msg;
+    // Chưa xác thực hoặc ngoài thời gian: vô hiệu hóa cả trang
+    var off = !!g;
+    svSetDisabled($('hs-tabs'), off);
+    svSetDisabled(document.querySelector('.hs-grid'), off);
     updateSend();
   }
   document.addEventListener('sv-profile', refreshLock);
+  watchReview(refreshLock);
 
   function renderTabs() {
     var box = document.createDocumentFragment();
@@ -77,6 +78,7 @@
   }
 
   async function delFile(sub) {
+    if (!canSubmit()) return alert('Đã ngoài thời gian xét duyệt nên không thể xóa tệp.');
     if (!confirm('Xóa tệp "' + sub.file_name + '"?')) return;
     var d = await sb.from('submissions').delete().eq('id', sub.id);
     if (d.error) return alert('Chưa xóa được tệp. Hãy thử lại.');
@@ -160,7 +162,7 @@
 
   $('hs-send').addEventListener('click', async function () {
     if (busy || !picked.length) return;
-    if (!canSubmit()) return alert('Tài khoản cần được Ban Chấp hành xác thực trước khi nộp hồ sơ.');
+    if (!canSubmit()) return alert((svGate() || {}).msg || 'Hiện chưa nộp được hồ sơ.');
     busy = true; updateSend();
     var btn = $('hs-send');
     var failed = [];

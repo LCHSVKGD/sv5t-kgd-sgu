@@ -84,3 +84,5 @@
 .fb-file .st, .fb-ans .st { background: #fff; }
 .fb-ans.rejected .hs-reason { background: #fff; border-color: #f0b5b5; }
 .fb-file.approved .hs-file-meta, .fb-file.rejected .hs-file-meta { color: #4a5568; }
+/* Vùng bị vô hiệu hóa (ngoài thời gian xét duyệt) */
+.is-disabled { opacity: 0.45; filter: grayscale(0.4); pointer-events: none; user-select: none; }

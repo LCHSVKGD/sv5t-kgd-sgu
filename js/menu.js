@@ -16,6 +16,16 @@ btn.addEventListener('click', function () {
   btn.setAttribute('aria-expanded', dangMo ? 'true' : 'false');
 });
 
+// Mục "Hoạt động" nằm ngay dưới "Phản hồi xét duyệt" (trang nào chưa có sẵn thì tự thêm)
+(function () {
+  var phanHoi = nav.querySelector('a[href="phan-hoi.html"]');
+  if (!phanHoi || nav.querySelector('a[href="hoat-dong.html"]')) return;
+  var a = document.createElement('a');
+  a.href = 'hoat-dong.html';
+  a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Hoạt động';
+  phanHoi.after(a);
+})();
+
 // Mục "Thông tin & Tài khoản" trên mọi trang đều trỏ về trang thong-tin.html
 nav.querySelectorAll('a').forEach(function (a) {
   if (a.getAttribute('href') === '#' && a.textContent.indexOf('Thông tin') > -1) a.setAttribute('href', 'thong-tin.html');

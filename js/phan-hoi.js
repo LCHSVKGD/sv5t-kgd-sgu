@@ -11,6 +11,7 @@
   var uid = s.data.session.user.id;
 
   var criteria = await loadCriteria();
+  await loadReviewWindow();   // thời gian xét duyệt do admin đặt
   var subs = [];
   var cur = (location.hash || '').replace('#', '');
   if (!criteria.some(function (c) { return c.key === cur; })) cur = criteria[0].key;
@@ -149,6 +150,23 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
     });
     box.replaceChildren(frag);
   }
+
+  // Chưa xác thực / ngoài thời gian xét duyệt: báo lý do và vô hiệu hóa trang
+  function refreshLock() {
+    var g = svGate('feedback');   // 'feedback': được xem thêm FEEDBACK_GRACE_DAYS ngày sau khi hết hạn
+    var p = window.svProfile;
+    var grace = !g && !!p && !p.isAdmin && reviewState() === 'after';   // đã hết hạn nộp nhưng còn xem được phản hồi
+    var lock = $('fb-lock');
+    lock.hidden = !g && !grace;
+    if (g) lock.textContent = g.msg;
+    else if (grace) lock.textContent = 'Đã hết thời gian nộp hồ sơ. Bạn vẫn xem được phản hồi đến ' + reviewFmt(reviewFeedbackEnd()) + ', sau đó trang sẽ đóng.';
+    var off = !!g;   // chưa xác thực hoặc ngoài thời gian: khóa cả trang
+    svSetDisabled($('fb-tabs'), off);
+    svSetDisabled(document.querySelector('.hs-grid'), off);
+    svSetDisabled(document.querySelector('.fb-edit-row'), off || grace);   // hết hạn rồi thì không nộp bổ sung nữa
+  }
+  document.addEventListener('sv-profile', refreshLock);
+  watchReview(refreshLock);
 
   function render() {
     renderTabs();

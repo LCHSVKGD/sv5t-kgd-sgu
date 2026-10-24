@@ -77,7 +77,13 @@
   document.querySelectorAll('[data-needs-verified]').forEach(function (el) {
     el.addEventListener('click', function (e) {
       var p = window.svProfile;
-      if (p.isAdmin || p.verified) return;
+      if (p.isAdmin) return;
+      if (p.verified) {
+        // Đã xác thực nhưng ngoài thời gian xét duyệt (nếu trang có nạp js/review-window.js)
+        var tm = (typeof reviewMessage === 'function' && svReview.loaded) ? reviewMessage() : '';
+        if (tm) { e.preventDefault(); alert(tm); }
+        return;
+      }
       e.preventDefault();
       alert(p.rejected
         ? 'Tài khoản của bạn chưa được xác thực. Vui lòng liên hệ Ban Chấp hành qua mục Hỏi đáp để được hỗ trợ.'

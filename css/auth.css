@@ -31,6 +31,8 @@
 .center { text-align: center; }
 .alt { margin-top: 18px; text-align: center; font-size: 14px; color: var(--muted); }
 .alt a { color: var(--primary); font-weight: 600; }
+.forgot { margin-top: 12px; text-align: right; font-size: 14px; }
+.forgot a { color: var(--primary); font-weight: 600; }
 @media (max-width: 600px) {
   .auth-card { padding: 24px 20px; }
   .form-grid { grid-template-columns: minmax(0, 1fr); }
