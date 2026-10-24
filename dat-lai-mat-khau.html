@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đặt lại mật khẩu | SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <script>window.__hash = location.hash;</script>
+</head>
+<body>
+
+  <header class="auth-top">
+    <a class="brand" href="index.html">
+      <span class="logo">5</span>
+      <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
+    </a>
+    <a class="btn btn-small" href="dang-nhap.html">Đăng nhập</a>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card narrow">
+      <h1>Đặt lại mật khẩu</h1>
+
+      <p class="sub" id="p-wait">Đang kiểm tra liên kết...</p>
+
+      <div id="p-form" class="panel" hidden>
+        <p class="sub">Nhập mật khẩu mới cho tài khoản của bạn.</p>
+        <form id="f" novalidate>
+          <div class="form-grid one">
+            <div class="field">
+              <label for="pw">Mật khẩu mới</label>
+              <input id="pw" type="password" autocomplete="new-password" placeholder="Tối thiểu 10 ký tự">
+            </div>
+            <div class="field">
+              <label for="pw2">Nhập lại mật khẩu mới</label>
+              <input id="pw2" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu">
+            </div>
+          </div>
+          <p class="msg error" id="m" role="alert" hidden></p>
+          <button class="btn btn-primary" id="b" type="submit">Lưu mật khẩu mới</button>
+        </form>
+      </div>
+
+      <div id="p-bad" class="panel" hidden>
+        <p class="msg error">Liên kết không hợp lệ hoặc đã hết hạn. Mỗi liên kết chỉ dùng được một lần và có hiệu lực trong thời gian ngắn.</p>
+        <a class="btn btn-primary" href="quen-mat-khau.html">Gửi lại liên kết mới</a>
+      </div>
+
+      <div id="p-ok" class="panel" hidden>
+        <p class="msg ok">Đã đổi mật khẩu thành công. Đang chuyển về trang đăng nhập...</p>
+        <a class="btn btn-primary" href="dang-nhap.html">Đăng nhập ngay</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function show(id) {
+      ['p-wait', 'p-form', 'p-bad', 'p-ok'].forEach(function (x) { $(x).hidden = (x !== id); });
+    }
+    function msg(text) { $('m').textContent = text || ''; $('m').hidden = !text; }
+
+    // Liên kết trong thư có dạng ...#access_token=...&type=recovery (hoặc có error nếu hết hạn)
+    var h = window.__hash || '';
+    var canReset = false;
+
+    sb.auth.onAuthStateChange(function (event) {
+      if (event === 'PASSWORD_RECOVERY') { canReset = true; show('p-form'); }
+    });
+
+    if (/error=|error_code=/.test(h) || !/type=recovery/.test(h)) {
+      show('p-bad');
+      return;
+    }
+    // getSession chờ thư viện đọc xong liên kết rồi mới trả kết quả
+    var s = await sb.auth.getSession();
+    if (s.data.session) { canReset = true; show('p-form'); }
+    else if (!canReset) show('p-bad');
+
+    $('f').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      msg('');
+      var pw = $('pw').value;
+      if (pw.length < 10) return msg('Mật khẩu cần tối thiểu 10 ký tự.');
+      if (pw !== $('pw2').value) return msg('Hai mật khẩu chưa giống nhau.');
+
+      var b = $('b');
+      b.disabled = true; b.textContent = 'Đang lưu...';
+      var r = await sb.auth.updateUser({ password: pw });
+      b.disabled = false; b.textContent = 'Lưu mật khẩu mới';
+
+      if (r.error) {
+        var t = (r.error.message || '').toLowerCase();
+        if (t.indexOf('different') > -1) return msg('Mật khẩu mới phải khác mật khẩu cũ.');
+        if (t.indexOf('password') > -1) return msg('Mật khẩu chưa đạt yêu cầu. Hãy dùng mật khẩu dài và khó đoán hơn.');
+        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại.');
+      }
+      await sb.auth.signOut();   // đăng xuất để đăng nhập lại bằng mật khẩu mới
+      show('p-ok');
+      setTimeout(function () { location.href = 'dang-nhap.html'; }, 2500);
+    });
+  })();
+  </script>
+</body>
+</html>

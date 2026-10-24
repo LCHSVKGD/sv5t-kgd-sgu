@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quên mật khẩu | SV5T khoa Giáo dục</title>
+  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <header class="auth-top">
+    <a class="brand" href="index.html">
+      <span class="logo">5</span>
+      <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
+    </a>
+    <a class="btn btn-small" href="dang-nhap.html">Đăng nhập</a>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card narrow">
+      <h1>Quên mật khẩu</h1>
+      <p class="sub">Nhập email bạn đã dùng để đăng ký. Hệ thống sẽ gửi một liên kết để bạn đặt mật khẩu mới.</p>
+
+      <form id="f" novalidate>
+        <div class="form-grid one">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" autocomplete="email" placeholder="ten@gmail.com">
+          </div>
+        </div>
+        <p class="msg" id="m" role="alert" hidden></p>
+        <button class="btn btn-primary" id="b" type="submit">Gửi liên kết đặt lại mật khẩu</button>
+      </form>
+      <p class="alt">Nhớ mật khẩu rồi? <a href="dang-nhap.html">Đăng nhập</a></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function msg(text, ok) {
+      var m = $('m');
+      m.textContent = text || '';
+      m.className = 'msg ' + (ok ? 'ok' : 'error');
+      m.hidden = !text;
+    }
+
+    // Chặn bấm liên tục: sau mỗi lần gửi phải chờ 60 giây mới gửi lại được
+    function cooldown(btn) {
+      var s = 60;
+      btn.disabled = true;
+      var t = setInterval(function () {
+        s--;
+        if (s <= 0) { clearInterval(t); btn.disabled = false; btn.textContent = 'Gửi lại liên kết'; return; }
+        btn.textContent = 'Gửi lại sau ' + s + ' giây';
+      }, 1000);
+      btn.textContent = 'Gửi lại sau ' + s + ' giây';
+    }
+
+    $('f').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      msg('');
+      var email = $('email').value.trim().toLowerCase();
+      if (!email || email.indexOf('@') < 1) return msg('Vui lòng nhập email hợp lệ.');
+
+      var b = $('b');
+      b.disabled = true; b.textContent = 'Đang gửi...';
+      var r = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: location.origin + '/dat-lai-mat-khau.html'
+      });
+
+      if (r.error) {
+        b.disabled = false; b.textContent = 'Gửi liên kết đặt lại mật khẩu';
+        var t = (r.error.message || '').toLowerCase();
+        if (t.indexOf('rate') > -1 || t.indexOf('seconds') > -1) return msg('Bạn gửi quá nhiều lần. Hãy chờ vài phút rồi thử lại.');
+        return msg('Có lỗi xảy ra (' + r.error.message + '). Hãy thử lại.');
+      }
+      // Luôn báo giống nhau dù email có tồn tại hay không (để không lộ email nào đã đăng ký)
+      msg('Nếu email này đã đăng ký, bạn sẽ nhận được thư trong vài phút. Hãy mở thư và bấm vào liên kết. Nếu không thấy, kiểm tra cả mục Spam.', true);
+      cooldown(b);
+    });
+  })();
+  </script>
+</body>
+</html>
