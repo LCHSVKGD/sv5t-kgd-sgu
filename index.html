@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ngọn lửa Tiên phong khoa Giáo dục</title>
-  <link rel="icon" type="image/png" href="images/logokhoa.png">
-  <link rel="icon" type="image/png" href="images/logokhoa.png">
+  <link rel="icon" type="image/png" href="images/logokhoa.png">  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -40,10 +39,17 @@
     var landing = document.getElementById('landing');
     var logoBtn = document.getElementById('logo-btn');
 
-    logoBtn.addEventListener('click', function () {
-      var mo = landing.classList.toggle('open');
-      logoBtn.setAttribute('aria-expanded', mo ? 'true' : 'false');
-    });
+// Hiện nút Đăng nhập / Đăng ký
+function moNut() {
+  landing.classList.add('open');
+  logoBtn.setAttribute('aria-expanded', 'true');
+}
+
+// Tự hiện sau 2 giây (2000 = 2 giây, muốn nhanh hay chậm hơn thì đổi số này)
+setTimeout(moNut, 2000);
+
+// Bấm vào logo trước 2 giây thì hiện ngay
+logoBtn.addEventListener('click', moNut);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
   <script src="js/supabase.js"></script>
