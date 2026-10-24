@@ -33,6 +33,21 @@ function reviewFeedbackEnd() {
   return new Date(new Date(svReview.end).getTime() + FEEDBACK_GRACE_DAYS * 86400000).toISOString();
 }
 
+// Đã quá hạn xem phản hồi (hết hạn + số ngày gia hạn) chưa?
+function reviewFeedbackClosed() {
+  if (reviewState() !== 'after') return false;
+  return Date.now() > new Date(reviewFeedbackEnd()).getTime();
+}
+
+// Trang nào đang bị khóa theo THỜI GIAN? page = 'ho-so' | 'phan-hoi'
+// (chưa đặt thời gian hoặc lỗi tải thì KHÔNG khóa, để tránh khóa nhầm)
+function reviewPageLocked(page) {
+  var st = reviewState();
+  if (st === 'before') return true;
+  if (st === 'after') return page === 'phan-hoi' ? reviewFeedbackClosed() : true;
+  return false;
+}
+
 // Câu giải thích theo trạng thái thời gian ('' nếu được dùng).
 // kind = 'feedback' cho trang Phản hồi xét duyệt (được xem thêm sau khi hết hạn), bỏ trống cho trang nộp hồ sơ.
 function reviewMessage(kind) {
@@ -82,7 +97,7 @@ function watchReview(cb) {
   var last = '';
   watchReview.timer = setInterval(async function () {
     await loadReviewWindow();
-    var key = reviewState() + '|' + svReview.start + '|' + svReview.end;
+    var key = reviewState() + '|' + svReview.start + '|' + svReview.end + '|' + (reviewFeedbackClosed() ? 'closed' : 'ok');
     if (key !== last) { last = key; svReviewListeners.forEach(function (f) { f(); }); }
   }, 15000);
 }
@@ -93,3 +108,47 @@ function svSetDisabled(el, on) {
   el.classList.toggle('is-disabled', !!on);
   el.inert = !!on;
 }
+
+
+// ===== Khóa mục menu "Hồ sơ của tôi" / "Phản hồi xét duyệt" khi ngoài thời gian =====
+// Mục bị khóa: mờ đi, bấm vào KHÔNG chuyển trang. Admin luôn được vào.
+var SV_LOCKABLE = { 'ho-so.html': 'ho-so', 'phan-hoi.html': 'phan-hoi' };
+
+function svUpdateMenuLock() {
+  var nav = document.getElementById('nav');
+  if (!nav || !svReview.loaded) return;
+  var p = window.svProfile;
+  if (!p) return;   // chưa biết là admin hay sinh viên thì chưa khóa
+  nav.querySelectorAll('a').forEach(function (a) {
+    var page = SV_LOCKABLE[a.getAttribute('href')];
+    if (!page) return;
+    var lock = !p.isAdmin && reviewPageLocked(page);
+    a.classList.toggle('is-locked', lock);
+    if (lock) {
+      a.setAttribute('aria-disabled', 'true');
+      a.tabIndex = -1;
+      a.title = page === 'phan-hoi' && reviewState() === 'after'
+        ? 'Đã hết thời gian xem phản hồi'
+        : (reviewState() === 'before' ? 'Chưa đến thời gian xét duyệt' : 'Đã hết thời gian xét duyệt');
+    } else {
+      a.removeAttribute('aria-disabled');
+      a.removeAttribute('tabindex');
+      a.removeAttribute('title');
+    }
+  });
+}
+
+(function () {
+  var nav = document.getElementById('nav');
+  if (!nav) return;   // trang không có menu (đăng nhập, đăng ký...)
+  // Chặn bấm (cả chuột lẫn phím Enter) trước khi các xử lý khác kịp chạy
+  nav.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a.is-locked') : null;
+    if (a) { e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
+  document.addEventListener('sv-profile', svUpdateMenuLock);
+  loadReviewWindow().then(function () {
+    svUpdateMenuLock();
+    watchReview(svUpdateMenuLock);
+  });
+})();
