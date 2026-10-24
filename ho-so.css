@@ -1,0 +1,88 @@
+/* ===== TRANG HỒ SƠ CỦA TÔI + PHẢN HỒI XÉT DUYỆT ===== */
+.hs-section { padding: 16px 0 40px; }
+.hs-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 20px; padding: 8px; background: var(--footer-1); border: 1px solid var(--footer-line); border-radius: 14px; }
+.hs-tabs button { min-height: 52px; padding: 6px 8px; font: inherit; font-size: 15px; font-weight: 600; line-height: 1.25; text-align: center; color: #c2660a; background: transparent; border: 2px solid var(--accent); border-radius: 8px; cursor: pointer; }
+.hs-tabs button:hover { background: var(--footer-2); }
+.hs-tabs button.on { background: var(--accent); color: #fff; }
+.hs-tabs small { display: block; font-weight: 600; opacity: 0.85; font-size: 12px; }
+
+.hs-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.hs-box { display: flex; flex-direction: column; min-height: 0; height: clamp(440px, 66vh, 620px); background: #e1ecfb; border: 2px solid var(--primary); border-radius: 16px; padding: 20px; }
+.hs-box h2 { font-size: 18px; font-weight: 800; letter-spacing: 0.04em; color: var(--primary-dark); margin-bottom: 12px; }
+.hs-req { flex: 1; min-height: 0; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; white-space: pre-line; overflow-wrap: anywhere; font-size: 15.5px; line-height: 1.6; }
+
+.hs-files { flex: 1; min-height: 0; overflow-y: auto; display: grid; gap: 8px; align-content: start; }
+.hs-none { text-align: center; color: var(--muted); padding: 24px 8px; font-size: 15px; }
+.hs-file { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.hs-file-top { display: flex; align-items: center; gap: 10px; }
+.hs-file-name { flex: 1; min-width: 0; text-align: left; font: inherit; font-weight: 700; font-size: 14.5px; color: var(--primary); background: none; border: 0; padding: 0; cursor: pointer; overflow-wrap: anywhere; }
+.hs-file-name:hover { text-decoration: underline; }
+.hs-file-meta { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+.hs-del { flex: none; font: inherit; font-size: 13px; font-weight: 700; color: #9b1c1c; background: none; border: 0; cursor: pointer; padding: 2px 4px; }
+.hs-del:hover { text-decoration: underline; }
+.hs-reason { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: #fdecec; border: 1px solid #f3c4c4; color: #7a1818; font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; }
+
+.st { flex: none; display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.st-pending { background: #fff7e6; border: 1px solid var(--footer-line); color: var(--footer-label); }
+.st-approved { background: #e5f6ea; border: 1px solid #b7e2c3; color: #1c6b36; }
+.st-rejected { background: #fdecec; border: 1px solid #f3c4c4; color: #9b1c1c; }
+
+.hs-upload { margin-top: 14px; padding-top: 14px; border-top: 2px dashed #a9c0e8; }
+.hs-upload h3 { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+.hs-upload input[type=file] { width: 100%; font: inherit; font-size: 14px; padding: 8px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+.hs-hint { margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+.hs-picked { margin-top: 8px; font-size: 13.5px; color: var(--ink); overflow-wrap: anywhere; }
+.hs-send { margin-top: 10px; }
+.hs-send[disabled] { opacity: 0.5; cursor: not-allowed; }
+.hs-lock { margin-bottom: 14px; padding: 12px 16px; border-radius: 10px; background: #fff7e6; border: 1px solid var(--footer-line); color: #9a4f06; font-size: 14.5px; }
+.hs-lock[hidden] { display: none; }
+
+/* Trang Phản hồi xét duyệt */
+.fb-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.fb-tabs button { font: inherit; font-size: 15px; font-weight: 600; padding: 9px 18px; color: var(--primary); background: transparent; border: 2px solid var(--primary); border-radius: 8px; cursor: pointer; }
+.fb-tabs button:hover { background: #e1ecfb; }
+.fb-tabs button.on { background: var(--primary); color: #fff; }
+.fb-list { display: grid; gap: 12px; }
+.fb-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+.fb-card.rejected { border-color: #f3c4c4; }
+.fb-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.fb-top h3 { font-size: 16.5px; overflow-wrap: anywhere; }
+.fb-meta { margin-top: 4px; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.fb-card .hs-reason { font-size: 15px; }
+.fb-card .hs-reason b { display: block; margin-bottom: 2px; }
+.fb-actions { margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+.fb-actions a, .fb-actions button { font: inherit; font-size: 14px; font-weight: 700; color: var(--primary); background: none; border: 0; padding: 0; cursor: pointer; }
+.fb-actions a:hover, .fb-actions button:hover { text-decoration: underline; }
+.fb-empty { text-align: center; color: var(--muted); padding: 40px 12px; }
+
+@media (max-width: 900px) {
+  .hs-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hs-grid { grid-template-columns: minmax(0, 1fr); }
+  .hs-box { height: auto; min-height: 0; }
+  .hs-req { max-height: 320px; flex: none; }
+  .hs-files { max-height: 340px; flex: none; }
+}
+
+/* Trang Phản hồi xét duyệt (bố cục 2 cột giống trang Nộp hồ sơ) */
+.fb-thumb { display: block; max-width: 100%; max-height: 220px; margin-top: 8px; border-radius: 8px; border: 1px solid var(--line); cursor: zoom-in; object-fit: contain; background: #fff; }
+.fb-thumb[hidden] { display: none; }
+.fb-ans { display: grid; gap: 8px; }
+.fb-ans.rejected { border-color: #f3c4c4; }
+.fb-ans.approved { border-color: #b7e2c3; }
+.fb-ans-name { flex: 1; min-width: 0; font-size: 14.5px; overflow-wrap: anywhere; }
+.fb-ans-wait { font-size: 14.5px; color: var(--muted); }
+.fb-ans-ok { font-size: 14.5px; color: #1c6b36; }
+.fb-ans .hs-reason { margin-top: 0; }
+.fb-ans .hs-reason b { display: block; margin-bottom: 2px; }
+.fb-edit-row { margin-top: 20px; display: flex; justify-content: flex-end; }
+@media (max-width: 600px) { .fb-edit-row .btn { width: 100%; text-align: center; } }
+
+
+/* Màu nền theo kết quả: đã duyệt = xanh lá nhạt, bị từ chối = đỏ nhạt */
+.fb-file.approved, .fb-ans.approved { background: #e6f6ea; border-color: #9fd5ae; }
+.fb-file.rejected, .fb-ans.rejected { background: #fdeaea; border-color: #f0b5b5; }
+.fb-file .st, .fb-ans .st { background: #fff; }
+.fb-ans.rejected .hs-reason { background: #fff; border-color: #f0b5b5; }
+.fb-file.approved .hs-file-meta, .fb-file.rejected .hs-file-meta { color: #4a5568; }
+/* Vùng bị vô hiệu hóa (ngoài thời gian xét duyệt) */
+.is-disabled { opacity: 0.45; filter: grayscale(0.4); pointer-events: none; user-select: none; }

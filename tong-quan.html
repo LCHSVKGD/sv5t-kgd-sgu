@@ -18,6 +18,15 @@
     .poster-card .pc-text { padding: 14px 16px 18px; }
     .poster-card h3 { font-size: 17px; margin-bottom: 4px; overflow-wrap: anywhere; }
     .poster-card p { color: var(--muted); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
+
+    /* Khung thời gian xét duyệt danh hiệu */
+    .rv-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 18px 22px; background: #fff7e6; border: 2px solid var(--accent); border-radius: 14px; }
+    .rv-box h2 { font-size: 18px; margin: 0; color: #9a4f06; }
+    .rv-time { flex: 1; min-width: 220px; font-size: 18px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+    .rv-time small { display: block; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .rv-tag { flex: none; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: #fff; border: 1px solid var(--footer-line); color: #9a4f06; }
+    .rv-tag.is-open { background: #e5f6ea; border-color: #b7e2c3; color: #1c6b36; }
+    .rv-tag.is-closed { background: #fdecec; border-color: #f3c4c4; color: #9b1c1c; }
   </style>
 </head>
 <body>
@@ -90,6 +99,16 @@
       </div>
     </section>
 
+    <section class="section" style="padding: 24px 0 0">
+      <div class="wrap">
+        <div class="rv-box" id="rv-box">
+          <h2>Thời gian xét duyệt danh hiệu</h2>
+          <div class="rv-time" id="rv-time">Đang tải...</div>
+          <span class="rv-tag" id="rv-tag" hidden></span>
+        </div>
+      </div>
+    </section>
+
     <section id="tieu-chuan" class="criteria" aria-label="Năm tiêu chuẩn">
       <div><h3>Đạo đức tốt</h3></div>
       <div><h3>Học tập tốt</h3></div>
@@ -137,6 +156,7 @@
   <script src="js/footer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
 <script src="js/supabase.js"></script>
+<script src="js/review-window.js"></script>
 <script>
   document.getElementById('logout').addEventListener('click', async function (e) {
     e.preventDefault();
@@ -145,6 +165,27 @@
   });
 </script>  
   <script src="js/auth-guard.js"></script>
+<script>
+// Khung "Thời gian xét duyệt danh hiệu": đồng bộ với thời gian admin đặt, tự đổi trạng thái khi đến giờ
+(async function () {
+  var time = document.getElementById('rv-time'), tag = document.getElementById('rv-tag');
+  var TAGS = { before: ['Sắp mở', ''], open: ['Đang mở', 'is-open'], after: ['Đã kết thúc', 'is-closed'] };
+  function show() {
+    var st = reviewState();
+    if (st === 'error') { time.textContent = 'Chưa tải được thời gian xét duyệt.'; tag.hidden = true; return; }
+    if (st === 'unset') { time.textContent = 'Chưa công bố. Ban Chấp hành sẽ thông báo sau.'; tag.hidden = true; return; }
+    time.replaceChildren(
+      document.createTextNode(reviewFmt(svReview.start)),
+      Object.assign(document.createElement('small'), { textContent: 'đến ' + reviewFmt(svReview.end) })
+    );
+    tag.hidden = false;
+    tag.textContent = TAGS[st][0];
+    tag.className = 'rv-tag ' + TAGS[st][1];
+  }
+  await loadReviewWindow();
+  watchReview(show);
+})();
+</script>
 <script>
 // Nội dung do admin chỉnh. Nếu chưa tải được thì giữ nguyên nội dung có sẵn trong trang.
 (async function () {

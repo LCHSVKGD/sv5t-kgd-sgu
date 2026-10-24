@@ -21,13 +21,13 @@
     .demo-note { margin-bottom: 16px; padding: 12px 16px; border-radius: 10px; background: #fff7e6; border: 1px solid #f6d9b8; color: #9a4f06; font-size: 14px; }
 
     /* Thanh chức năng của trang Admin */
-    .admin-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 20px; padding: 8px; background: var(--footer-1); border: 1px solid var(--footer-line); border-radius: 14px; }
+    .admin-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 20px; padding: 8px; background: var(--footer-1); border: 1px solid var(--footer-line); border-radius: 14px; }
     .admin-tabs .btn { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 6px 4px; font-size: 13px; line-height: 1.25; text-align: center; border-color: var(--accent); color: #c2660a; }
     .admin-tabs .btn:hover { background: var(--footer-2); color: #c2660a; }
     .admin-tabs .btn.on, .admin-tabs .btn.on:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
     .admin-tabs .btn.on:hover { background: #d97a18; border-color: #d97a18; }
     @media (min-width: 700px) {
-      .admin-tabs { gap: 10px; padding: 10px; grid-template-columns: repeat(6, 1fr); }
+      .admin-tabs { gap: 10px; padding: 10px; grid-template-columns: repeat(4, 1fr); }
       .admin-tabs .btn { min-height: 52px; font-size: 15px; padding: 8px 8px; }
     }
     .panel[hidden] { display: none; }
@@ -167,6 +167,14 @@
       .acc-actions { width: 100%; }
       .acc-actions .btn { flex: 1; width: auto; }
     }
+
+    /* Chức năng Thời gian xét duyệt + Hoạt động */
+    .rw-status { margin-bottom: 14px; padding: 12px 16px; border-radius: 10px; background: #fff7e6; border: 1px solid var(--footer-line); color: #9a4f06; font-size: 15px; font-weight: 600; }
+    .rw-status.is-open { background: #e5f6ea; border-color: #b7e2c3; color: #1c6b36; }
+    .rw-status.is-closed { background: #fdecec; border-color: #f3c4c4; color: #9b1c1c; }
+    .rw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .ac-thumb { flex: none; width: 96px; height: 96px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+    .ac-cap { display: block; margin-top: 2px; color: var(--ink); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -236,7 +244,7 @@
   <main id="main" hidden>
     <div class="wrap page-title">
       <h1><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Admin</h1>
-      <p>Khu vực dành cho Ban Chấp hành: duyệt tài khoản, trả lời tin nhắn, đăng thông báo và duyệt hồ sơ.</p>
+      <p>Khu vực dành cho Ban Chấp hành: duyệt tài khoản, trả lời tin nhắn, đăng thông báo, duyệt hồ sơ, đặt thời gian xét duyệt và đăng bài Hoạt động.</p>
     </div>
 
     <section class="dt-section">
@@ -244,12 +252,14 @@
 
         <!-- Thanh chọn chức năng -->
         <div class="admin-tabs" id="admin-tabs">
-          <button class="btn btn-line on" type="button" data-p="tai-khoan">Duyệt tài khoản</button>
-          <button class="btn btn-line" type="button" data-p="tin-nhan">Tin nhắn</button>
+          <button class="btn btn-line on" type="button" data-p="tai-khoan">Duyệt tài khoản<span class="tab-count" id="n-tk" hidden></span></button>
+          <button class="btn btn-line" type="button" data-p="tin-nhan">Tin nhắn<span class="tab-count" id="n-tn" hidden></span></button>
           <button class="btn btn-line" type="button" data-p="thong-bao">Đăng thông báo</button>
           <button class="btn btn-line" type="button" data-p="tai-lieu">Đăng tài liệu</button>
           <button class="btn btn-line" type="button" data-p="ho-so">Duyệt hồ sơ<span class="tab-count" id="n-hoso" hidden></span></button>
           <button class="btn btn-line" type="button" data-p="tong-quan">Trang Tổng quan</button>
+          <button class="btn btn-line" type="button" data-p="thoi-gian">Thời gian xét duyệt</button>
+          <button class="btn btn-line" type="button" data-p="hoat-dong">Hoạt động</button>
         </div>
 
         <!-- Chức năng 1: Duyệt tài khoản -->
@@ -401,6 +411,51 @@
           <div class="list" id="ck-list"></div>
         </div>
 
+
+        <!-- Chức năng 6: Thời gian xét duyệt & nhận hồ sơ -->
+        <div class="panel" id="p-thoi-gian" hidden>
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Đặt khoảng thời gian nhận hồ sơ và xét duyệt. Thời gian này hiển thị ở khung trên trang Tổng quan của sinh viên. Ngoài khoảng thời gian này, sinh viên không nộp được hồ sơ và trang "Hồ sơ của tôi" bị vô hiệu hóa; trang "Phản hồi xét duyệt" còn mở thêm 3 ngày sau khi hết hạn rồi mới bị vô hiệu hóa (tài khoản admin vẫn vào bình thường). Chưa đặt thời gian thì không giới hạn: sinh viên đã xác thực vẫn nộp hồ sơ và xem phản hồi như bình thường. Bấm "Xóa thời gian" để quay về trạng thái không giới hạn.</p>
+          <div class="rw-status" id="rw-status"></div>
+          <div class="tb-form">
+            <h3>Đặt thời gian</h3>
+            <div class="rw-grid">
+              <div>
+                <label for="rw-start">Bắt đầu</label>
+                <input id="rw-start" type="datetime-local">
+              </div>
+              <div>
+                <label for="rw-end">Kết thúc</label>
+                <input id="rw-end" type="datetime-local">
+              </div>
+            </div>
+            <div class="ck-btns">
+              <button class="btn btn-small" type="button" id="rw-save">Lưu thời gian</button>
+              <button class="btn btn-danger" type="button" id="rw-clear">Xóa thời gian</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chức năng 7: Đăng bài Hoạt động -->
+        <div class="panel" id="p-hoat-dong" hidden>
+          <div class="tb-form">
+            <h3>Đăng bài Hoạt động</h3>
+            <p class="ck-hint" style="margin:0">Bài đăng hiển thị ở trang Hoạt động của tất cả sinh viên, bài mới nhất nằm trên cùng.</p>
+            <div>
+              <label for="ac-file">Hình ảnh</label>
+              <input id="ac-file" type="file" accept="image/png,image/jpeg,image/webp">
+              <p class="ck-hint">Ảnh PNG, JPG hoặc WEBP, tối đa 5 MB.</p>
+              <img id="ac-preview" class="ck-preview" alt="Xem trước hình" hidden>
+            </div>
+            <div>
+              <label for="ac-caption">Caption</label>
+              <textarea id="ac-caption" maxlength="2000" style="min-height:100px" placeholder="Viết vài dòng về hoạt động. Bấm Enter để xuống dòng."></textarea>
+            </div>
+            <button class="btn btn-small" type="button" id="ac-post">Đăng bài</button>
+          </div>
+          <h3 class="sub-title">Bài đã đăng</h3>
+          <div class="list" id="ac-list"></div>
+        </div>
+
       </div>
     </section>
   </main>
@@ -414,6 +469,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
   <script src="js/supabase.js"></script>
   <script src="js/criteria.js"></script>
+  <script src="js/review-window.js"></script>
   <script>
     // Đăng xuất
     document.getElementById('logout').addEventListener('click', async function (e) {
@@ -462,6 +518,13 @@
     }
 
     function statusOf(p) { return p.verified ? 'done' : (p.rejected ? 'rejected' : 'pending'); }
+        // Hiện số trên nút của thanh tab (ẩn khi bằng 0)
+    function setTab(id, n) {
+      var el = $(id);
+      if (!el) return;
+      el.textContent = n;
+      el.hidden = !n;
+    }
 
     function makeBtn(label, cls, onClick) {
       var b = document.createElement('button');
@@ -499,6 +562,7 @@
       $('n-pending').textContent = groups.pending.length;
       $('n-done').textContent = groups.done.length;
       $('n-rejected').textContent = groups.rejected.length;
+      setTab('n-tk', groups.pending.length);      
       document.querySelectorAll('.tabs [data-f]').forEach(function (b) {
         b.classList.toggle('on', b.dataset.f === filter);
       });
@@ -743,6 +807,7 @@
     function renderInbox() {
       var list = $('inbox');
       var rows = buildInbox();
+      setTab('n-tn', rows.filter(function (c) { return c.last.sender === 'student'; }).length);      
       if (!rows.length) {
         var p = document.createElement('p');
         p.className = 'note';
@@ -915,10 +980,9 @@
     }
 
     function hsStatusCounts() {
-      var n = subs.filter(function (x) { return x.status === 'pending'; }).length;
-      var tag = $('n-hoso');
-      tag.textContent = n;
-      tag.hidden = !n;
+      var ids = {};
+      subs.forEach(function (x) { if (x.status === 'pending') ids[x.student_id] = true; });
+      setTab('n-hoso', Object.keys(ids).length);
     }
 
     async function hsOpenFile(x) {
@@ -1338,6 +1402,142 @@
       ckRender();
     }
 
+    // ===== Chức năng 6: Thời gian xét duyệt =====
+    function toLocalInput(iso) {
+      if (!iso) return '';
+      var d = new Date(iso), p = function (n) { return String(n).padStart(2, '0'); };
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+    var RW_TXT = { unset: 'Chưa đặt thời gian (không giới hạn: sinh viên đã xác thực vẫn nộp hồ sơ bình thường).', before: 'Sắp mở', open: 'Đang trong thời gian nhận hồ sơ / xét duyệt', after: 'Đã kết thúc. Sinh viên không nộp được hồ sơ nữa; trang Phản hồi xét duyệt còn mở thêm 3 ngày.', error: 'Không tải được thời gian (đã chạy SQL đợt 6 chưa?).' };
+    function rwRender() {
+      var st = reviewState();
+      var el = $('rw-status');
+      el.className = 'rw-status' + (st === 'open' ? ' is-open' : (st === 'after' || st === 'error' ? ' is-closed' : ''));
+      el.textContent = (svReview.start && svReview.end ? reviewRange() + ' · ' : '') + RW_TXT[st];
+      $('rw-start').value = toLocalInput(svReview.start);
+      $('rw-end').value = toLocalInput(svReview.end);
+    }
+    async function rwSave(start, end) {
+      if (DEMO) { svReview.start = start; svReview.end = end; return rwRender(); }
+      var btns = document.querySelectorAll('#p-thoi-gian button');
+      btns.forEach(function (b) { b.disabled = true; });
+      var res = await sb.from('site_settings').upsert({ id: 1, review_start: start, review_end: end, updated_at: new Date().toISOString() }).select().single();
+      btns.forEach(function (b) { b.disabled = false; });
+      if (res.error || !res.data) {
+        console.error(res.error && res.error.message);
+        return alert('Chưa lưu được. Hãy kiểm tra đã chạy SQL đợt 6 và đang đăng nhập bằng tài khoản admin.');
+      }
+      svReview.error = false; svReview.start = res.data.review_start; svReview.end = res.data.review_end;
+      rwRender();
+    }
+    $('rw-save').addEventListener('click', function () {
+      var a = $('rw-start').value, b = $('rw-end').value;
+      if (!a || !b) return alert('Hãy chọn cả thời gian bắt đầu và kết thúc.');
+      var da = new Date(a), db = new Date(b);
+      if (db <= da) return alert('Thời gian kết thúc phải sau thời gian bắt đầu.');
+      if (db < new Date() && !confirm('Thời gian kết thúc đã qua nên sinh viên sẽ bị khóa nộp hồ sơ ngay. Vẫn lưu?')) return;
+      rwSave(da.toISOString(), db.toISOString());
+    });
+    $('rw-clear').addEventListener('click', function () {
+      if (confirm('Xóa thời gian? Hệ thống sẽ về trạng thái không giới hạn thời gian.')) rwSave(null, null);
+    });
+    async function rwLoad() { if (!DEMO) await loadReviewWindow(); rwRender(); }
+
+    // ===== Chức năng 7: Hoạt động =====
+    var acs = [], acFile = null;
+    function acNote(text) {
+      var p = document.createElement('p');
+      p.className = 'note';
+      p.textContent = text;
+      $('ac-list').replaceChildren(p);
+    }
+    function acRender() {
+      if (!acs.length) return acNote('Chưa có bài đăng nào.');
+      var box = document.createDocumentFragment();
+      acs.forEach(function (a) {
+        var row = document.createElement('div');
+        row.className = 'row';
+        var info = document.createElement('div');
+        info.className = 'acc-info ck-info';
+        var im = document.createElement('img');
+        im.className = 'ac-thumb'; im.src = a.image_url; im.alt = '';
+        var tx = document.createElement('div');
+        var cap = document.createElement('span');
+        cap.className = 'ac-cap';
+        cap.textContent = a.caption || '(không có caption)';
+        var meta = document.createElement('span');
+        meta.className = 'tb-meta';
+        meta.textContent = new Date(a.created_at).toLocaleString('vi-VN');
+        tx.append(cap, meta);
+        info.append(im, tx);
+        var act = document.createElement('div');
+        act.className = 'acc-actions';
+        act.appendChild(makeBtn('Xóa', 'btn btn-danger', async function () {
+          if (!confirm('Xóa bài đăng này? Sinh viên sẽ không còn thấy bài này ở trang Hoạt động.')) return;
+          if (!DEMO) {
+            var d = await sb.from('activities').delete().eq('id', a.id);
+            if (d.error) return alert('Chưa xóa được. Hãy thử lại.');
+            if (a.image_path) sb.storage.from('activities').remove([a.image_path]);
+          }
+          acs = acs.filter(function (x) { return x.id !== a.id; });
+          acRender();
+        }));
+        row.append(info, act);
+        box.appendChild(row);
+      });
+      $('ac-list').replaceChildren(box);
+    }
+    async function acLoad() {
+      if (DEMO) return acRender();
+      var r = await sb.from('activities').select('*').order('created_at', { ascending: false });
+      if (r.error) return acNote('Không tải được bài đăng: ' + r.error.message + ' (đã chạy SQL đợt 6 chưa?)');
+      acs = r.data;
+      acRender();
+    }
+    $('ac-file').addEventListener('change', function () {
+      var f = this.files[0], pv = $('ac-preview');
+      acFile = null; pv.hidden = true;
+      if (!f) return;
+      if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { this.value = ''; return alert('Chỉ nhận ảnh PNG, JPG hoặc WEBP.'); }
+      if (f.size > MAX_IMG) { this.value = ''; return alert('Ảnh lớn hơn 5 MB. Hãy chọn ảnh nhỏ hơn.'); }
+      acFile = f;
+      pv.src = URL.createObjectURL(f);
+      pv.hidden = false;
+    });
+    $('ac-post').addEventListener('click', async function () {
+      var caption = $('ac-caption').value.trim();
+      if (!acFile) return alert('Hãy chọn hình ảnh cho bài đăng.');
+      var btn = this;
+      btn.disabled = true;
+      var row;
+      if (DEMO) {
+        row = { id: 'a' + Date.now(), caption: caption, image_url: URL.createObjectURL(acFile), image_path: '', created_at: new Date().toISOString() };
+      } else {
+        var ext = acFile.type === 'image/png' ? 'png' : (acFile.type === 'image/webp' ? 'webp' : 'jpg');
+        var path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        var up = await sb.storage.from('activities').upload(path, acFile, { contentType: acFile.type, cacheControl: '3600' });
+        if (up.error) {
+          btn.disabled = false;
+          console.error(up.error.message);
+          return alert('Chưa tải được ảnh lên. Hãy kiểm tra đã chạy SQL đợt 6 (kho ảnh activities) chưa.');
+        }
+        var url = sb.storage.from('activities').getPublicUrl(path).data.publicUrl;
+        var res = await sb.from('activities').insert({ caption: caption, image_url: url, image_path: path }).select().single();
+        if (res.error || !res.data) {
+          btn.disabled = false;
+          console.error(res.error && res.error.message);
+          sb.storage.from('activities').remove([path]);
+          return alert('Chưa đăng được bài. Hãy kiểm tra đã chạy SQL đợt 6 và đang đăng nhập bằng tài khoản admin.');
+        }
+        row = res.data;
+      }
+      btn.disabled = false;
+      acs.unshift(row);
+      acFile = null;
+      $('ac-file').value = ''; $('ac-caption').value = ''; $('ac-preview').hidden = true;
+      acRender();
+    });
+
     if (DEMO) {
       content = [
         { id: 'c1', kind: 'poster', title: 'Poster mở đăng ký xét SV5T 2027', body: 'Hạn nộp hồ sơ: 30/11.', image_url: '', sort_order: 1, created_at: '2026-10-01' },
@@ -1366,6 +1566,8 @@
       ];
       hsRender();
       renderInbox();
+      rwLoad();
+      acLoad();
       return render();
     }
 
@@ -1380,6 +1582,8 @@
     loadMessages();
     ckLoad();
     loadSubs();
+    rwLoad();
+    acLoad();
   })();
   </script>
 
