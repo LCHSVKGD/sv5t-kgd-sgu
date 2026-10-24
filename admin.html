@@ -21,13 +21,13 @@
     .demo-note { margin-bottom: 16px; padding: 12px 16px; border-radius: 10px; background: #fff7e6; border: 1px solid #f6d9b8; color: #9a4f06; font-size: 14px; }
 
     /* Thanh chức năng của trang Admin */
-    .admin-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 20px; padding: 8px; background: var(--footer-1); border: 1px solid var(--footer-line); border-radius: 14px; }
+    .admin-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 20px; padding: 8px; background: var(--footer-1); border: 1px solid var(--footer-line); border-radius: 14px; }
     .admin-tabs .btn { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 6px 4px; font-size: 13px; line-height: 1.25; text-align: center; border-color: var(--accent); color: #c2660a; }
     .admin-tabs .btn:hover { background: var(--footer-2); color: #c2660a; }
     .admin-tabs .btn.on, .admin-tabs .btn.on:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
     .admin-tabs .btn.on:hover { background: #d97a18; border-color: #d97a18; }
     @media (min-width: 700px) {
-      .admin-tabs { gap: 10px; padding: 10px; grid-template-columns: repeat(4, 1fr); }
+      .admin-tabs { gap: 10px; padding: 10px; grid-template-columns: repeat(5, 1fr); }
       .admin-tabs .btn { min-height: 52px; font-size: 15px; padding: 8px 8px; }
     }
     .panel[hidden] { display: none; }
@@ -175,6 +175,19 @@
     .rw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
     .ac-thumb { flex: none; width: 96px; height: 96px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
     .ac-cap { display: block; margin-top: 2px; color: var(--ink); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Chức năng Cập nhật tiêu chí */
+    .tc-box { padding: 20px 24px; display: grid; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 16px; }
+    .tc-box h3 { font-size: 18px; }
+    .tc-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+    .tc-tabs .btn { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 56px; line-height: 1.3; text-align: center; }
+    .tc-tabs .btn small { font-size: 12px; font-weight: 600; opacity: 0.85; }
+    .tc-tabs .btn.on { background: var(--primary); color: #fff; }
+    .tc-box textarea { width: 100%; min-height: 260px; padding: 12px 14px; font: inherit; font-size: 16px; line-height: 1.6; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; resize: vertical; }
+    .tc-box textarea:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+    .tc-msg { color: #1c6b36; font-size: 14px; font-weight: 600; }
+    .tc-msg[hidden] { display: none; }
+    .tc-msg.is-warn { color: #9a4f06; }
   </style>
 </head>
 <body>
@@ -263,6 +276,7 @@
           <button class="btn btn-line" type="button" data-p="tai-lieu">Đăng tài liệu</button>
           <button class="btn btn-line" type="button" data-p="ho-so">Duyệt hồ sơ<span class="tab-count" id="n-hoso" hidden></span></button>
           <button class="btn btn-line" type="button" data-p="tong-quan">Trang Tổng quan</button>
+          <button class="btn btn-line" type="button" data-p="tieu-chi">Cập nhật tiêu chí</button>
           <button class="btn btn-line" type="button" data-p="thoi-gian">Thời gian xét duyệt</button>
           <button class="btn btn-line" type="button" data-p="hoat-dong">Hoạt động</button>
         </div>
@@ -416,6 +430,24 @@
           <div class="list" id="ck-list"></div>
         </div>
 
+
+        <!-- Chức năng 8: Cập nhật tiêu chí -->
+        <div class="panel" id="p-tieu-chi" hidden>
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chọn một trong 5 tiêu chí, nhập yêu cầu rồi bấm "Cập nhật". Nội dung hiển thị ngay ở khung "Yêu cầu" (bên trái) của trang "Hồ sơ của tôi" khi sinh viên bấm vào tiêu chí tương ứng. Mỗi tiêu chí được cập nhật riêng.</p>
+          <div class="tc-box">
+            <h3>1. Chọn tiêu chí</h3>
+            <div class="tc-tabs" id="tc-tabs"></div>
+          </div>
+          <div class="tc-box">
+            <h3 id="tc-title">2. Yêu cầu</h3>
+            <textarea id="tc-req" maxlength="5000" placeholder="Ví dụ: điều kiện cần đạt, minh chứng cần nộp... Bấm Enter để xuống dòng."></textarea>
+            <p class="ck-hint" style="margin:0">Để trống rồi cập nhật thì sinh viên sẽ thấy nội dung mặc định ("Yêu cầu chi tiết do Ban Chấp hành cập nhật...").</p>
+            <div class="ck-btns">
+              <button class="btn btn-small" type="button" id="tc-save">Cập nhật</button>
+            </div>
+            <p class="tc-msg" id="tc-msg" hidden></p>
+          </div>
+        </div>
 
         <!-- Chức năng 6: Thời gian xét duyệt & nhận hồ sơ -->
         <div class="panel" id="p-thoi-gian" hidden>
@@ -1407,6 +1439,97 @@
       ckRender();
     }
 
+    // ===== Chức năng 8: Cập nhật tiêu chí (yêu cầu hiện ở trang "Hồ sơ của tôi") =====
+    var tcRows = [];                 // các dòng kind = 'criterion' trong site_content
+    var tcCur = CRITERIA[0].key;
+    var tcOrig = '';                 // nội dung đã lưu của tiêu chí đang chọn (để biết có sửa dở không)
+    // Tìm dòng của tiêu chí: theo mã (slug); nếu dòng cũ chưa có mã thì tìm theo tên mặc định
+    function tcRow(key) {
+      var bySlug = tcRows.filter(function (x) { return x.slug === key; })[0];
+      if (bySlug) return bySlug;
+      var c = CRITERIA.filter(function (x) { return x.key === key; })[0];
+      return tcRows.filter(function (x) { return !x.slug && x.title === c.name; })[0];
+    }
+    function tcName(c) { var r = tcRow(c.key); return r && r.title ? r.title : c.name; }
+    function tcDirty() { return $('tc-req').value.trim() !== tcOrig; }
+    function tcMsg(text, warn) {
+      var m = $('tc-msg');
+      m.hidden = !text;
+      m.textContent = text || '';
+      m.classList.toggle('is-warn', !!warn);
+    }
+    function tcRenderTabs() {
+      var frag = document.createDocumentFragment();
+      CRITERIA.forEach(function (c) {
+        var r = tcRow(c.key);
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn btn-line' + (c.key === tcCur ? ' on' : '');
+        b.append(tcName(c));
+        var sm = document.createElement('small');
+        sm.textContent = r && r.requirements && r.requirements.trim() ? 'Đã có yêu cầu' : 'Chưa nhập';
+        b.appendChild(sm);
+        b.addEventListener('click', function () {
+          if (c.key === tcCur) return;
+          if (tcDirty() && !confirm('Bạn đang sửa dở nội dung chưa cập nhật. Chuyển tiêu chí khác sẽ mất phần đã sửa. Vẫn chuyển?')) return;
+          tcShow(c.key);
+        });
+        frag.appendChild(b);
+      });
+      $('tc-tabs').replaceChildren(frag);
+    }
+    function tcShow(key) {
+      tcCur = key;
+      var r = tcRow(key);
+      tcOrig = ((r && r.requirements) || '').trim();
+      $('tc-req').value = tcOrig;
+      var c = CRITERIA.filter(function (x) { return x.key === key; })[0];
+      $('tc-title').textContent = '2. Yêu cầu: ' + tcName(c);
+      tcMsg('');
+      tcRenderTabs();
+    }
+    async function tcLoad() {
+      if (!DEMO) {
+        var r = await sb.from('site_content').select('*').eq('kind', 'criterion');
+        if (r.error) return tcMsg('Không tải được tiêu chí: ' + r.error.message, true);
+        tcRows = r.data;
+      }
+      if (tcDirty()) return tcRenderTabs();   // đang sửa dở thì không ghi đè
+      tcShow(tcCur);
+    }
+    $('tc-save').addEventListener('click', async function () {
+      var text = $('tc-req').value.trim();
+      var c = CRITERIA.filter(function (x) { return x.key === tcCur; })[0];
+      if (!text && !confirm('Yêu cầu đang để trống. Sinh viên sẽ thấy nội dung mặc định. Vẫn cập nhật?')) return;
+      var btn = this;
+      btn.disabled = true;
+      var row = tcRow(tcCur);
+      if (DEMO) {
+        if (row) row.requirements = text; else tcRows.push({ id: 'tc' + tcCur, kind: 'criterion', slug: tcCur, title: c.name, requirements: text });
+      } else {
+        var res;
+        if (row) {
+          res = await sb.from('site_content').update({ requirements: text, slug: tcCur }).eq('id', row.id).select().maybeSingle();
+        } else {
+          var idx = CRITERIA.indexOf(c) + 1;
+          res = await sb.from('site_content').insert({ kind: 'criterion', slug: tcCur, title: c.name, body: '', requirements: text, sort_order: idx }).select().single();
+        }
+        if (res.error || !res.data) {
+          btn.disabled = false;
+          console.error(res.error && res.error.message);
+          return tcMsg('Chưa cập nhật được. Hãy kiểm tra đang đăng nhập bằng tài khoản admin và thử lại.', true);
+        }
+        if (row) Object.assign(row, res.data); else tcRows.push(res.data);
+        ckLoad();   // làm mới danh sách ở tab "Trang Tổng quan"
+      }
+      btn.disabled = false;
+      tcOrig = text;
+      tcRenderTabs();
+      tcMsg('Đã cập nhật yêu cầu "' + tcName(c) + '" lúc ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + '. Sinh viên thấy ngay khi mở trang Hồ sơ của tôi.');
+    });
+    var tcTab = document.querySelector('#admin-tabs [data-p="tieu-chi"]');
+    if (tcTab) tcTab.addEventListener('click', tcLoad);
+
     // ===== Chức năng 6: Thời gian xét duyệt =====
     function toLocalInput(iso) {
       if (!iso) return '';
@@ -1573,6 +1696,7 @@
       renderInbox();
       rwLoad();
       acLoad();
+      tcLoad();
       return render();
     }
 
@@ -1589,6 +1713,7 @@
     loadSubs();
     rwLoad();
     acLoad();
+    tcLoad();
   })();
   </script>
 
