@@ -160,7 +160,7 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
     lock.hidden = !g && !grace;
     if (g) lock.textContent = g.msg;
     else if (grace) lock.textContent = 'Đã hết thời gian nộp hồ sơ. Bạn vẫn xem được phản hồi đến ' + reviewFmt(reviewFeedbackEnd()) + ', sau đó trang sẽ đóng.';
-    var off = !!g && g.kind === 'time';
+    var off = !!g;   // chưa xác thực hoặc ngoài thời gian: khóa cả trang
     svSetDisabled($('fb-tabs'), off);
     svSetDisabled(document.querySelector('.hs-grid'), off);
     svSetDisabled(document.querySelector('.fb-edit-row'), off || grace);   // hết hạn rồi thì không nộp bổ sung nữa

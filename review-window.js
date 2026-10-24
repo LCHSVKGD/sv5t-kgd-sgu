@@ -110,7 +110,7 @@ function svSetDisabled(el, on) {
 }
 
 
-// ===== Khóa mục menu "Hồ sơ của tôi" / "Phản hồi xét duyệt" khi ngoài thời gian =====
+// ===== Khóa mục menu "Hồ sơ của tôi" / "Phản hồi xét duyệt" khi chưa xác thực HOẶC ngoài thời gian =====
 // Mục bị khóa: mờ đi, bấm vào KHÔNG chuyển trang. Admin luôn được vào.
 var SV_LOCKABLE = { 'ho-so.html': 'ho-so', 'phan-hoi.html': 'phan-hoi' };
 
@@ -122,14 +122,18 @@ function svUpdateMenuLock() {
   nav.querySelectorAll('a').forEach(function (a) {
     var page = SV_LOCKABLE[a.getAttribute('href')];
     if (!page) return;
-    var lock = !p.isAdmin && reviewPageLocked(page);
+    // Chỉ mở khi: tài khoản đã xác thực VÀ đang trong thời gian (admin luôn được vào)
+    var unverified = !p.isAdmin && !p.verified;
+    var lock = !p.isAdmin && (unverified || reviewPageLocked(page));
     a.classList.toggle('is-locked', lock);
     if (lock) {
       a.setAttribute('aria-disabled', 'true');
       a.tabIndex = -1;
-      a.title = page === 'phan-hoi' && reviewState() === 'after'
-        ? 'Đã hết thời gian xem phản hồi'
-        : (reviewState() === 'before' ? 'Chưa đến thời gian xét duyệt' : 'Đã hết thời gian xét duyệt');
+      a.title = unverified
+        ? (p.rejected ? 'Tài khoản chưa được xác thực' : 'Tài khoản đang chờ Ban Chấp hành xác thực')
+        : (page === 'phan-hoi' && reviewState() === 'after'
+            ? 'Đã hết thời gian xem phản hồi'
+            : (reviewState() === 'before' ? 'Chưa đến thời gian xét duyệt' : 'Đã hết thời gian xét duyệt'));
     } else {
       a.removeAttribute('aria-disabled');
       a.removeAttribute('tabindex');

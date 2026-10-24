@@ -38,8 +38,8 @@
     var lock = $('hs-lock');
     lock.hidden = !g;
     if (g) lock.textContent = g.msg;
-    // Hết/chưa đến thời gian: vô hiệu hóa cả trang (tài khoản chưa xác thực thì vẫn xem được yêu cầu như trước)
-    var off = !!g && g.kind === 'time';
+    // Chưa xác thực hoặc ngoài thời gian: vô hiệu hóa cả trang
+    var off = !!g;
     svSetDisabled($('hs-tabs'), off);
     svSetDisabled(document.querySelector('.hs-grid'), off);
     updateSend();
