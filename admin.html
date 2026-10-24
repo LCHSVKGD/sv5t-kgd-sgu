@@ -520,6 +520,7 @@
   (async function () {
     var $ = function (id) { return document.getElementById(id); };
     var all = [];
+    var everyone = [];   // mọi hồ sơ, kể cả admin (dùng để hiện tên trong tin nhắn)
     var filter = 'pending';
     var DEMO = location.hash === '#xem-thu';   // xem thử bằng dữ liệu mẫu, không lưu gì vào hệ thống
 
@@ -829,7 +830,7 @@
       var d = new Date(t);
       return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · ' + d.toLocaleDateString('vi-VN');
     }
-    function profileOf(id) { return all.filter(function (x) { return x.id === id; })[0]; }
+    function profileOf(id) { return everyone.filter(function (x) { return x.id === id; })[0] || all.filter(function (x) { return x.id === id; })[0]; }
 
     function buildInbox() {
       inbox = {};
@@ -860,7 +861,7 @@
         var info = document.createElement('div');
         info.className = 'acc-info';
         var h = document.createElement('h3');
-        h.textContent = pf ? (pf.full_name || '(chưa có tên)') : 'Sinh viên';
+        h.textContent = pf ? (pf.full_name || pf.email || '(chưa có tên)') : 'Sinh viên';
         if (c.last.sender === 'student') {
           row.classList.add('unread');
           var dot = document.createElement('span');
@@ -905,7 +906,7 @@
     function openConv(id) {
       openId = id;
       var pf = profileOf(id);
-      $('conv-name').textContent = pf ? (pf.full_name || '(chưa có tên)') : 'Sinh viên';
+      $('conv-name').textContent = pf ? (pf.full_name || pf.email || '(chưa có tên)') : 'Sinh viên';
       $('conv-mssv').textContent = pf && pf.mssv ? pf.mssv : '';
       var body = $('conv-body');
       body.replaceChildren();
@@ -1703,6 +1704,7 @@
     note('Đang tải...');
     var r = await sb.from('profiles').select('*');
     if (r.error) return note('Không tải được danh sách: ' + r.error.message);
+    everyone = r.data.slice();   // gồm cả tài khoản admin, để tin nhắn hiện đúng tên tài khoản
     all = r.data.filter(function (p) { return p.role !== 'admin'; });
     all.sort(function (a, b) { return String(a.created_at || '').localeCompare(String(b.created_at || '')); });
     render();
