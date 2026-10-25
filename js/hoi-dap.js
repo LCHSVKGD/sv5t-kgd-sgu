@@ -60,6 +60,12 @@
   // Nhận tin mới (BCH trả lời) ngay lập tức
   sb.channel('chat-' + uid)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: 'student_id=eq.' + uid }, function (p) { add(p.new); })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, function (p) {
+      // BCH xóa đoạn chat: làm trống khung chat
+      if (!p.old || !seen[p.old.id]) return;
+      seen = {};
+      body.replaceChildren();
+    })
     .subscribe();
 
   // Ô nhập: tự cao lên theo nội dung (tối đa 5 dòng), bật/tắt nút gửi

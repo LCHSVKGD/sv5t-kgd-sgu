@@ -86,6 +86,8 @@
     .conv-main { display: flex; flex-direction: column; flex: 1; min-height: 0; }
     .conv-empty { margin: auto; padding: 20px; text-align: center; color: var(--muted); }
     .conv .chat-head strong { overflow-wrap: anywhere; }
+    .conv-del { margin-left: auto; flex: none; padding: 6px 12px; font-size: 14px; color: #9b1c1c; border-color: #e3b4b4; }
+    .conv-del:hover { background: #fdecec; }
     .back { display: none; flex: none; width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--primary); font-size: 24px; line-height: 1; cursor: pointer; }
     .back:hover { background: var(--panel-bg); }
     @media (max-width: 800px) {
@@ -315,6 +317,7 @@
                   <div>
                     <strong><span id="conv-name"></span><span class="mssv" id="conv-mssv"></span></strong>
                   </div>
+                  <button class="btn btn-line conv-del" type="button" id="conv-del">Xóa đoạn chat</button>
                 </header>
                 <div class="chat-body" id="conv-body"></div>
                 <form class="chat-form" id="conv-form">
@@ -960,6 +963,32 @@
     }
 
     $('conv-back').addEventListener('click', function () {
+      openId = null;
+      $('conv-main').hidden = true;
+      $('conv-empty').hidden = false;
+      $('msgr').classList.remove('open');
+      renderInbox();
+    });
+
+    $('conv-del').addEventListener('click', async function () {
+      if (!openId) return;
+      var id = openId;
+      var pf = profileOf(id);
+      var name = pf ? (pf.full_name || pf.email || 'sinh viên này') : 'sinh viên này';
+      if (!confirm('Xóa toàn bộ đoạn chat với ' + name + '?\nTin nhắn bị xóa vĩnh viễn, sinh viên cũng không còn thấy và không khôi phục được.')) return;
+      var btn = this;
+      btn.disabled = true;
+      if (!DEMO) {
+        var d = await sb.from('messages').delete().eq('student_id', id).select('id');
+        var had = msgs.some(function (m) { return m.student_id === id; });
+        if (d.error || (had && (!d.data || !d.data.length))) {
+          btn.disabled = false;
+          console.error(d.error && d.error.message);
+          return alert('Chưa xóa được đoạn chat. Hãy chạy file SQL/xoa-chat.sql trong Supabase (nếu chưa chạy) và đăng nhập bằng tài khoản admin');
+        }
+      }
+      btn.disabled = false;
+      msgs = msgs.filter(function (m) { return m.student_id !== id; });
       openId = null;
       $('conv-main').hidden = true;
       $('conv-empty').hidden = false;
