@@ -21,7 +21,7 @@ async function loadCriteria() {
         if (!c) return;
         if (x.title) c.name = x.title;
         if (x.requirements && x.requirements.trim()) c.req = x.requirements;
-        if (x.template_path) c.tpl = { path: x.template_path, name: x.template_name || 'bang-mau', size: x.template_size || 0 };
+        if (x.template_path && c.key === 'ke-khai') c.tpl = { path: x.template_path, name: x.template_name || 'bang-mau', size: x.template_size || 0 };
       });
     }
   } catch (e) {}
