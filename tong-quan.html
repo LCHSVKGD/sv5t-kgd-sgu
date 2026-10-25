@@ -134,12 +134,19 @@
 
     <section id="quy-trinh" class="section">
       <div class="wrap">
-        <h2>Nộp hồ sơ trong 3 bước</h2>
-        <p class="lead">Bạn có thể quay lại bất cứ lúc nào để xem hồ sơ và tin nhắn của mình</p>
-        <ol class="steps">
-          <li><h3>Tạo tài khoản</h3></li>
-          <li><h3>Nộp hồ sơ</h3></li>
-          <li><h3>Nhận phản hồi</h3></li>
+        <div class="section-head">
+          <div>
+            <h2>Nộp hồ sơ trong 5 bước</h2>
+            <p class="lead">Bạn có thể quay lại bất cứ lúc nào để xem hồ sơ và tin nhắn của mình</p>
+          </div>
+          <a class="btn btn-line" href="tai-lieu.html">Hướng dẫn chi tiết</a>
+        </div>
+        <ol class="steps steps-5">
+          <li><h3>Chờ xác thực tài khoản</h3><p>Tài khoản được xác thực và đang trong thời gian nộp thì bạn mới vào được Hồ sơ của tôi.</p></li>
+          <li><h3>Đọc yêu cầu, tải bảng mẫu</h3><p>Xem yêu cầu từng mục trong hồ sơ, tải bảng kê khai mẫu và hoàn thiện.</p></li>
+          <li><h3>Nộp minh chứng</h3><p>Tải ảnh, PDF hoặc Word cho từng mục trong thời gian xét duyệt.</p></li>
+          <li><h3>Theo dõi phản hồi</h3><p>Xem kết quả duyệt ở Phản hồi xét duyệt, chỉnh sửa và nộp lại nếu cần.</p></li>
+          <li><h3>Hồ sơ được công nhận</h3><p>Hồ sơ được công nhận và lưu trữ, theo dõi Thông báo và Hoạt động.</p></li>
         </ol>
       </div>
     </section>
@@ -212,10 +219,7 @@
     document.getElementById('tieu-chuan').replaceChildren.apply(
       document.getElementById('tieu-chuan'), by.criterion.map(function (x) { return item('div', x); }));
   }
-  if (by.step.length) {
-    var ol = document.querySelector('#quy-trinh .steps');
-    ol.replaceChildren.apply(ol, by.step.map(function (x) { return item('li', x); }));
-  }
+  // 5 bước nộp hồ sơ: nội dung cố định trong trang, không lấy từ Supabase
   if (by.poster.length) {
     var box = document.getElementById('posters');
     box.replaceChildren.apply(box, by.poster.map(function (x) {

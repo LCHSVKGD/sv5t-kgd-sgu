@@ -314,3 +314,13 @@ main.split > .doc-panel-2 { padding-bottom: 28px; }
   .panel-box .guide-steps, .panel-box .guide-note { padding: 20px 16px; border-radius: 16px; }
   .panel-box .guide-note h3 { font-size: 21px; }
 }
+
+
+/* ===== Tổng quan: "Nộp hồ sơ trong 5 bước" + nút Hướng dẫn chi tiết ===== */
+.section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px 24px; flex-wrap: wrap; margin-bottom: 36px; }
+.section-head .lead { margin-bottom: 0; }
+.section-head .btn { flex: none; margin-top: 6px; }
+.steps.steps-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
+.steps.steps-5 h3 { font-size: 17px; line-height: 1.35; }
+@media (max-width: 1100px) { .steps.steps-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .steps.steps-5 { grid-template-columns: minmax(0, 1fr); } .section-head .btn { width: 100%; text-align: center; } }
