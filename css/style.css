@@ -297,19 +297,20 @@ body:has(.sidebar) .hero { padding-top: 20px; }
 }
 
 
-/* ===== Trang Tài liệu & Hướng dẫn: 2 ô nội dung trên / dưới ===== */
-.doc-panel { padding: 20px 0 0; }
-.doc-panel-2 { padding-bottom: 56px; }
-.panel-box { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; }
-.panel-head { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
-.panel-head h1, .panel-head h2 { font-size: clamp(26px, 4vw, 36px); display: flex; align-items: center; gap: 14px; font-weight: 800; line-height: 1.25; }
+/* ===== Trang Tài liệu & Hướng dẫn: nền xanh nhạt chia thành 2 ô trên / dưới ===== */
+body:has(.sidebar) main.split { background: none; border: 0; border-radius: 0; overflow: visible; display: grid; gap: 16px; }
+main.split > .doc-panel { background: var(--panel-bg); border: 1px solid var(--panel-line); border-radius: 16px; padding: 12px 0 24px; overflow: hidden; }
+main.split > .doc-panel-2 { padding-bottom: 28px; }
+.panel-box { padding: 8px 0 0; }
+.panel-head { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--panel-line); }
+.panel-head h1, .panel-head h2 { font-size: clamp(30px, 5vw, 44px); display: flex; align-items: center; gap: 14px; font-weight: 800; line-height: 1.25; }
 .panel-head p { color: var(--muted); margin-top: 6px; }
-.panel-box .guide-note { margin-top: 26px; padding: 20px 22px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); }
-.panel-box .guide-note h3 { font-size: 21px; line-height: 1.3; margin-bottom: 12px; }
+.panel-box .guide-steps { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; }
+.panel-box .guide-note { margin-top: 16px; padding: 24px 32px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); }
+.panel-box .guide-note h3 { font-size: 24px; line-height: 1.3; margin-bottom: 14px; }
 .panel-box .guide-note ol { padding-left: 22px; display: grid; gap: 8px; color: var(--muted); font-size: 15.5px; }
 .panel-box .viewer { padding: 0 0 20px; }
-.panel-box .list { box-shadow: none; }
 @media (max-width: 600px) {
-  .panel-box { padding: 20px 16px; border-radius: 16px; }
-  .panel-box .guide-note { padding: 16px; }
+  .panel-box .guide-steps, .panel-box .guide-note { padding: 20px 16px; border-radius: 16px; }
+  .panel-box .guide-note h3 { font-size: 21px; }
 }
