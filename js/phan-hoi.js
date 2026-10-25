@@ -16,6 +16,7 @@
   var cur = (location.hash || '').replace('#', '');
   if (!criteria.some(function (c) { return c.key === cur; })) cur = criteria[0].key;
   var loaded = false;
+  var archive = null;   // có dòng = BCH đã đồng bộ hồ sơ về Drive
 var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu mẫu
 
   function fmtDate(t) {
@@ -40,6 +41,7 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
   }
 
   async function openFile(sub) {
+    if (sub.archived_at) return alert('Tệp này đã được Ban Chấp hành lưu trữ');
     if (DEMO) return alert('Đang xem thử nên chưa mở được tệp');
     var w = window.open('', '_blank');
     var r = await sb.storage.from(BUCKET).createSignedUrl(sub.file_path, 3600);
@@ -89,17 +91,17 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
       var name = document.createElement('button');
       name.type = 'button'; name.className = 'hs-file-name';
       name.textContent = (i + 1) + '. ' + x.file_name;
-      name.title = 'Bấm để mở tệp';
-      name.addEventListener('click', function () { openFile(x); });
+      if (x.archived_at) { name.disabled = true; name.title = 'Đã được Ban Chấp hành lưu trữ'; }
+      else { name.title = 'Bấm để mở tệp'; name.addEventListener('click', function () { openFile(x); }); }
       var st = document.createElement('span');
       var sh = shownStatus(x);
       st.className = 'st st-' + sh; st.textContent = STATUS[sh];
       top.append(name, st);
       var meta = document.createElement('div');
       meta.className = 'hs-file-meta';
-      meta.textContent = 'Nộp ' + fmtDate(x.created_at) + (x.file_size ? ' · ' + fmtSize(x.file_size) : '');
+      meta.textContent = 'Nộp ' + fmtDate(x.created_at) + (x.file_size ? ' · ' + fmtSize(x.file_size) : '') + (x.archived_at ? ' · Đã lưu trữ' : '');
       card.append(top, meta);
-      if (IMG.test(x.file_name || '')) {
+      if (IMG.test(x.file_name || '') && !x.archived_at) {
         var img = document.createElement('img');
         img.className = 'fb-thumb'; img.alt = 'Xem trước ' + x.file_name; img.loading = 'lazy'; img.hidden = true;
         img.addEventListener('click', function () { openFile(x); });
@@ -198,6 +200,10 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
       return;
     }
     subs = r.data;
+    archive = await loadArchive(uid);
+    renderArchiveBanner(archive);
+    var er = document.querySelector('.fb-edit-row');
+    if (er) er.style.display = archive ? 'none' : '';
     loaded = true;
     render();
   }

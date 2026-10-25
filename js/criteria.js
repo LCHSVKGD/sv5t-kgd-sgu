@@ -1,6 +1,7 @@
-// Danh sách 5 tiêu chí SV5T (khóa cố định dùng trong hệ thống + tên mặc định).
+// Danh sách 6 mục hồ sơ: Bảng kê khai thành tích cá nhân + 5 tiêu chí SV5T (khóa cố định dùng trong hệ thống + tên mặc định).
 // Tên và yêu cầu chi tiết sẽ được lấy từ trang Admin (bảng site_content); nếu chưa có thì dùng tên dưới đây.
 var CRITERIA = [
+  { key: 'ke-khai',     name: 'Bảng kê khai thành tích cá nhân', req: 'Tải lên Bảng kê khai thành tích cá nhân theo mẫu của Ban Chấp hành (có đầy đủ thông tin và chữ ký). Ban Chấp hành sẽ cập nhật hướng dẫn chi tiết tại đây.\n\nHãy đặt tên tệp đúng hướng dẫn rồi nộp ở khung bên phải' },
   { key: 'dao-duc',     name: 'Đạo đức tốt' },
   { key: 'hoc-tap',     name: 'Học tập tốt' },
   { key: 'the-luc',     name: 'Thể lực tốt' },
@@ -11,7 +12,7 @@ var DEFAULT_REQ = 'Yêu cầu chi tiết của tiêu chí này do Ban Chấp hà
 
 // Lấy tên + yêu cầu từ site_content; trả về mảng cùng thứ tự CRITERIA
 async function loadCriteria() {
-  var out = CRITERIA.map(function (c) { return { key: c.key, name: c.name, req: DEFAULT_REQ }; });
+  var out = CRITERIA.map(function (c) { return { key: c.key, name: c.name, req: c.req || DEFAULT_REQ }; });
   try {
     var r = await sb.from('site_content').select('slug, title, requirements').eq('kind', 'criterion');
     if (!r.error && r.data) {

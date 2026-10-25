@@ -251,3 +251,10 @@ body:has(.sidebar) .hero { padding-top: 20px; }
 .drive-mask { position: absolute; top: 0; right: 0; width: 64px; height: 64px; }
 .drive-mask[hidden] { display: none; }
 .tb-attach .drive-box { margin: 8px 0; }
+
+/* Khung thông báo "Hồ sơ đã được công nhận" (trang Hồ sơ của tôi + Phản hồi xét duyệt) */
+.arch-banner { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 20px; padding: 18px 20px; background: #fee2e2; border: 2px solid #f87171; border-left: 10px solid #dc2626; border-radius: 14px; color: #b91c1c; font-weight: 800; box-shadow: 0 8px 22px rgba(220, 38, 38, 0.18); }
+.arch-banner[hidden] { display: none; }
+.arch-banner svg { flex: none; width: 32px; height: 32px; stroke: #dc2626; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.arch-banner strong { display: block; font-size: 20px; line-height: 1.35; font-weight: 800; }
+.arch-banner span { display: block; margin-top: 4px; font-size: 16px; line-height: 1.5; font-weight: 800; }

@@ -55,6 +55,11 @@
     .kind-switch button + button { border-left: 1px solid var(--line); }
     .kind-switch button.on { background: var(--primary); color: #fff; }
     .kind-tag { font-style: normal; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; margin-right: 8px; background: #e1ecfb; color: var(--primary-dark); vertical-align: middle; white-space: nowrap; }
+    .hd-sync { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; display: grid; gap: 8px; justify-items: start; }
+    .hd-sync p { margin: 0; }
+    .hd-sync.is-ready { border-color: #86c99a; background: #f0faf3; }
+    .hd-sync.is-done { border-color: #f87171; background: #fee2e2; color: #b91c1c; }
+    .hd-sync a { color: inherit; font-weight: 700; }
     .kind-tag.is-doc { background: #e3f3e8; color: #1e6b36; }
 
     /* Chức năng Tin nhắn: kiểu Messenger (máy tính: 2 cột, điện thoại: 1 cột) */
@@ -443,7 +448,7 @@
 
         <!-- Chức năng 8: Cập nhật tiêu chí -->
         <div class="panel" id="p-tieu-chi" hidden>
-          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chọn một trong 5 tiêu chí, nhập yêu cầu rồi bấm "Cập nhật". Nội dung hiển thị ngay ở khung "Yêu cầu" (bên trái) của trang "Hồ sơ của tôi" khi sinh viên bấm vào tiêu chí tương ứng. Mỗi tiêu chí được cập nhật riêng</p>
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chọn một trong 6 mục (Bảng kê khai thành tích cá nhân và 5 tiêu chí), nhập yêu cầu rồi bấm "Cập nhật". Nội dung hiển thị ngay ở khung "Yêu cầu" (bên trái) của trang "Hồ sơ của tôi" khi sinh viên bấm vào tiêu chí tương ứng. Mỗi tiêu chí được cập nhật riêng</p>
           <div class="tc-box">
             <h3>1. Chọn tiêu chí</h3>
             <div class="tc-tabs" id="tc-tabs"></div>
@@ -518,6 +523,7 @@
   <script src="js/criteria.js"></script>
   <script src="js/review-window.js"></script>
   <script src="js/documents.js"></script>
+  <script src="js/archive-config.js"></script>
   <script>
     // Đăng xuất
     document.getElementById('logout').addEventListener('click', async function (e) {
@@ -1020,6 +1026,48 @@
       hsRender();
     });
     var HS_STATUS = { pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Bị từ chối' };
+    var archMap = {};          // student_id -> dòng trong bảng archives (đã đồng bộ về Drive)
+
+    // Tiến độ duyệt: mỗi mục (Bảng kê khai + 5 tiêu chí) phải có ít nhất 1 tệp và mọi tệp đều được duyệt
+    function hsProgress(studentId) {
+      var mine = subsOf(studentId), done = 0, miss = [];
+      CRITERIA.forEach(function (c) {
+        var fl = mine.filter(function (x) { return x.criterion === c.key; });
+        if (fl.length && groupStatus(fl) === 'approved') done++;
+        else miss.push(CRIT_NAME[c.key] + (fl.length ? '' : ' (chưa nộp)'));
+      });
+      return { done: done, total: CRITERIA.length, miss: miss, complete: done === CRITERIA.length };
+    }
+
+    // Đồng bộ minh chứng về Drive (qua Apps Script) rồi xóa tệp trên web
+    async function hsSync(studentId, btn) {
+      var pf = profileOf(studentId) || {};
+      var pr = hsProgress(studentId);
+      if (!pr.complete) return alert('Chưa đủ ' + pr.total + ' mục được duyệt. Còn thiếu:\n- ' + pr.miss.join('\n- '));
+      if (!pf.mssv || !pf.full_name) return alert('Sinh viên chưa có đủ MSSV và họ tên trong hồ sơ nên chưa đặt được tên thư mục');
+      if (!SYNC_URL) return alert('Chưa dán địa chỉ Apps Script. Mở file js/archive-config.js và dán địa chỉ Web app vào SYNC_URL');
+      if (!confirm('Đồng bộ toàn bộ minh chứng của ' + pf.full_name + ' (' + pf.mssv + ') về Google Drive rồi XÓA các tệp này khỏi web?\n\nSau đó sinh viên không còn mở được tệp trên web, chỉ còn bản trên Drive. Không hoàn tác được.')) return;
+      if (DEMO) return alert('Đang ở chế độ xem thử nên chưa đồng bộ được');
+      var old = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Đang đồng bộ... (có thể mất 1-2 phút, đừng đóng trang)';
+      try {
+        var s2 = await sb.auth.getSession();
+        var res = await fetch(SYNC_URL, { method: 'POST', body: JSON.stringify({ action: 'sync', token: s2.data.session.access_token, student_id: studentId }) });
+        var out = await res.json();
+        if (!out.ok) throw new Error(out.error || 'Lỗi không rõ');
+        await refreshSubs();
+        alert('Đã đồng bộ ' + out.copied + ' tệp về Drive và xóa khỏi web' + (out.deleted != null ? ' (đã xóa ' + out.deleted + ' tệp)' : '') + '.\nThư mục: ' + out.folder_name);
+      } catch (e) {
+        console.error(e);
+        var m = String(e && e.message || e);
+        if (/Failed to fetch|NetworkError|Load failed/i.test(m)) m = 'Không kết nối được Apps Script. Kiểm tra SYNC_URL và mục "Who has access" của Web app phải là "Anyone"';
+        alert('Chưa đồng bộ xong:\n' + m);
+        await refreshSubs();
+      }
+      btn.disabled = false;
+      btn.textContent = old;
+    }
 
     function fmtSize(n) {
       if (!n) return '';
@@ -1040,6 +1088,7 @@
     }
 
     async function hsOpenFile(x) {
+      if (x.archived_at) return alert('Tệp này đã được đồng bộ về Drive và xóa khỏi web. Hãy mở thư mục Drive của sinh viên');
       if (DEMO) return alert('Đang ở chế độ xem thử nên chưa mở được tệp');
       var w = window.open('', '_blank');
       var r = await sb.storage.from('evidence').createSignedUrl(x.file_path, 3600);
@@ -1127,8 +1176,9 @@
         var c1 = document.createElement('div'); c1.className = 'hs-name';
         var nm = document.createElement('b'); nm.textContent = r.pf.full_name || '(chưa có tên)';
         var sub = document.createElement('small');
-        sub.textContent = r.pending ? r.pending + ' tệp chờ duyệt' : (r.unsent ? 'Chưa gửi phản hồi' : 'Đã gửi phản hồi');
-        sub.className = r.pending ? 'tag-wait' : (r.unsent ? 'tag-unsent' : 'tag-done');
+        var arc = !!archMap[r.id];
+        sub.textContent = arc ? 'Đã lưu trữ trên Drive' : (r.pending ? r.pending + ' tệp chờ duyệt' : (r.unsent ? 'Chưa gửi phản hồi' : 'Đã gửi phản hồi'));
+        sub.className = arc ? 'tag-done' : (r.pending ? 'tag-wait' : (r.unsent ? 'tag-unsent' : 'tag-done'));
         c1.append(nm, sub);
         var c2 = document.createElement('div'); c2.textContent = r.pf.mssv || '—'; c2.dataset.label = 'MSSV';
         var c3 = document.createElement('div'); c3.className = 'hs-chips'; c3.dataset.label = 'Tiêu chí';
@@ -1171,6 +1221,36 @@
       who.append(h, info);
       frag.appendChild(who);
 
+      var pr = hsProgress(hsView);
+      var arch = archMap[hsView];
+      var sync = document.createElement('div');
+      var sp = document.createElement('p');
+      if (arch) {
+        sync.className = 'hd-sync is-done';
+        sp.textContent = 'Đã đồng bộ về Drive lúc ' + fmtTime(arch.archived_at) + ' (' + arch.file_count + ' tệp). Tệp trên web đã được xóa.';
+        sync.appendChild(sp);
+        if (arch.folder_url) {
+          var fa = document.createElement('a');
+          fa.href = arch.folder_url; fa.target = '_blank'; fa.rel = 'noopener';
+          fa.textContent = 'Mở thư mục: ' + (arch.folder_name || 'Drive');
+          sync.appendChild(fa);
+        }
+      } else {
+        sync.className = 'hd-sync' + (pr.complete ? ' is-ready' : '');
+        sp.textContent = 'Tiến độ duyệt: ' + pr.done + '/' + pr.total + ' mục đã được duyệt' + (pr.complete ? '. Đủ điều kiện đồng bộ về Drive.' : '.');
+        sync.appendChild(sp);
+        if (!pr.complete) {
+          var hint = document.createElement('p');
+          hint.className = 'note';
+          hint.textContent = 'Chưa duyệt xong: ' + pr.miss.join('; ');
+          sync.appendChild(hint);
+        } else {
+          var sb2 = makeBtn('Đồng bộ về Drive & xóa tệp trên web', 'btn btn-primary', function () { hsSync(hsView, sb2); });
+          sync.appendChild(sb2);
+        }
+      }
+      frag.appendChild(sync);
+
       CRITERIA.forEach(function (c) {
         var fl = mine.filter(function (x) { return x.criterion === c.key; })
                      .sort(function (a, b) { return String(a.created_at).localeCompare(String(b.created_at)); });
@@ -1210,6 +1290,11 @@
         act.appendChild(makeBtn('Hoàn tác', 'btn btn-line', function () {
           if (confirm('Đưa tệp này về trạng thái chờ duyệt?')) hsReview(x, { status: 'pending' }, act);
         }));
+      }
+      if (x.archived_at) {
+        act.replaceChildren();
+        var arSp = document.createElement('span'); arSp.className = 'sub-meta'; arSp.textContent = 'Đã lưu trữ trên Drive';
+        act.appendChild(arSp);
       }
       top.append(inf, st, act);
       row.appendChild(top);
@@ -1253,6 +1338,10 @@
         return $('hs-list').replaceChildren(p);
       }
       subs = r.data;
+      var ar = await sb.from('archives').select('*');
+      archMap = {};
+      if (ar.error) console.error('Không tải được trạng thái lưu trữ:', ar.error.message + ' (đã chạy SQL archive.sql chưa?)');
+      else ar.data.forEach(function (a) { archMap[a.student_id] = a; });
       hsRender();
     }
 
@@ -1274,7 +1363,7 @@
     var MAX_IMG = 5 * 1024 * 1024;
 
     function ckItems() {
-      return content.filter(function (x) { return x.kind === ckKind; })
+      return content.filter(function (x) { return x.kind === ckKind && !(x.kind === 'criterion' && x.slug === 'ke-khai'); })
         .sort(function (a, b) { return a.sort_order - b.sort_order || String(a.created_at).localeCompare(String(b.created_at)); });
     }
 
@@ -1528,7 +1617,7 @@
         if (row) {
           res = await sb.from('site_content').update({ requirements: text, slug: tcCur }).eq('id', row.id).select().maybeSingle();
         } else {
-          var idx = CRITERIA.indexOf(c) + 1;
+          var idx = CRITERIA.indexOf(c);
           res = await sb.from('site_content').insert({ kind: 'criterion', slug: tcCur, title: c.name, body: '', requirements: text, sort_order: idx }).select().single();
         }
         if (res.error || !res.data) {

@@ -199,7 +199,7 @@
   var r = await sb.from('site_content').select('*').order('sort_order', { ascending: true });
   if (r.error || !r.data) return;
   var by = { poster: [], criterion: [], step: [] };
-  r.data.forEach(function (x) { if (by[x.kind]) by[x.kind].push(x); });
+  r.data.forEach(function (x) { if (by[x.kind] && !(x.kind === 'criterion' && x.slug === 'ke-khai')) by[x.kind].push(x); });
 
   function item(tag, x) {
     var li = document.createElement(tag);

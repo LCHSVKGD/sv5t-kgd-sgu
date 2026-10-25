@@ -17,6 +17,7 @@
   if (!criteria.some(function (c) { return c.key === cur; })) cur = criteria[0].key;
   var picked = [];
   var busy = false;
+  var archive = null;   // có dòng = BCH đã đồng bộ hồ sơ về Drive
 
   function fmtDate(t) {
     var d = new Date(t);
@@ -32,7 +33,7 @@
   function crit(key) { return criteria.filter(function (c) { return c.key === key; })[0]; }
 
   // Chỉ nộp được khi: tài khoản đã được BCH xác thực VÀ đang trong thời gian xét duyệt (admin thì luôn được)
-  function canSubmit() { var p = window.svProfile; return !!p && (p.isAdmin || !svGate()); }
+  function canSubmit() { var p = window.svProfile; return !archive && !!p && (p.isAdmin || !svGate()); }
   function refreshLock() {
     var g = svGate();
     var lock = $('hs-lock');
@@ -71,6 +72,7 @@
   }
 
   async function openFile(sub) {
+    if (sub.archived_at) return alert('Tệp này đã được Ban Chấp hành lưu trữ');
     var w = window.open('', '_blank');           // mở cửa sổ ngay để không bị chặn pop-up
     var r = await sb.storage.from(BUCKET).createSignedUrl(sub.file_path, 3600);
     if (r.error || !r.data) { if (w) w.close(); return alert('Chưa mở được tệp. Hãy thử lại'); }
@@ -104,13 +106,13 @@
       top.className = 'hs-file-top';
       var name = document.createElement('button');
       name.type = 'button'; name.className = 'hs-file-name'; name.textContent = x.file_name;
-      name.title = 'Bấm để mở tệp';
-      name.addEventListener('click', function () { openFile(x); });
+      if (x.archived_at) { name.disabled = true; name.title = 'Đã được Ban Chấp hành lưu trữ'; }
+      else { name.title = 'Bấm để mở tệp'; name.addEventListener('click', function () { openFile(x); }); }
       var st = document.createElement('span');
       var sh = shown(x);
       st.className = 'st st-' + sh; st.textContent = STATUS[sh];
       top.append(name, st);
-      if (sh !== 'approved') {
+      if (sh !== 'approved' && !x.archived_at) {
         var del = document.createElement('button');
         del.type = 'button'; del.className = 'hs-del'; del.textContent = 'Xóa';
         del.addEventListener('click', function () { delFile(x); });
@@ -118,7 +120,7 @@
       }
       var meta = document.createElement('div');
       meta.className = 'hs-file-meta';
-      meta.textContent = fmtDate(x.created_at) + (x.file_size ? ' · ' + fmtSize(x.file_size) : '');
+      meta.textContent = fmtDate(x.created_at) + (x.file_size ? ' · ' + fmtSize(x.file_size) : '') + (x.archived_at ? ' · Đã lưu trữ' : '');
       card.append(top, meta);
       if (sh === 'rejected' && x.reason) {
         var rs = document.createElement('div');
@@ -188,6 +190,13 @@
     if (failed.length) alert('Chưa gửi được: ' + failed.join(', ') + '.\nHãy kiểm tra mạng, định dạng tệp và đã chạy SQL đợt 5 trong Supabase chưa');
   });
 
+  function applyArchive() {
+    renderArchiveBanner(archive);
+    var up = document.querySelector('.hs-upload');
+    if (up) up.style.display = archive ? 'none' : '';
+    updateSend();
+  }
+
   async function load() {
     var r = await sb.from('submissions').select('*').eq('student_id', uid).order('created_at', { ascending: false });
     if (r.error) {
@@ -199,6 +208,8 @@
       return;
     }
     subs = r.data;
+    archive = await loadArchive(uid);
+    applyArchive();
     render();
   }
 
