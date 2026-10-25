@@ -204,6 +204,7 @@
       item.unread = false;
       readIds[item.id] = true;
       try { localStorage.setItem(READ_KEY + uid, JSON.stringify(readIds)); } catch (e) {}
+      if (window.svBadgeRefresh) window.svBadgeRefresh();
 
       detail.className = 'tb-detail';
       detail.innerHTML = '';
@@ -291,5 +292,6 @@
     })();
   </script>
   <script src="js/auth-guard.js"></script>
+  <script src="js/nav-badge.js"></script>
 </body>
 </html>

@@ -54,7 +54,13 @@ var DEMO = location.search === '?xem-thu';   // xem thử bằng dữ liệu m�
     if (!list.length) return 'Chưa nộp';
     var st = list.map(shownStatus);
     if (st.indexOf('pending') >= 0) return 'Chờ phản hồi';
-    return st.indexOf('rejected') >= 0 ? 'Cần bổ sung' : 'Đã duyệt';
+    // Kết quả cuối: tệp bị từ chối mà sau đó đã nộp lại và được duyệt thì không còn "Cần bổ sung"
+    var stillRejected = list.some(function (r) {
+      if (shownStatus(r) !== 'rejected') return false;
+      var since = String(r.reviewed_at || r.created_at);
+      return !list.some(function (a) { return shownStatus(a) === 'approved' && String(a.created_at) > since; });
+    });
+    return stillRejected ? 'Cần bổ sung' : 'Đã duyệt';
   }
 
   function renderTabs() {

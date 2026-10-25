@@ -1119,10 +1119,17 @@
     }
     function subsOf(studentId) { return subs.filter(function (x) { return x.student_id === studentId; }); }
     // Trạng thái gộp của một nhóm tệp: còn tệp chờ -> chờ duyệt; có tệp bị từ chối -> từ chối; còn lại -> đã duyệt
+    // Kết quả CUỐI của một nhóm tệp: còn tệp chờ -> chờ duyệt. Tệp bị từ chối mà sau đó sinh viên đã nộp lại
+    // (có tệp nộp SAU thời điểm bị từ chối) và tệp nộp lại đó được duyệt -> không còn tính là từ chối.
+    // Nộp lại mà lại bị từ chối -> vẫn là từ chối.
     function groupStatus(list) {
       if (list.some(function (x) { return x.status === 'pending'; })) return 'pending';
-      if (list.some(function (x) { return x.status === 'rejected'; })) return 'rejected';
-      return 'approved';
+      var stillRejected = list.some(function (r) {
+        if (r.status !== 'rejected') return false;
+        var since = String(r.reviewed_at || r.created_at);
+        return !list.some(function (a) { return a.status === 'approved' && String(a.created_at) > since; });
+      });
+      return stillRejected ? 'rejected' : 'approved';
     }
 
     function hsStatusCounts() {
