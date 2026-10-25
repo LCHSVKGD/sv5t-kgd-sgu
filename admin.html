@@ -1191,6 +1191,44 @@
       alert('Đã gửi phản hồi cho sinh viên');
     }
 
+    // Xóa toàn bộ hồ sơ xét duyệt của một sinh viên (các tệp đã nộp + dấu "đã lưu trữ"), để dọn trang.
+    // Không xóa tài khoản sinh viên, không đụng tới thư mục đã lưu trên Google Drive.
+    async function hsDelete(studentId, btn) {
+      var pf = profileOf(studentId) || {};
+      var list = subsOf(studentId);
+      var onWeb = list.filter(function (x) { return !x.archived_at && x.file_path; });
+      var who = (pf.full_name || 'sinh viên này') + (pf.mssv ? ' (' + pf.mssv + ')' : '');
+      var msg = 'XÓA hồ sơ xét duyệt của ' + who + '?\n\n' +
+        '- Xóa ' + list.length + ' dòng hồ sơ đã nộp và kết quả duyệt' + (onWeb.length ? ', cùng ' + onWeb.length + ' tệp còn trên web' : '') + '.\n' +
+        (archMap[studentId] ? '- Bỏ dấu "đã lưu trữ". Thư mục trên Google Drive KHÔNG bị xóa.\n' : '') +
+        '- Tài khoản của sinh viên vẫn giữ nguyên, sinh viên có thể nộp lại từ đầu.\n\nKhông thể hoàn tác.';
+      if (!confirm(msg)) return;
+      if (DEMO) { subs = subs.filter(function (x) { return x.student_id !== studentId; }); delete archMap[studentId]; hsView = null; return hsRender(); }
+      var old = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Đang xóa...';
+      try {
+        if (onWeb.length) {
+          var rm = await sb.storage.from('evidence').remove(onWeb.map(function (x) { return x.file_path; }));
+          if (rm.error) throw rm.error;
+        }
+        var d1 = await sb.from('submissions').delete().eq('student_id', studentId).select('id');
+        if (d1.error) throw d1.error;
+        if (list.length && (!d1.data || !d1.data.length)) throw new Error('Không xóa được (thiếu quyền). Hãy chạy file SQL/xoa-ho-so.sql trong Supabase');
+        var d2 = await sb.from('archives').delete().eq('student_id', studentId);
+        if (d2.error) throw d2.error;
+        subs = subs.filter(function (x) { return x.student_id !== studentId; });
+        delete archMap[studentId];
+        hsView = null; hsOpenReject = null;
+        hsRender();
+        alert('Đã xóa hồ sơ xét duyệt của ' + who);
+      } catch (e) {
+        console.error(e);
+        alert('Chưa xóa xong: ' + String(e && e.message || e) + '\nHãy chạy file SQL/xoa-ho-so.sql trong Supabase rồi thử lại');
+        await refreshSubs();
+      }
+      btn.disabled = false; btn.textContent = old;
+    }
+
     // ----- Danh sách sinh viên đã nộp hồ sơ -----
     function hsRenderList() {
       $('hs-list-wrap').hidden = false;
@@ -1244,6 +1282,9 @@
         });
         var c4 = document.createElement('div');
         c4.appendChild(makeBtn('Xem hồ sơ', 'btn btn-small', function () { hsView = r.id; hsOpenReject = null; hsRender(); window.scrollTo({ top: 0 }); }));
+        var del = makeBtn('Xóa', 'btn btn-danger', function () { hsDelete(r.id, del); });
+        c4.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+        c4.appendChild(del);
         tr.append(c1, c2, c3, c4);
         frag.appendChild(tr);
       });
@@ -1262,7 +1303,10 @@
       var bar = document.createElement('div'); bar.className = 'hd-bar';
       bar.appendChild(makeBtn('← Quay lại danh sách', 'btn btn-line', function () { hsView = null; hsOpenReject = null; hsRender(); }));
       var fin = makeBtn('Hoàn thành & gửi phản hồi', 'btn btn-primary', function () { hsFinish(hsView, fin); });
-      bar.appendChild(fin);
+      var delBtn = makeBtn('Xóa hồ sơ', 'btn btn-danger', function () { hsDelete(hsView, delBtn); });
+      var grp = document.createElement('div'); grp.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px';
+      grp.append(delBtn, fin);
+      bar.appendChild(grp);
       frag.appendChild(bar);
 
       var who = document.createElement('div'); who.className = 'hd-who';
