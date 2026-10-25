@@ -182,7 +182,6 @@ a.row:hover { background: var(--bg); }
 }
 
 @media (max-width: 600px) {
-  .brand small { display: none; }
   .criteria { grid-template-columns: minmax(0, 1fr); }
   .row { flex-direction: column; align-items: flex-start; }
 
@@ -271,3 +270,28 @@ body:has(.sidebar) .hero { padding-top: 20px; }
 .pdf-modal-bar { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .pdf-modal-bar strong { flex: 1; min-width: 0; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pdf-modal-body { flex: 1; max-height: none; border: 0; border-radius: 0; }
+
+/* Trang Tài liệu & Hướng dẫn: 2 phần */
+.page-title h2 { font-size: clamp(30px, 5vw, 44px); display: flex; align-items: center; gap: 14px; font-weight: 800; }
+.guide-section { padding: 16px 0 8px; }
+.guide-card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; }
+.guide-card + .guide-card { margin-top: 16px; }
+.guide-steps { list-style: none; counter-reset: gstep; display: grid; gap: 22px; }
+.guide-steps li { counter-increment: gstep; position: relative; padding-left: 52px; }
+.guide-steps li::before { content: counter(gstep); position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 16px; }
+.guide-steps h3 { font-size: 18px; line-height: 1.35; margin-bottom: 4px; }
+.guide-steps p { color: var(--muted); font-size: 15.5px; }
+.guide-note h3 { font-size: 24px; line-height: 1.3; margin-bottom: 14px; }
+.guide-note ol { padding-left: 22px; display: grid; gap: 8px; color: var(--muted); font-size: 15.5px; }
+.doc-title { padding-top: 40px; }
+.section.doc-section { padding: 12px 0 56px; }
+@media (max-width: 600px) {
+  .guide-card { padding: 22px 18px; border-radius: 16px; }
+  .guide-steps li { padding-left: 46px; }
+  .guide-steps li::before { width: 32px; height: 32px; font-size: 15px; }
+  .guide-note h3 { font-size: 21px; }
+  .doc-title { padding-top: 28px; }
+  .section.doc-section { padding: 8px 0 40px; }
+  /* Thanh đầu trang trên điện thoại: vẫn hiện dòng "Trường Đại học Sài Gòn" */
+  .brand small { display: block; font-size: 11.5px; }
+}
