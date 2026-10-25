@@ -6,6 +6,26 @@
   var session = s.data.session;
   if (!session) { location.replace('index.html'); return; }
 
+  // Quá thời hạn một lần đăng nhập (SESSION_MAX_MINUTES, mặc định 60 phút) thì đăng xuất và yêu cầu đăng nhập lại
+  if (svSessionLeftMs(session) <= 0) { await svSignOutExpired(); return; }
+  var warnBox = null;
+  function sessionTick() {
+    var left = svSessionLeftMs(session);
+    if (left <= 0) return svSignOutExpired();
+    if (left <= 5 * 60000) {   // còn 5 phút: nhắc để kịp lưu việc đang làm
+      if (!warnBox) {
+        warnBox = document.createElement('div');
+        warnBox.setAttribute('role', 'status');
+        warnBox.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:9999;max-width:340px;padding:12px 16px;border-radius:12px;background:#fff7e6;border:2px solid #f08a24;color:#9a4f06;font:600 14.5px/1.5 system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.15)';
+        document.body.appendChild(warnBox);
+      }
+      warnBox.textContent = 'Phiên đăng nhập sẽ hết hạn sau ' + Math.ceil(left / 60000) + ' phút. Hãy lưu việc đang làm, sau đó bạn cần đăng nhập lại.';
+    }
+  }
+  sessionTick();
+  setInterval(sessionTick, 15000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) sessionTick(); });
+
   document.body.style.visibility = 'visible';
 
   // Đăng xuất ở tab khác thì tab này cũng thoát

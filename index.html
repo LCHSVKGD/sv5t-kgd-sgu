@@ -55,7 +55,11 @@ logoBtn.addEventListener('click', moNut);
   <script src="js/supabase.js"></script>
   <script>
     // Đã đăng nhập thì vào thẳng trang tổng quan
-    sb.auth.getSession().then(function (r) { if (r.data.session) location.replace('tong-quan.html'); });
+    sb.auth.getSession().then(function (r) {
+      if (!r.data.session) return;
+      if (svSessionLeftMs(r.data.session) > 0) location.replace('tong-quan.html');
+      else sb.auth.signOut();   // phiên cũ đã quá thời hạn
+    });
   </script>
 </body>
 </html>

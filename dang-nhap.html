@@ -54,7 +54,11 @@
 
     // Đã đăng nhập sẵn thì vào thẳng trang tổng quan
     var s = await sb.auth.getSession();
-    if (s.data.session) { location.replace('tong-quan.html'); return; }
+    if (s.data.session) {
+      if (svSessionLeftMs(s.data.session) > 0) { location.replace('tong-quan.html'); return; }
+      await sb.auth.signOut();   // phiên cũ đã quá thời hạn
+    }
+    if (/[?&]het-phien=1/.test(location.search)) msg('Phiên đăng nhập đã hết hạn (tối đa ' + SESSION_MAX_MINUTES + ' phút mỗi lần). Vui lòng đăng nhập lại');
 
     $('f').addEventListener('submit', async function (e) {
       e.preventDefault();

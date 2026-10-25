@@ -129,6 +129,7 @@
     .st-approved { background: #e5f6ea; border: 1px solid #b7e2c3; color: #1c6b36; }
     .st-rejected { background: #fdecec; border: 1px solid #f3c4c4; color: #9b1c1c; }
     .st-pending { background: #fff7e6; border: 1px solid var(--footer-line); color: var(--footer-label); }
+    .st-missing { background: #dbeafe; border: 1px solid #7aa7f0; color: #1d4ed8; }
     .tab-count { display: inline-block; margin-left: 6px; min-width: 20px; padding: 0 6px; border-radius: 999px; background: #fff; color: #c2660a; font-size: 12px; line-height: 20px; }
     .admin-tabs .btn:not(.on) .tab-count:empty, .tab-count[hidden] { display: none; }
 
@@ -145,6 +146,7 @@
     .chip-pending { background: #fff7e6; border: 1px solid var(--footer-line); color: var(--footer-label); }
     .chip-approved { background: #e5f6ea; border: 1px solid #b7e2c3; color: #1c6b36; }
     .chip-rejected { background: #fdecec; border: 1px solid #f3c4c4; color: #9b1c1c; }
+    .chip-missing { background: #dbeafe; border: 1px solid #7aa7f0; color: #1d4ed8; }
     .st-none { background: #eef1f6; border: 1px solid var(--line); color: var(--muted); }
     @media (max-width: 800px) {
       .hs-th { display: none; }
@@ -163,6 +165,30 @@
     .hd-file-top .sub-info { min-width: 200px; }
     .hd-file .acc-actions { flex-wrap: wrap; }
     @media (max-width: 700px) { .hd-bar .btn { flex: 1; } }
+    /* Nút kết quả của tiêu chuẩn / tiêu chí: Đạt (xanh lá), Thiếu (xanh dương), Không đạt / Chưa đạt (đỏ) */
+    .hd-sec { margin-top: 12px; padding: 12px 14px; background: #f1f6fd; border: 1px solid #a9c0e8; border-radius: 12px; }
+    .hd-sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 14px; margin-bottom: 4px; }
+    .hd-sec-title { display: grid; }
+    .hd-sec-title b { font-size: 15.5px; color: var(--primary-dark); }
+    .hd-sec-title small { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+    .hd-mark { display: grid; gap: 8px; justify-items: end; }
+    .hd-mark-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+    .hd-mark-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-right: 2px; }
+    .mk { font: inherit; font-size: 13.5px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: #fff; border: 2px solid var(--line); color: var(--ink); cursor: pointer; }
+    .mk:hover { border-color: #a9c0e8; }
+    .mk[disabled] { opacity: 0.5; cursor: not-allowed; }
+    .mk-approved.on { background: #2e9b57; border-color: #2e9b57; color: #fff; }
+    .mk-missing.on { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .mk-rejected.on { background: #d64545; border-color: #d64545; color: #fff; }
+    .mk-clear { font: inherit; font-size: 12.5px; font-weight: 700; color: var(--muted); background: none; border: 0; padding: 2px 6px; cursor: pointer; text-decoration: underline; }
+    .hd-mark .sub-reason, .hd-mark .sub-reject { width: 100%; text-align: left; justify-self: stretch; }
+    .hd-mark .sub-reason.is-missing { background: #e8f0fe; border-color: #9db8e8; color: #1e3a8a; }
+    .hd-mark .sub-reject.is-missing { background: #e8f0fe; border-color: #9db8e8; }
+    .hd-mark .sub-reject.is-missing label { color: #1e3a8a; }
+    #tc-fields { display: grid; gap: 22px; }
+    .tc-field { display: grid; gap: 12px; }
+    .tc-field label { font-size: 15px; font-weight: 700; color: var(--primary-dark); padding-left: 2px; }
+    .tc-field textarea { min-height: 200px; }
 
     /* Nút thao tác */
     .acc-actions { display: flex; gap: 8px; flex: none; }
@@ -453,14 +479,14 @@
 
         <!-- Chức năng 8: Cập nhật tiêu chí -->
         <div class="panel" id="p-tieu-chi" hidden>
-          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chọn một trong 6 mục (Bảng kê khai thành tích cá nhân và 5 tiêu chí), nhập yêu cầu rồi bấm "Cập nhật". Nội dung hiển thị ngay ở khung "Yêu cầu" (bên trái) của trang "Hồ sơ của tôi" khi sinh viên bấm vào tiêu chí tương ứng. Mỗi tiêu chí được cập nhật riêng</p>
+          <p class="page-note" style="color: var(--muted); margin-bottom: 16px;">Chọn một trong 6 mục (Bảng kê khai thành tích cá nhân và 5 tiêu chí), nhập yêu cầu rồi bấm "Cập nhật". Nội dung hiển thị ngay ở khung "Yêu cầu" (bên trái) của trang "Hồ sơ của tôi" khi sinh viên bấm vào tiêu chí tương ứng. Đạo đức và Học tập có 2 ô (Bắt buộc, Khác), Hội nhập có 3 ô; các mục còn lại có 1 ô. Mỗi tiêu chí được cập nhật riêng</p>
           <div class="tc-box">
             <h3>1. Chọn tiêu chí</h3>
             <div class="tc-tabs" id="tc-tabs"></div>
           </div>
           <div class="tc-box">
             <h3 id="tc-title">2. Yêu cầu</h3>
-            <textarea id="tc-req" maxlength="5000" placeholder="Ví dụ: điều kiện cần đạt, minh chứng cần nộp... Bấm Enter để xuống dòng"></textarea>
+            <div id="tc-fields"></div>
             <p class="ck-hint" style="margin:0">Để trống rồi cập nhật thì sinh viên sẽ thấy nội dung mặc định ("Yêu cầu chi tiết do Ban Chấp hành cập nhật...")</p>
             <div class="ck-btns">
               <button class="btn btn-small" type="button" id="tc-save">Cập nhật</button>
@@ -1069,16 +1095,19 @@
       list.forEach(function (c) { CRIT_NAME[c.key] = c.name; });
       hsRender();
     });
-    var HS_STATUS = { pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Bị từ chối' };
+    var HS_STATUS = { pending: 'Chờ duyệt', approved: 'Đạt', rejected: 'Không đạt' };
+    var marks = [];            // kết quả admin chọn: tiêu chuẩn (Đạt/Thiếu/Không đạt) và tiêu chí (Đạt/Chưa đạt), bảng review_marks
+    var hsOpenMark = null;     // ô nhập giải trình của một kết quả đang mở (chuỗi studentId|tiêu chí|tiêu chuẩn|trạng thái)
     var archMap = {};          // student_id -> dòng trong bảng archives (đã đồng bộ về Drive)
 
-    // Tiến độ duyệt: mỗi mục (Bảng kê khai + 5 tiêu chí) phải có ít nhất 1 tệp và mọi tệp đều được duyệt
+    // Tiến độ duyệt: mỗi mục (Bảng kê khai + 5 tiêu chí) do admin chọn "Đạt" ở cấp tiêu chí. Đủ 6/6 mới đồng bộ được về Drive
     function hsProgress(studentId) {
       var mine = subsOf(studentId), done = 0, miss = [];
       CRITERIA.forEach(function (c) {
-        var fl = mine.filter(function (x) { return x.criterion === c.key; });
-        if (fl.length && groupStatus(fl) === 'approved') done++;
-        else miss.push(CRIT_NAME[c.key] + (fl.length ? '' : ' (chưa nộp)'));
+        var m = markOf(studentId, c.key, SEC_TONG);
+        var has = mine.some(function (x) { return x.criterion === c.key; });
+        if (m && m.status === 'approved') done++;
+        else miss.push(CRIT_NAME[c.key] + (m ? ' (chưa đạt)' : (has ? ' (chưa đánh giá)' : ' (chưa nộp)')));
       });
       return { done: done, total: CRITERIA.length, miss: miss, complete: done === CRITERIA.length };
     }
@@ -1087,7 +1116,7 @@
     async function hsSync(studentId, btn) {
       var pf = profileOf(studentId) || {};
       var pr = hsProgress(studentId);
-      if (!pr.complete) return alert('Chưa đủ ' + pr.total + ' mục được duyệt. Còn thiếu:\n- ' + pr.miss.join('\n- '));
+      if (!pr.complete) return alert('Chưa đủ ' + pr.total + '/' + pr.total + ' mục Đạt. Còn thiếu:\n- ' + pr.miss.join('\n- '));
       if (!pf.mssv || !pf.full_name) return alert('Sinh viên chưa có đủ MSSV và họ tên trong hồ sơ nên chưa đặt được tên thư mục');
       if (!SYNC_URL) return alert('Chưa dán địa chỉ Apps Script. Mở file js/archive-config.js và dán địa chỉ Web app vào SYNC_URL');
       if (!confirm('Đồng bộ toàn bộ minh chứng của ' + pf.full_name + ' (' + pf.mssv + ') về Google Drive rồi XÓA các tệp này khỏi web?\n\nSau đó sinh viên không còn mở được tệp trên web, chỉ còn bản trên Drive. Không hoàn tác được.')) return;
@@ -1118,18 +1147,9 @@
       return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
     }
     function subsOf(studentId) { return subs.filter(function (x) { return x.student_id === studentId; }); }
-    // Trạng thái gộp của một nhóm tệp: còn tệp chờ -> chờ duyệt; có tệp bị từ chối -> từ chối; còn lại -> đã duyệt
-    // Kết quả CUỐI của một nhóm tệp: còn tệp chờ -> chờ duyệt. Tệp bị từ chối mà sau đó sinh viên đã nộp lại
-    // (có tệp nộp SAU thời điểm bị từ chối) và tệp nộp lại đó được duyệt -> không còn tính là từ chối.
-    // Nộp lại mà lại bị từ chối -> vẫn là từ chối.
-    function groupStatus(list) {
-      if (list.some(function (x) { return x.status === 'pending'; })) return 'pending';
-      var stillRejected = list.some(function (r) {
-        if (r.status !== 'rejected') return false;
-        var since = String(r.reviewed_at || r.created_at);
-        return !list.some(function (a) { return a.status === 'approved' && String(a.created_at) > since; });
-      });
-      return stillRejected ? 'rejected' : 'approved';
+    // Kết quả admin đã chọn cho một tiêu chuẩn (sec = mã tiêu chuẩn) hoặc cho cả tiêu chí (sec = SEC_TONG)
+    function markOf(studentId, crit, sec) {
+      return marks.filter(function (m) { return m.student_id === studentId && m.criterion === crit && m.section === sec; })[0] || null;
     }
 
     function hsStatusCounts() {
@@ -1164,27 +1184,56 @@
       hsRender();
     }
 
-    // Nút Hoàn thành: gửi kết quả (các tệp đã duyệt/từ chối) về cho sinh viên
+    // Lưu / gỡ kết quả của một tiêu chuẩn (Đạt - Thiếu - Không đạt) hoặc của cả tiêu chí (Đạt - Chưa đạt).
+    // status = null là gỡ kết quả. Mọi thay đổi thu hồi "đã gửi phản hồi" của kết quả đó.
+    async function hsMark(studentId, critKey, sec, status, reason, box) {
+      function put(m) {
+        marks = marks.filter(function (x) { return !(x.student_id === studentId && x.criterion === critKey && x.section === sec); });
+        if (m) marks.push(m);
+      }
+      var row = { student_id: studentId, criterion: critKey, section: sec, status: status, reason: reason || null, updated_at: new Date().toISOString(), released_at: null };
+      if (DEMO) { put(status ? row : null); hsOpenMark = null; return hsRender(); }
+      if (box) box.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+      var res;
+      if (status) res = await sb.from('review_marks').upsert(row, { onConflict: 'student_id,criterion,section' }).select().maybeSingle();
+      else res = await sb.from('review_marks').delete().eq('student_id', studentId).eq('criterion', critKey).eq('section', sec);
+      if (res.error || (status && !res.data)) {
+        console.error(res.error && res.error.message);
+        if (box) box.querySelectorAll('button').forEach(function (b) { b.disabled = false; });
+        return alert('Chưa lưu được kết quả. Hãy kiểm tra đã chạy SQL "tieu-chuan-ket-qua.sql" trong Supabase và đang đăng nhập bằng tài khoản admin. (Không đạt / Chưa đạt bắt buộc có giải trình.)');
+      }
+      put(status ? res.data : null);
+      hsOpenMark = null;
+      hsRender();
+    }
+
+    // Nút Hoàn thành: gửi kết quả (tệp Đạt/Không đạt + kết quả tiêu chuẩn/tiêu chí) về cho sinh viên
     async function hsFinish(studentId, btn) {
       var list = subsOf(studentId);
       var pend = list.filter(function (x) { return x.status === 'pending'; }).length;
       var todo = list.filter(function (x) { return x.status !== 'pending' && !x.released_at; });
-      if (!todo.length) return alert(pend ? 'Chưa có tệp nào được duyệt hoặc từ chối để gửi phản hồi' : 'Mọi kết quả đã được gửi cho sinh viên rồi');
+      var todoMarks = marks.filter(function (m) { return m.student_id === studentId && !m.released_at; });
+      if (!todo.length && !todoMarks.length) return alert(pend ? 'Chưa có tệp hoặc kết quả nào được đánh giá để gửi phản hồi' : 'Mọi kết quả đã được gửi cho sinh viên rồi');
       var pf = profileOf(studentId);
-      var msg = 'Gửi kết quả ' + todo.length + ' tệp cho ' + (pf && pf.full_name ? pf.full_name : 'sinh viên') + '?';
-      if (pend) msg += '\n\nCòn ' + pend + ' tệp chưa duyệt, các tệp này vẫn hiện "Chờ duyệt" với sinh viên';
+      var msg = 'Gửi phản hồi cho ' + (pf && pf.full_name ? pf.full_name : 'sinh viên') + '?\n\n- ' + todo.length + ' tệp đã đánh giá\n- ' + todoMarks.length + ' kết quả tiêu chuẩn / tiêu chí';
+      if (pend) msg += '\n\nCòn ' + pend + ' tệp chưa đánh giá, các tệp này vẫn hiện \"Chờ duyệt\" với sinh viên';
       if (!confirm(msg)) return;
       var now = new Date().toISOString();
-      if (DEMO) { todo.forEach(function (x) { x.released_at = now; }); return hsRender(); }
+      if (DEMO) { todo.forEach(function (x) { x.released_at = now; }); todoMarks.forEach(function (m) { m.released_at = now; }); return hsRender(); }
       btn.disabled = true;
-      var u = await sb.from('submissions').update({ released_at: now }).in('id', todo.map(function (x) { return x.id; })).select();
+      var u1 = todo.length ? await sb.from('submissions').update({ released_at: now }).in('id', todo.map(function (x) { return x.id; })).select() : { data: [] };
+      var u2 = todoMarks.length ? await sb.from('review_marks').update({ released_at: now }).eq('student_id', studentId).is('released_at', null).select() : { data: [] };
       btn.disabled = false;
-      if (u.error) {
-        console.error(u.error.message);
-        return alert('Chưa gửi được phản hồi. Hãy chạy file SQL/submissions-released.sql trong Supabase (thêm cột released_at) rồi thử lại');
+      if (u1.error || u2.error) {
+        console.error((u1.error || u2.error).message);
+        return alert('Chưa gửi được phản hồi. Hãy chạy file SQL/tieu-chuan-ket-qua.sql (và SQL "released_at") trong Supabase rồi thử lại');
       }
-      u.data.forEach(function (row) {
+      u1.data.forEach(function (row) {
         var cur = subs.filter(function (x) { return x.id === row.id; })[0];
+        if (cur) Object.assign(cur, row);
+      });
+      u2.data.forEach(function (row) {
+        var cur = markOf(row.student_id, row.criterion, row.section);
         if (cur) Object.assign(cur, row);
       });
       hsRender();
@@ -1203,7 +1252,7 @@
         (archMap[studentId] ? '- Bỏ dấu "đã lưu trữ". Thư mục trên Google Drive KHÔNG bị xóa.\n' : '') +
         '- Tài khoản của sinh viên vẫn giữ nguyên, sinh viên có thể nộp lại từ đầu.\n\nKhông thể hoàn tác.';
       if (!confirm(msg)) return;
-      if (DEMO) { subs = subs.filter(function (x) { return x.student_id !== studentId; }); delete archMap[studentId]; hsView = null; return hsRender(); }
+      if (DEMO) { subs = subs.filter(function (x) { return x.student_id !== studentId; }); marks = marks.filter(function (m) { return m.student_id !== studentId; }); delete archMap[studentId]; hsView = null; return hsRender(); }
       var old = btn.textContent;
       btn.disabled = true; btn.textContent = 'Đang xóa...';
       try {
@@ -1216,9 +1265,12 @@
         if (list.length && (!d1.data || !d1.data.length)) throw new Error('Không xóa được (thiếu quyền). Hãy chạy file SQL/xoa-ho-so.sql trong Supabase');
         var d2 = await sb.from('archives').delete().eq('student_id', studentId);
         if (d2.error) throw d2.error;
+        var d3 = await sb.from('review_marks').delete().eq('student_id', studentId);
+        if (d3.error) console.error('Không xóa được kết quả tiêu chuẩn:', d3.error.message);
         subs = subs.filter(function (x) { return x.student_id !== studentId; });
+        marks = marks.filter(function (m) { return m.student_id !== studentId; });
         delete archMap[studentId];
-        hsView = null; hsOpenReject = null;
+        hsView = null; hsOpenReject = null; hsOpenMark = null;
         hsRender();
         alert('Đã xóa hồ sơ xét duyệt của ' + who);
       } catch (e) {
@@ -1240,7 +1292,7 @@
         var list = subsOf(id);
         return { id: id, pf: profileOf(id) || {}, list: list,
                  pending: list.filter(function (x) { return x.status === 'pending'; }).length,
-                 unsent: list.filter(function (x) { return x.status !== 'pending' && !x.released_at; }).length,
+                 unsent: list.filter(function (x) { return x.status !== 'pending' && !x.released_at; }).length + marks.filter(function (m) { return m.student_id === id && !m.released_at; }).length,
                  last: list.reduce(function (m, x) { return String(x.created_at) > m ? String(x.created_at) : m; }, '') };
       }).filter(function (r) {
         if (!q) return true;
@@ -1273,15 +1325,16 @@
         var c3 = document.createElement('div'); c3.className = 'hs-chips'; c3.dataset.label = 'Tiêu chí';
         CRITERIA.forEach(function (c) {
           var fl = r.list.filter(function (x) { return x.criterion === c.key; });
-          if (!fl.length) return;
+          var m = markOf(r.id, c.key, SEC_TONG);
+          if (!fl.length && !m) return;
           var chip = document.createElement('span');
-          chip.className = 'chip chip-' + groupStatus(fl);
+          chip.className = 'chip chip-' + (m ? m.status : 'pending');
           chip.textContent = CRIT_NAME[c.key] + ' (' + fl.length + ')';
-          chip.title = HS_STATUS[groupStatus(fl)];
+          chip.title = m ? 'Tiêu chí: ' + CRIT_MARK_LABEL[m.status] : 'Tiêu chí chưa được đánh giá';
           c3.appendChild(chip);
         });
         var c4 = document.createElement('div');
-        c4.appendChild(makeBtn('Xem hồ sơ', 'btn btn-small', function () { hsView = r.id; hsOpenReject = null; hsRender(); window.scrollTo({ top: 0 }); }));
+        c4.appendChild(makeBtn('Xem hồ sơ', 'btn btn-small', function () { hsView = r.id; hsOpenReject = null; hsOpenMark = null; hsRender(); window.scrollTo({ top: 0 }); }));
         var del = makeBtn('Xóa', 'btn btn-danger', function () { hsDelete(r.id, del); });
         c4.style.cssText = 'display:flex;flex-direction:column;gap:8px';
         c4.appendChild(del);
@@ -1301,7 +1354,7 @@
       var frag = document.createDocumentFragment();
 
       var bar = document.createElement('div'); bar.className = 'hd-bar';
-      bar.appendChild(makeBtn('← Quay lại danh sách', 'btn btn-line', function () { hsView = null; hsOpenReject = null; hsRender(); }));
+      bar.appendChild(makeBtn('← Quay lại danh sách', 'btn btn-line', function () { hsView = null; hsOpenReject = null; hsOpenMark = null; hsRender(); }));
       var fin = makeBtn('Hoàn thành & gửi phản hồi', 'btn btn-primary', function () { hsFinish(hsView, fin); });
       var delBtn = makeBtn('Xóa hồ sơ', 'btn btn-danger', function () { hsDelete(hsView, delBtn); });
       var grp = document.createElement('div'); grp.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px';
@@ -1332,12 +1385,12 @@
         }
       } else {
         sync.className = 'hd-sync' + (pr.complete ? ' is-ready' : '');
-        sp.textContent = 'Tiến độ duyệt: ' + pr.done + '/' + pr.total + ' mục đã được duyệt' + (pr.complete ? '. Đủ điều kiện đồng bộ về Drive.' : '.');
+        sp.textContent = 'Tiến độ: ' + pr.done + '/' + pr.total + ' mục được đánh dấu Đạt' + (pr.complete ? '. Đủ điều kiện đồng bộ về Drive (chỉ các tệp Đạt được chép về).' : '.');
         sync.appendChild(sp);
         if (!pr.complete) {
           var hint = document.createElement('p');
           hint.className = 'note';
-          hint.textContent = 'Chưa duyệt xong: ' + pr.miss.join('; ');
+          hint.textContent = 'Chưa đạt 6/6: ' + pr.miss.join('; ');
           sync.appendChild(hint);
         } else {
           var sb2 = makeBtn('Đồng bộ về Drive & xóa tệp trên web', 'btn btn-primary', function () { hsSync(hsView, sb2); });
@@ -1353,17 +1406,91 @@
         var hd = document.createElement('div'); hd.className = 'hd-crit-head';
         var t = document.createElement('h4'); t.textContent = CRIT_NAME[c.key];
         hd.appendChild(t);
-        var st = document.createElement('span');
-        if (fl.length) { var g = groupStatus(fl); st.className = 'st st-' + g; st.textContent = fl.length + ' tệp · ' + HS_STATUS[g]; }
-        else { st.className = 'st st-none'; st.textContent = 'Chưa nộp'; }
-        hd.appendChild(st);
+        // Kết quả của CẢ TIÊU CHÍ (admin tự chọn, không tự tính theo tệp)
+        hd.appendChild(markBar(hsView, c.key, SEC_TONG, 'Kết quả tiêu chí', [['approved', 'Đạt'], ['rejected', 'Chưa đạt']]));
         sec.appendChild(hd);
-        fl.forEach(function (x) { sec.appendChild(hsFileCard(x)); });
-        if (!fl.length) { var e = document.createElement('p'); e.className = 'note'; e.textContent = 'Sinh viên chưa nộp minh chứng cho tiêu chí này'; sec.appendChild(e); }
+        c.sections.forEach(function (s) {
+          var inSec = fl.filter(function (x) { return subSection(c, x) === s.id; });
+          var wrap = sec;
+          if (c.sections.length > 1) {
+            wrap = document.createElement('div'); wrap.className = 'hd-sec';
+            var sh = document.createElement('div'); sh.className = 'hd-sec-head';
+            var tt = document.createElement('div'); tt.className = 'hd-sec-title';
+            var tb = document.createElement('b'); tb.textContent = s.name;
+            var ts = document.createElement('small'); ts.textContent = s.hint + ' · ' + inSec.length + ' tệp';
+            tt.append(tb, ts);
+            sh.appendChild(tt);
+            // Kết quả của TỪNG TIÊU CHUẨN (Đạt / Thiếu / Không đạt)
+            sh.appendChild(markBar(hsView, c.key, s.id, 'Tiêu chuẩn', [['approved', 'Đạt'], ['missing', 'Thiếu'], ['rejected', 'Không đạt']]));
+            wrap.appendChild(sh);
+            sec.appendChild(wrap);
+          }
+          inSec.forEach(function (x) { wrap.appendChild(hsFileCard(x)); });
+          if (!inSec.length) {
+            var e = document.createElement('p'); e.className = 'note';
+            e.textContent = c.sections.length > 1 ? 'Sinh viên chưa nộp minh chứng cho tiêu chuẩn này' : 'Sinh viên chưa nộp minh chứng cho tiêu chí này';
+            wrap.appendChild(e);
+          }
+        });
         frag.appendChild(sec);
       });
       box.replaceChildren(frag);
     }
+
+    // Cụm nút kết quả. opts = [[trạng thái, nhãn], ...]. Đạt lưu ngay; Thiếu / Không đạt / Chưa đạt mở ô giải trình
+    // (Không đạt và Chưa đạt BẮT BUỘC có giải trình; Thiếu thì ghi chú không bắt buộc).
+    function markBar(studentId, critKey, sec, label, opts) {
+      var cur = markOf(studentId, critKey, sec);
+      var wrap = document.createElement('div'); wrap.className = 'hd-mark';
+      var row = document.createElement('div'); row.className = 'hd-mark-row';
+      var lb = document.createElement('span'); lb.className = 'hd-mark-label'; lb.textContent = label + ':';
+      row.appendChild(lb);
+      opts.forEach(function (o) {
+        var st = o[0];
+        var b = makeBtn(o[1], 'mk mk-' + st + (cur && cur.status === st ? ' on' : ''), function () {
+          if (cur && cur.status === st) return;
+          if (st === 'approved') return hsMark(studentId, critKey, sec, 'approved', null, row);
+          hsOpenMark = studentId + '|' + critKey + '|' + sec + '|' + st;
+          hsRender();
+        });
+        b.setAttribute('aria-pressed', cur && cur.status === st ? 'true' : 'false');
+        row.appendChild(b);
+      });
+      if (cur) row.appendChild(makeBtn('Bỏ chọn', 'mk-clear', function () {
+        if (confirm('Bỏ kết quả "' + label + '" đã chọn (quay về chưa đánh giá)?')) hsMark(studentId, critKey, sec, null, null, row);
+      }));
+      wrap.appendChild(row);
+      if (cur && cur.reason && !(hsOpenMark && hsOpenMark.indexOf(studentId + '|' + critKey + '|' + sec + '|') === 0)) {
+        var rs = document.createElement('div'); rs.className = 'sub-reason' + (cur.status === 'missing' ? ' is-missing' : '');
+        rs.textContent = (cur.status === 'missing' ? 'Ghi chú: ' : 'Giải trình: ') + cur.reason;
+        wrap.appendChild(rs);
+      }
+      var openPrefix = studentId + '|' + critKey + '|' + sec + '|';
+      if (hsOpenMark && hsOpenMark.indexOf(openPrefix) === 0) {
+        var st2 = hsOpenMark.slice(openPrefix.length);
+        var need = st2 === 'rejected';
+        var okLabel = o2label(opts, st2);
+        var rj = document.createElement('div'); rj.className = 'sub-reject' + (st2 === 'missing' ? ' is-missing' : '');
+        var lb2 = document.createElement('label');
+        lb2.textContent = need ? 'Giải trình chi tiết (bắt buộc khi chọn ' + okLabel + ', sinh viên sẽ đọc được)' : 'Ghi chú cho sinh viên về phần còn thiếu (không bắt buộc)';
+        var ta = document.createElement('textarea'); ta.maxLength = 2000;
+        ta.placeholder = need ? 'Ví dụ: Chưa đủ minh chứng cho tiêu chuẩn này. Vui lòng nộp bổ sung rồi nhờ BCH xét lại' : 'Ví dụ: Cần nộp thêm 01 minh chứng ở tiêu chuẩn khác';
+        ta.value = cur && cur.status === st2 && cur.reason ? cur.reason : '';
+        lb2.htmlFor = ta.id = 'mk-' + Date.now();
+        var ra = document.createElement('div'); ra.className = 'acc-actions';
+        ra.appendChild(makeBtn('Xác nhận ' + okLabel, need ? 'btn btn-danger' : 'btn btn-small', function () {
+          var text = ta.value.trim();
+          if (need && !text) { ta.focus(); return alert('Hãy nhập giải trình chi tiết để sinh viên nắm thông tin'); }
+          hsMark(studentId, critKey, sec, st2, text, ra);
+        }));
+        ra.appendChild(makeBtn('Hủy', 'btn btn-line', function () { hsOpenMark = null; hsRender(); }));
+        rj.append(lb2, ta, ra);
+        wrap.appendChild(rj);
+        setTimeout(function () { ta.focus(); }, 0);
+      }
+      return wrap;
+    }
+    function o2label(opts, st) { var f = opts.filter(function (o) { return o[0] === st; })[0]; return f ? f[1] : st; }
 
     function hsFileCard(x) {
       var row = document.createElement('div'); row.className = 'hd-file';
@@ -1379,8 +1506,8 @@
       var act = document.createElement('div'); act.className = 'acc-actions';
       act.appendChild(makeBtn('Mở tệp', 'btn btn-line', function () { hsOpenFile(x); }));
       if (x.status === 'pending') {
-        act.appendChild(makeBtn('Duyệt', 'btn btn-small', function () { hsReview(x, { status: 'approved' }, act); }));
-        act.appendChild(makeBtn('Từ chối', 'btn btn-danger', function () { hsOpenReject = (hsOpenReject === x.id ? null : x.id); hsRender(); }));
+        act.appendChild(makeBtn('Đạt', 'btn btn-small', function () { hsReview(x, { status: 'approved' }, act); }));
+        act.appendChild(makeBtn('Không đạt', 'btn btn-danger', function () { hsOpenReject = (hsOpenReject === x.id ? null : x.id); hsRender(); }));
       } else {
         act.appendChild(makeBtn('Hoàn tác', 'btn btn-line', function () {
           if (confirm('Đưa tệp này về trạng thái chờ duyệt?')) hsReview(x, { status: 'pending' }, act);
@@ -1400,11 +1527,11 @@
       }
       if (x.status === 'pending' && hsOpenReject === x.id) {
         var rj = document.createElement('div'); rj.className = 'sub-reject';
-        var lb = document.createElement('label'); lb.textContent = 'Giải trình chi tiết (bắt buộc khi từ chối, sinh viên sẽ đọc được)';
+        var lb = document.createElement('label'); lb.textContent = 'Giải trình chi tiết (bắt buộc khi chọn Không đạt, sinh viên sẽ đọc được)';
         var ta = document.createElement('textarea'); ta.maxLength = 2000; ta.placeholder = 'Ví dụ: Ảnh bị mờ, chưa thấy dấu xác nhận. Vui lòng nộp lại bản rõ nét';
         lb.htmlFor = ta.id = 'rj-' + x.id;
         var ra = document.createElement('div'); ra.className = 'acc-actions';
-        ra.appendChild(makeBtn('Xác nhận từ chối', 'btn btn-danger', function () {
+        ra.appendChild(makeBtn('Xác nhận Không đạt', 'btn btn-danger', function () {
           var reason = ta.value.trim();
           if (!reason) { ta.focus(); return alert('Hãy nhập giải trình chi tiết để sinh viên nắm thông tin'); }
           hsReview(x, { status: 'rejected', reason: reason }, ra);
@@ -1433,6 +1560,9 @@
         return $('hs-list').replaceChildren(p);
       }
       subs = r.data;
+      var mk = await sb.from('review_marks').select('*').limit(5000);
+      if (mk.error) { console.error('Không tải được kết quả tiêu chuẩn:', mk.error.message + ' (đã chạy SQL tieu-chuan-ket-qua.sql chưa?)'); marks = []; }
+      else marks = mk.data;
       var ar = await sb.from('archives').select('*');
       archMap = {};
       if (ar.error) console.error('Không tải được trạng thái lưu trữ:', ar.error.message + ' (đã chạy SQL archive.sql chưa?)');
@@ -1444,8 +1574,9 @@
       await refreshSubs();
       // Sinh viên nộp thêm / xóa tệp là cập nhật ngay (không làm mất ô giải trình đang gõ dở)
       sb.channel('admin-subs')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'submissions' }, function () { if (!hsOpenReject) refreshSubs(); })
-        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'submissions' }, function () { if (!hsOpenReject) refreshSubs(); })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'submissions' }, function () { if (!hsOpenReject && !hsOpenMark) refreshSubs(); })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'submissions' }, function () { if (!hsOpenReject && !hsOpenMark) refreshSubs(); })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'review_marks' }, function () { if (!hsOpenReject && !hsOpenMark) refreshSubs(); })
         .subscribe();
     }
 
@@ -1652,7 +1783,37 @@
       return tcRows.filter(function (x) { return !x.slug && x.title === c.name; })[0];
     }
     function tcName(c) { var r = tcRow(c.key); return r && r.title ? r.title : c.name; }
-    function tcDirty() { return $('tc-req').value.trim() !== tcOrig; }
+    var tcAreas = {};                // mã tiêu chuẩn -> ô nhập của tiêu chí đang chọn
+    function tcCrit(key) { return CRITERIA.filter(function (x) { return x.key === key; })[0]; }
+    // Nội dung các ô nhập gộp lại thành 1 chuỗi để lưu (mục nhiều tiêu chuẩn dùng dòng @@mã@@ để ngăn cách)
+    function tcValue() {
+      var c = tcCrit(tcCur), o = {};
+      c.sections.forEach(function (sec) { o[sec.id] = tcAreas[sec.id] ? tcAreas[sec.id].value : ''; });
+      return joinReq(c, o);
+    }
+    function tcDirty() { return tcValue() !== tcOrig; }
+    // Dựng các ô nhập: hiện nội dung đang áp dụng (BCH đã lưu, chưa có thì nội dung mặc định theo Hướng dẫn 01/HD-LCH)
+    function tcBuild(c, saved) {
+      var box = $('tc-fields');
+      box.replaceChildren();
+      tcAreas = {};
+      var texts = parseReq(saved, c);
+      c.sections.forEach(function (sec) {
+        var wrap = document.createElement('div'); wrap.className = 'tc-field';
+        var ta = document.createElement('textarea');
+        ta.id = 'tc-req-' + sec.id; ta.maxLength = 5000;
+        ta.placeholder = 'Điều kiện cần đạt, minh chứng cần nộp... Bấm Enter để xuống dòng';
+        ta.value = texts[sec.id] || sec.req || '';
+        if (c.sections.length > 1) {
+          var lb = document.createElement('label');
+          lb.htmlFor = ta.id; lb.textContent = sec.name + (sec.hint ? ' (' + sec.hint + ')' : '');
+          wrap.appendChild(lb);
+        }
+        wrap.appendChild(ta);
+        box.appendChild(wrap);
+        tcAreas[sec.id] = ta;
+      });
+    }
     function tcMsg(text, warn) {
       var m = $('tc-msg');
       m.hidden = !text;
@@ -1668,7 +1829,7 @@
         b.className = 'btn btn-line' + (c.key === tcCur ? ' on' : '');
         b.append(tcName(c));
         var sm = document.createElement('small');
-        sm.textContent = r && r.requirements && r.requirements.trim() ? 'Đã có yêu cầu' : 'Chưa nhập';
+        sm.textContent = r && r.requirements && r.requirements.trim() ? 'Đã có yêu cầu' : 'Đang dùng mặc định';
         b.appendChild(sm);
         b.addEventListener('click', function () {
           if (c.key === tcCur) return;
@@ -1683,9 +1844,9 @@
     function tcShow(key) {
       tcCur = key;
       var r = tcRow(key);
-      tcOrig = ((r && r.requirements) || '').trim();
-      $('tc-req').value = tcOrig;
-      var c = CRITERIA.filter(function (x) { return x.key === key; })[0];
+      var c = tcCrit(key);
+      tcBuild(c, (r && r.requirements) || '');
+      tcOrig = tcValue();
       $('tc-title').textContent = '2. Yêu cầu: ' + tcName(c);
       tcMsg('');
       tcRenderTabs();
@@ -1700,8 +1861,8 @@
       tcShow(tcCur);
     }
     $('tc-save').addEventListener('click', async function () {
-      var text = $('tc-req').value.trim();
-      var c = CRITERIA.filter(function (x) { return x.key === tcCur; })[0];
+      var text = tcValue();
+      var c = tcCrit(tcCur);
       if (!text && !confirm('Yêu cầu đang để trống. Sinh viên sẽ thấy nội dung mặc định. Vẫn cập nhật?')) return;
       var btn = this;
       btn.disabled = true;
@@ -1994,10 +2155,17 @@
         { id: 'demo3', mssv: '3122530003', full_name: 'Lê Hoàng Minh Khôi', class_name: 'DTL1221', major: 'Tâm lý học', email: 'lehoangminhkhoi@gmail.com', verified: true, rejected: false },
         { id: 'demo4', mssv: '3122530004', full_name: 'Phạm Quốc Bảo', class_name: 'DQL1221', major: 'Quản lý giáo dục', email: 'phamquocbao.sgu@gmail.com', verified: false, rejected: true }
       ];
+      var agoMs = function (ms) { return new Date(Date.now() - ms).toISOString(); };
       subs = [
-        { id: 's1', student_id: 'demo1', criterion: 'hoc-tap', file_name: 'bang-diem-hk1.pdf', file_path: 'x', status: 'pending', reason: null, created_at: new Date(Date.now() - 5400e3).toISOString() },
-        { id: 's2', student_id: 'demo1', criterion: 'tinh-nguyen', file_name: 'giay-chung-nhan-mua-he-xanh.jpg', file_path: 'x', status: 'pending', reason: null, created_at: new Date(Date.now() - 4800e3).toISOString() },
-        { id: 's3', student_id: 'demo2', criterion: 'dao-duc', file_name: 'diem-ren-luyen.docx', file_path: 'x', status: 'rejected', reason: 'File thiếu dấu xác nhận của Khoa', created_at: new Date(Date.now() - 9000e3).toISOString(), reviewed_at: new Date(Date.now() - 3000e3).toISOString() }
+        { id: 's1', student_id: 'demo1', criterion: 'hoc-tap', section: 'bat-buoc', file_name: 'bang-diem-hk1.pdf', file_path: 'x', status: 'approved', reason: null, created_at: agoMs(5400e3), reviewed_at: agoMs(3000e3) },
+        { id: 's1b', student_id: 'demo1', criterion: 'hoc-tap', section: 'khac', file_name: 'giay-chung-nhan-clb-hoc-thuat.pdf', file_path: 'x', status: 'pending', reason: null, created_at: agoMs(5000e3) },
+        { id: 's1c', student_id: 'demo1', criterion: 'hoc-tap', section: 'khac', file_name: 'bai-viet-tap-chi.docx', file_path: 'x', status: 'rejected', reason: 'Chưa thấy tên sinh viên trong bài viết', created_at: agoMs(4900e3), reviewed_at: agoMs(2000e3) },
+        { id: 's2', student_id: 'demo1', criterion: 'tinh-nguyen', section: 'chung', file_name: 'giay-chung-nhan-mua-he-xanh.jpg', file_path: 'x', status: 'pending', reason: null, created_at: agoMs(4800e3) },
+        { id: 's3', student_id: 'demo2', criterion: 'dao-duc', section: 'bat-buoc', file_name: 'diem-ren-luyen.docx', file_path: 'x', status: 'rejected', reason: 'File thiếu dấu xác nhận của Khoa', created_at: agoMs(9000e3), reviewed_at: agoMs(3000e3) }
+      ];
+      marks = [
+        { student_id: 'demo1', criterion: 'hoc-tap', section: 'bat-buoc', status: 'approved', reason: null, released_at: null },
+        { student_id: 'demo1', criterion: 'hoc-tap', section: 'khac', status: 'missing', reason: 'Cần nộp thêm 01 minh chứng hợp lệ', released_at: null }
       ];
       hsRender();
       renderInbox();

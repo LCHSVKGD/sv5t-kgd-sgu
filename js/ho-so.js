@@ -1,10 +1,10 @@
-// Trang "Hồ sơ của tôi": sinh viên xem yêu cầu từng tiêu chí, nộp minh chứng và xem lịch sử nộp.
+// Trang "Hồ sơ của tôi": sinh viên chọn tiêu chí, chọn tiêu chuẩn (ô bên trái), xem yêu cầu và nộp minh chứng cho tiêu chuẩn đó (bên phải).
 (async function () {
   var $ = function (id) { return document.getElementById(id); };
   var BUCKET = 'evidence';
   var MAX_SIZE = 10 * 1024 * 1024;
   var TYPES = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
-  var STATUS = { pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Bị từ chối' };
+  var STATUS = { pending: 'Chờ duyệt', approved: 'Đạt', rejected: 'Không đạt' };
 
   var s = await sb.auth.getSession();
   if (!s.data.session) return;
@@ -13,8 +13,10 @@
   var criteria = await loadCriteria();
   await loadReviewWindow();   // thời gian xét duyệt do admin đặt
   var subs = [];
+  var marks = [];   // kết quả do BCH chọn (tiêu chuẩn + tiêu chí); sinh viên chỉ thấy sau khi BCH gửi phản hồi
   var cur = (location.hash || '').replace('#', '');
   if (!criteria.some(function (c) { return c.key === cur; })) cur = criteria[0].key;
+  var curSec = crit(cur).sections[0].id;   // tiêu chuẩn đang chọn
   var picked = [];
   var busy = false;
   var archive = null;   // có dòng = BCH đã đồng bộ hồ sơ về Drive
@@ -31,6 +33,9 @@
   // Chưa được BCH "Hoàn thành" thì vẫn hiện "Chờ duyệt"
   function shown(x) { return x.status !== 'pending' && x.released_at ? x.status : 'pending'; }
   function crit(key) { return criteria.filter(function (c) { return c.key === key; })[0]; }
+  function secOf(c, id) { return c.sections.filter(function (s) { return s.id === id; })[0] || c.sections[0]; }
+  function filesIn(c, secId) { return subs.filter(function (x) { return x.criterion === c.key && subSection(c, x) === secId; }); }
+  function multi(c) { return c.sections.length > 1; }
 
   // Chỉ nộp được khi: tài khoản đã được BCH xác thực VÀ đang trong thời gian xét duyệt (admin thì luôn được)
   function canSubmit() { var p = window.svProfile; return !archive && !!p && (p.isAdmin || !svGate()); }
@@ -48,20 +53,25 @@
   document.addEventListener('sv-profile', refreshLock);
   watchReview(refreshLock);
 
+  // Nhãn kết quả của cả tiêu chí (chỉ khi BCH đã gửi phản hồi)
+  function critVerdict(c) { var m = markShown(marks, c.key, SEC_TONG); return m ? m.status : ''; }
+
   function renderTabs() {
     var box = document.createDocumentFragment();
     criteria.forEach(function (c) {
       var n = subs.filter(function (x) { return x.criterion === c.key; }).length;
+      var v = critVerdict(c);
       var b = document.createElement('button');
       b.type = 'button';
       b.setAttribute('role', 'tab');
-      b.className = c.key === cur ? 'on' : '';
+      b.className = (c.key === cur ? 'on' : '') + (v === 'approved' ? ' v-ok' : v === 'rejected' ? ' v-bad' : '');
       b.append(c.name);
       var sm = document.createElement('small');
-      sm.textContent = n ? n + ' tệp' : 'Chưa nộp';
+      sm.textContent = v ? CRIT_MARK_LABEL[v] : (n ? n + ' tệp' : 'Chưa nộp');
       b.appendChild(sm);
       b.addEventListener('click', function () {
         cur = c.key;
+        curSec = c.sections[0].id;
         history.replaceState(null, '', '#' + cur);
         picked = []; $('hs-file').value = ''; renderPicked();
         render();
@@ -86,16 +96,18 @@
     if (d.error) return alert('Chưa xóa được tệp. Hãy thử lại');
     sb.storage.from(BUCKET).remove([sub.file_path]);
     subs = subs.filter(function (x) { return x.id !== sub.id; });
+    marks = marks.filter(function (m) { return !(m.criterion === sub.criterion && (m.section === SEC_TONG || m.section === sub.section)); });
     render();
   }
 
   function renderFiles() {
-    var list = subs.filter(function (x) { return x.criterion === cur; });
+    var c = crit(cur);
+    var list = filesIn(c, curSec);
     var box = $('hs-files');
     if (!list.length) {
       var p = document.createElement('p');
       p.className = 'hs-none';
-      p.textContent = 'Bạn chưa nộp minh chứng nào cho tiêu chí này';
+      p.textContent = multi(c) ? 'Bạn chưa nộp minh chứng nào cho "' + secOf(c, curSec).name + '"' : 'Bạn chưa nộp minh chứng nào cho tiêu chí này';
       return box.replaceChildren(p);
     }
     var frag = document.createDocumentFragment();
@@ -133,6 +145,65 @@
     box.replaceChildren(frag);
   }
 
+  // Chip kết quả của một tiêu chuẩn: Đạt / Thiếu / Không đạt (sau khi BCH gửi phản hồi), chưa có thì Chờ duyệt / Chưa nộp
+  function secChip(c, sec) {
+    var m = markShown(marks, c.key, sec.id);
+    var chip = document.createElement('span');
+    if (m) { chip.className = 'st st-' + m.status; chip.textContent = MARK_LABEL[m.status]; return chip; }
+    var n = filesIn(c, sec.id).length;
+    chip.className = 'st ' + (n ? 'st-pending' : 'st-none');
+    chip.textContent = n ? 'Chờ duyệt · ' + n + ' tệp' : 'Chưa nộp';
+    return chip;
+  }
+
+  // Bên trái: mục 1 tiêu chuẩn hiện như cũ (một khung chữ); mục nhiều tiêu chuẩn chia thành các ô trên dưới, bấm ô nào thì khung bên phải nộp cho ô đó
+  function renderReq(c) {
+    var box = $('hs-req');
+    if (!multi(c)) {
+      box.className = 'hs-req';
+      box.textContent = c.sections[0].req;
+      return;
+    }
+    box.className = 'hs-req hs-secs';
+    var frag = document.createDocumentFragment();
+    c.sections.forEach(function (sec) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'hs-sec' + (sec.id === curSec ? ' on' : '');
+      card.setAttribute('aria-pressed', sec.id === curSec ? 'true' : 'false');
+      var head = document.createElement('span');
+      head.className = 'hs-sec-head';
+      var t = document.createElement('span');
+      t.className = 'hs-sec-title';
+      t.textContent = sec.name;
+      var hint = document.createElement('small');
+      hint.textContent = sec.hint;
+      var tl = document.createElement('span');
+      tl.className = 'hs-sec-tl';
+      tl.append(t, hint);
+      head.append(tl, secChip(c, sec));
+      var body = document.createElement('span');
+      body.className = 'hs-sec-body';
+      body.textContent = sec.req;
+      card.append(head, body);
+      var m = markShown(marks, c.key, sec.id);
+      if (m && m.status !== 'approved' && m.reason) {
+        var rs = document.createElement('span');
+        rs.className = 'hs-reason';
+        rs.textContent = 'Giải trình của BCH: ' + m.reason;
+        card.appendChild(rs);
+      }
+      card.addEventListener('click', function () {
+        if (curSec === sec.id) return;
+        curSec = sec.id;
+        picked = []; $('hs-file').value = ''; renderPicked();
+        render();
+      });
+      frag.appendChild(card);
+    });
+    box.replaceChildren(frag);
+  }
+
   // Bảng mẫu do BCH tải lên (chỉ có ở mục Bảng kê khai thành tích)
   function renderTemplate(c) {
     var box = $('hs-tpl');
@@ -144,8 +215,11 @@
 
   function render() {
     var c = crit(cur);
+    var sec = secOf(c, curSec);
     $('hs-req-title').textContent = 'Yêu cầu: ' + c.name;
-    $('hs-req').textContent = c.req;
+    $('hs-files-title').textContent = multi(c) ? 'Minh chứng: ' + sec.name : 'Tệp đã nộp';
+    $('hs-up-title').textContent = multi(c) ? 'Nộp minh chứng cho: ' + sec.name : 'Nộp minh chứng';
+    renderReq(c);
     renderTemplate(c);
     renderTabs();
     renderFiles();
@@ -178,26 +252,29 @@
     busy = true; updateSend();
     var btn = $('hs-send');
     var failed = [];
+    var sendCrit = cur, sendSec = curSec;   // giữ nguyên nơi nộp dù sinh viên bấm sang ô khác khi đang gửi
     for (var i = 0; i < picked.length; i++) {
       var f = picked[i];
       btn.textContent = 'Đang gửi ' + (i + 1) + '/' + picked.length + '...';
       var ext = extOf(f.name);
-      var path = uid + '/' + cur + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      var path = uid + '/' + sendCrit + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
       var up = await sb.storage.from(BUCKET).upload(path, f, { contentType: TYPES[ext], cacheControl: '3600' });
       if (up.error) { console.error(up.error.message); failed.push(f.name); continue; }
-      var ins = await sb.from('submissions').insert({ student_id: uid, criterion: cur, file_name: f.name, file_path: path, file_type: TYPES[ext], file_size: f.size }).select().single();
+      var ins = await sb.from('submissions').insert({ student_id: uid, criterion: sendCrit, section: sendSec, file_name: f.name, file_path: path, file_type: TYPES[ext], file_size: f.size }).select().single();
       if (ins.error) {
         console.error(ins.error.message);
         sb.storage.from(BUCKET).remove([path]);
         failed.push(f.name); continue;
       }
       subs.unshift(ins.data);
+      // Nộp thêm tệp thì kết quả của tiêu chuẩn đó và của cả tiêu chí về "chờ duyệt lại" (máy chủ cũng tự bỏ các kết quả này)
+      marks = marks.filter(function (m) { return !(m.criterion === sendCrit && (m.section === SEC_TONG || m.section === sendSec)); });
     }
     busy = false;
     btn.textContent = 'Gửi minh chứng';
     picked = []; $('hs-file').value = ''; renderPicked();
     render();
-    if (failed.length) alert('Chưa gửi được: ' + failed.join(', ') + '.\nHãy kiểm tra mạng, định dạng tệp và đã chạy SQL đợt 5 trong Supabase chưa');
+    if (failed.length) alert('Chưa gửi được: ' + failed.join(', ') + '.\nHãy kiểm tra mạng, định dạng tệp và đã chạy SQL "tieu-chuan-ket-qua.sql" trong Supabase chưa');
   });
 
   function applyArchive() {
@@ -218,6 +295,9 @@
       return;
     }
     subs = r.data;
+    var mk = await sb.from('review_marks').select('*').eq('student_id', uid);
+    if (mk.error) { console.error('Không tải được kết quả tiêu chuẩn:', mk.error.message + ' (đã chạy SQL tieu-chuan-ket-qua.sql chưa?)'); marks = []; }
+    else marks = mk.data;
     archive = await loadArchive(uid);
     applyArchive();
     render();
@@ -230,5 +310,6 @@
   // Admin duyệt xong là trạng thái đổi ngay, không cần tải lại trang
   sb.channel('hs-' + uid)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions', filter: 'student_id=eq.' + uid }, function () { if (!busy) load(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'review_marks', filter: 'student_id=eq.' + uid }, function () { if (!busy) load(); })
     .subscribe();
 })();

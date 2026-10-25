@@ -93,3 +93,46 @@
 .hs-tpl-info { min-width: 0; display: grid; gap: 2px; }
 .hs-tpl-cap { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--footer-label); }
 .hs-tpl-info strong { font-size: 14.5px; overflow-wrap: anywhere; }
+
+
+/* ===== TIÊU CHUẨN (ô bên trái) + KẾT QUẢ DO BCH CHỌN ===== */
+/* Thiếu = xanh dương (cam là màu mặc định của "Chờ duyệt"); Chưa nộp = xám */
+.st-missing { background: #dbeafe; border: 1px solid #7aa7f0; color: #1d4ed8; }
+.st-none { background: #eef1f6; border: 1px solid var(--line); color: var(--muted); }
+.fb-file .st-missing, .fb-ans .st-missing { background: #dbeafe; }
+
+/* Mục nhiều tiêu chuẩn: khung bên trái chia thành các ô trên dưới */
+.hs-req.hs-secs { display: grid; gap: 10px; align-content: start; background: transparent; border: 0; padding: 0; white-space: normal; }
+.hs-sec { display: grid; gap: 8px; width: 100%; text-align: left; font: inherit; color: var(--ink); background: #fff; border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+.hs-sec:hover { border-color: #a9c0e8; }
+.hs-sec.on { border-color: var(--accent); background: #fffaf3; }
+.hs-sec-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+.hs-sec-tl { display: grid; gap: 0; min-width: 0; }
+.hs-sec-title { font-weight: 800; font-size: 15.5px; color: var(--primary-dark); }
+.hs-sec-tl small { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.hs-sec-body { white-space: pre-line; overflow-wrap: anywhere; font-size: 14.5px; line-height: 1.55; font-weight: 400; }
+.hs-sec .hs-reason { margin-top: 0; font-weight: 400; }
+
+/* Thanh tiêu chí: xanh = tiêu chí Đạt, đỏ = Chưa đạt (chỉ hiện sau khi BCH gửi phản hồi) */
+.hs-tabs button.v-ok { border-color: #2e9b57; color: #1c6b36; }
+.hs-tabs button.v-ok:hover { background: #e5f6ea; }
+.hs-tabs button.v-ok.on { background: #2e9b57; color: #fff; }
+.hs-tabs button.v-bad { border-color: #d64545; color: #9b1c1c; }
+.hs-tabs button.v-bad:hover { background: #fdecec; }
+.hs-tabs button.v-bad.on { background: #d64545; color: #fff; }
+.hs-tabs { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .hs-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Trang Phản hồi xét duyệt: nhóm theo tiêu chuẩn + kết quả tiêu chí */
+.fb-group { display: grid; gap: 8px; }
+.fb-group + .fb-group { margin-top: 12px; }
+.fb-group-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; padding: 0 2px; }
+.fb-group-head b { font-size: 15px; color: var(--primary-dark); }
+.fb-verdict { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: #fff; font-size: 14.5px; }
+.fb-verdict.approved { background: #e6f6ea; border-color: #9fd5ae; }
+.fb-verdict.rejected { background: #fdeaea; border-color: #f0b5b5; }
+.fb-verdict.missing { background: #e8f0fe; border-color: #9db8e8; }
+.fb-verdict-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+.fb-verdict-top b { font-size: 15px; }
+.fb-verdict .st { background: #fff; }
+.fb-verdict p { white-space: pre-line; overflow-wrap: anywhere; color: #4a5568; }
