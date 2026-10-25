@@ -40,8 +40,8 @@ a { color: inherit; text-decoration: none; }
 .btn-small:hover { background: var(--primary-dark); }
 
 /* ===== ĐẦU TRANG: khung cam sữa bo góc, trải hết chiều rộng ===== */
-.site-header { position: sticky; top: 12px; z-index: 10; margin: 12px 12px 0; background: linear-gradient(135deg, var(--footer-1), var(--footer-2)); border: 1px solid var(--footer-line); border-radius: 16px; box-shadow: 0 4px 14px rgba(154, 79, 6, 0.10); }
-.site-header .wrap { max-width: none; padding: 0 24px; display: flex; align-items: center; justify-content: flex-start; gap: 16px; height: 68px; }
+.site-header { position: sticky; top: 0; z-index: 10; margin: 0; background: linear-gradient(135deg, var(--footer-1), var(--footer-2)); border: 0; border-bottom: 1px solid var(--footer-line); border-radius: 0 0 14px 14px; box-shadow: 0 4px 14px rgba(154, 79, 6, 0.12); }
+.site-header .wrap { max-width: none; padding: 0 24px; display: flex; align-items: center; justify-content: flex-start; gap: 16px; height: 84px; }
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--primary); min-width: 0; }
 .brand small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); line-height: 1.2; }
 .logo { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 20px; border: 3px solid var(--accent); }
@@ -50,7 +50,7 @@ a { color: inherit; text-decoration: none; }
 .menu-btn { display: block; flex: none; background: none; border: 1px solid var(--line); border-radius: 8px; width: 44px; height: 44px; font-size: 22px; cursor: pointer; color: var(--ink); }
 
 /* ===== MENU BÊN TRÁI ===== */
-.sidebar { display: flex; flex-direction: column; position: fixed; top: 94px; left: 0; bottom: 0; width: 290px; max-width: 85vw; background: var(--card); border-right: 1px solid var(--line); padding: 20px 14px; overflow-y: auto; z-index: 9; transform: translateX(-100%); visibility: hidden; transition: transform 0.3s ease, visibility 0s linear 0.3s; }
+.sidebar { display: flex; flex-direction: column; position: fixed; top: 84px; left: 0; bottom: 0; width: 290px; max-width: 85vw; background: var(--card); border-right: 1px solid var(--line); padding: 20px 14px; overflow-y: auto; z-index: 9; transform: translateX(-100%); visibility: hidden; transition: transform 0.3s ease, visibility 0s linear 0.3s; }
 .sidebar.open { transform: none; visibility: visible; transition: transform 0.3s ease; }
 
 .sidebar-label { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 0 14px; margin-bottom: 12px; }
@@ -64,7 +64,7 @@ a { color: inherit; text-decoration: none; }
 .sidebar a.is-locked { opacity: 0.4; cursor: not-allowed; }
 .sidebar a.is-locked:hover { background: transparent; }
 
-.sidebar-overlay { position: fixed; top: 94px; left: 0; right: 0; bottom: 0; background: rgba(20, 33, 61, 0.35); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; z-index: 8; }
+.sidebar-overlay { position: fixed; top: 84px; left: 0; right: 0; bottom: 0; background: rgba(20, 33, 61, 0.35); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; z-index: 8; }
 .sidebar-overlay.open { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
 
 /* Nhóm cuối menu: Tài liệu & Đăng xuất */
@@ -182,12 +182,12 @@ a.row:hover { background: var(--bg); }
 }
 
 @media (max-width: 600px) {
-  .brand small { display: none; }
   .criteria { grid-template-columns: minmax(0, 1fr); }
   .row { flex-direction: column; align-items: flex-start; }
 
-  .site-header { top: 10px; margin: 10px 10px 0; border-radius: 12px; }
-  .sidebar, .sidebar-overlay { top: 90px; }
+  .site-header { border-radius: 0 0 12px 12px; }
+  .site-header .wrap { height: 76px; padding: 0 16px; }
+  .sidebar, .sidebar-overlay { top: 76px; }
   .site-footer { margin: 16px 10px 10px; border-radius: 12px; }
   body:has(.sidebar) main { margin: 12px 10px 0; border-radius: 12px; }  
 }
@@ -244,3 +244,73 @@ body:has(.sidebar) .hero { padding-top: 20px; }
 .tb-attach > span { font-size: 14px; color: var(--muted); }
 .tb-attach-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
 .tb-attach a { font-size: 14px; color: var(--primary); }
+
+/* Khung xem tệp Google Drive (nhúng ngay trên web) */
+.drive-box { position: relative; width: 100%; }
+.drive-box iframe { width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: #fff; display: block; }
+.drive-mask { position: absolute; top: 0; right: 0; width: 64px; height: 64px; }
+.drive-mask[hidden] { display: none; }
+.tb-attach .drive-box { margin: 8px 0; }
+
+/* Khung thông báo "Hồ sơ đã được công nhận" (trang Hồ sơ của tôi + Phản hồi xét duyệt) */
+.arch-banner { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 20px; padding: 18px 20px; background: #fee2e2; border: 2px solid #f87171; border-left: 10px solid #dc2626; border-radius: 14px; color: #b91c1c; font-weight: 800; box-shadow: 0 8px 22px rgba(220, 38, 38, 0.18); }
+.arch-banner[hidden] { display: none; }
+.arch-banner svg { flex: none; width: 32px; height: 32px; stroke: #dc2626; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.arch-banner strong { display: block; font-size: 20px; line-height: 1.35; font-weight: 800; }
+.arch-banner span { display: block; margin-top: 4px; font-size: 16px; line-height: 1.5; font-weight: 800; }
+
+/* PDF vẽ từng trang (điện thoại) */
+.drive-box iframe[hidden] { display: none; }
+.pdf-pages { width: 100%; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #e9edf3; border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: grid; gap: 8px; align-content: start; }
+.pdf-pages[hidden] { display: none; }
+.pdf-page { display: block; width: 100%; height: auto; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.pdf-msg { text-align: center; color: var(--muted); font-size: 14.5px; padding: 18px 8px; }
+.pdf-end { padding: 6px 8px 10px; font-size: 13px; }
+.pdf-modal { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; background: #fff; }
+.pdf-modal-bar { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.pdf-modal-bar strong { flex: 1; min-width: 0; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pdf-modal-body { flex: 1; max-height: none; border: 0; border-radius: 0; }
+
+/* Trang Tài liệu & Hướng dẫn: 2 phần */
+.page-title h2 { font-size: clamp(30px, 5vw, 44px); display: flex; align-items: center; gap: 14px; font-weight: 800; }
+.guide-section { padding: 16px 0 8px; }
+.guide-card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; }
+.guide-card + .guide-card { margin-top: 16px; }
+.guide-steps { list-style: none; counter-reset: gstep; display: grid; gap: 22px; }
+.guide-steps li { counter-increment: gstep; position: relative; padding-left: 52px; }
+.guide-steps li::before { content: counter(gstep); position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 16px; }
+.guide-steps h3 { font-size: 18px; line-height: 1.35; margin-bottom: 4px; }
+.guide-steps p { color: var(--muted); font-size: 15.5px; }
+.guide-note h3 { font-size: 24px; line-height: 1.3; margin-bottom: 14px; }
+.guide-note ol { padding-left: 22px; display: grid; gap: 8px; color: var(--muted); font-size: 15.5px; }
+.doc-title { padding-top: 40px; }
+.section.doc-section { padding: 12px 0 56px; }
+@media (max-width: 600px) {
+  .guide-card { padding: 22px 18px; border-radius: 16px; }
+  .guide-steps li { padding-left: 46px; }
+  .guide-steps li::before { width: 32px; height: 32px; font-size: 15px; }
+  .guide-note h3 { font-size: 21px; }
+  .doc-title { padding-top: 28px; }
+  .section.doc-section { padding: 8px 0 40px; }
+  /* Thanh đầu trang trên điện thoại: vẫn hiện dòng "Trường Đại học Sài Gòn" */
+  .brand small { display: block; font-size: 11.5px; }
+}
+
+
+/* ===== Trang Tài liệu & Hướng dẫn: nền xanh nhạt chia thành 2 ô trên / dưới ===== */
+body:has(.sidebar) main.split { background: none; border: 0; border-radius: 0; overflow: visible; display: grid; gap: 16px; }
+main.split > .doc-panel { background: var(--panel-bg); border: 1px solid var(--panel-line); border-radius: 16px; padding: 12px 0 24px; overflow: hidden; }
+main.split > .doc-panel-2 { padding-bottom: 28px; }
+.panel-box { padding: 8px 0 0; }
+.panel-head { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--panel-line); }
+.panel-head h1, .panel-head h2 { font-size: clamp(30px, 5vw, 44px); display: flex; align-items: center; gap: 14px; font-weight: 800; line-height: 1.25; }
+.panel-head p { color: var(--muted); margin-top: 6px; }
+.panel-box .guide-steps { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 32px; }
+.panel-box .guide-note { margin-top: 16px; padding: 24px 32px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); }
+.panel-box .guide-note h3 { font-size: 24px; line-height: 1.3; margin-bottom: 14px; }
+.panel-box .guide-note ol { padding-left: 22px; display: grid; gap: 8px; color: var(--muted); font-size: 15.5px; }
+.panel-box .viewer { padding: 0 0 20px; }
+@media (max-width: 600px) {
+  .panel-box .guide-steps, .panel-box .guide-note { padding: 20px 16px; border-radius: 16px; }
+  .panel-box .guide-note h3 { font-size: 21px; }
+}
