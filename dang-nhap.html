@@ -15,7 +15,7 @@
 
   <header class="auth-top">
     <a class="brand" href="index.html">
-      <span class="logo">5</span>
+      <img class="logo" src="images/logoclb.png" alt="Logo CLB">
       <span>SV5T khoa Giáo dục<small>Trường Đại học Sài Gòn</small></span>
     </a>
     <a class="btn btn-small" href="dang-ky.html">Đăng ký</a>
@@ -58,7 +58,7 @@
       if (svSessionLeftMs(s.data.session) > 0) { location.replace('tong-quan.html'); return; }
       await sb.auth.signOut();   // phiên cũ đã quá thời hạn
     }
-    if (/[?&]het-phien=1/.test(location.search)) msg('Phiên đăng nhập đã hết hạn (tối đa ' + SESSION_MAX_MINUTES + ' phút mỗi lần). Vui lòng đăng nhập lại');
+    if (/[?&]het-phien=1/.test(location.search)) msg('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại');
 
     $('f').addEventListener('submit', async function (e) {
       e.preventDefault();

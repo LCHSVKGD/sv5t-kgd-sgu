@@ -11,6 +11,7 @@
             <img src="images/logotruong.png" alt="Trường Đại học Sài Gòn">
             <img src="images/logosv5t.png" alt="Sinh viên 5 tốt">
             <img src="images/logokhoa.png" alt="Khoa Giáo dục">
+            <img src="images/logoclb.png" alt="Logo CLB">
           </div>
           <div class="footer-brand-name">Sinh viên 5 tốt khoa Giáo dục</div>
           <div class="footer-brand-sub">Cổng thông tin xét duyệt danh hiệu cấp Khoa</div>
