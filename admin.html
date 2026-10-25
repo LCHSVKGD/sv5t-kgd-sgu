@@ -337,9 +337,14 @@
               <textarea id="tb-body" maxlength="5000" placeholder="Nhập nội dung thông báo. Bấm Enter để xuống dòng"></textarea>
             </div>
             <div>
-              <label for="tb-file">Tệp đính kèm (không bắt buộc)</label>
+              <label for="tb-file">Tệp đính kèm (tải lên, không bắt buộc)</label>
               <input id="tb-file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
               <p class="ck-hint">PDF, Word, Excel, PowerPoint hoặc ảnh PNG/JPG, tối đa 20 MB. Tệp đính kèm sẽ tự động hiển thị thêm ở trang Tài liệu &amp; hướng dẫn</p>
+            </div>
+            <div>
+              <label for="tb-drive">Hoặc dán link Google Drive</label>
+              <input id="tb-drive" type="url" placeholder="https://drive.google.com/file/d/.../view">
+              <p class="ck-hint">Chọn một trong hai: tải tệp lên hoặc dán link. Với link Drive, hãy mở quyền chia sẻ của tệp thành "Bất kỳ ai có đường liên kết" (Người xem) để sinh viên xem được ngay trên web. Nhận link tệp Drive, Google Docs, Sheets, Slides (không nhận link thư mục)</p>
             </div>
             <button class="btn btn-small" type="button" id="tb-post">Đăng thông báo</button>
           </div>
@@ -362,9 +367,14 @@
               <textarea id="td-body" maxlength="5000" style="min-height:90px" placeholder="Mô tả ngắn về tài liệu"></textarea>
             </div>
             <div>
-              <label for="td-file">Tệp tài liệu</label>
+              <label for="td-file">Tệp tài liệu (tải lên)</label>
               <input id="td-file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
               <p class="ck-hint">PDF, Word, Excel, PowerPoint hoặc ảnh PNG/JPG, tối đa 20 MB</p>
+            </div>
+            <div>
+              <label for="td-drive">Hoặc dán link Google Drive</label>
+              <input id="td-drive" type="url" placeholder="https://drive.google.com/file/d/.../view">
+              <p class="ck-hint">Chọn một trong hai: tải tệp lên hoặc dán link. Với link Drive, hãy mở quyền chia sẻ của tệp thành "Bất kỳ ai có đường liên kết" (Người xem) để sinh viên xem được ngay trên web. Nhận link tệp Drive, Google Docs, Sheets, Slides (không nhận link thư mục)</p>
             </div>
             <button class="btn btn-small" type="button" id="td-post">Đăng tài liệu</button>
           </div>
@@ -507,6 +517,7 @@
   <script src="js/supabase.js"></script>
   <script src="js/criteria.js"></script>
   <script src="js/review-window.js"></script>
+  <script src="js/documents.js"></script>
   <script>
     // Đăng xuất
     document.getElementById('logout').addEventListener('click', async function (e) {
@@ -704,17 +715,17 @@
         meta.textContent = new Date(n.created_at).toLocaleString('vi-VN') + ' · ' +
           (isDoc ? 'Hiển thị ở trang Tài liệu' : (n.target_student_id ? 'Gửi riêng cho ' + nameOf(n.target_student_id) : 'Thông báo chung'));
         info.append(h, meta);
-        if (n.file_path) {
+        if (n.file_path || n.drive_url) {
           var fl = document.createElement('span');
           fl.className = 'tb-meta';
-          fl.textContent = 'Tệp: ' + n.file_name + (n.file_size ? ' (' + fmtSize(n.file_size) + ')' : '') +
+          fl.textContent = (n.drive_url ? 'Link Google Drive' : 'Tệp: ' + n.file_name + (n.file_size ? ' (' + fmtSize(n.file_size) + ')' : '')) +
             (isDoc ? '' : ' · cũng hiển thị ở trang Tài liệu');
           info.appendChild(fl);
         }
         var act = document.createElement('div');
         act.className = 'acc-actions';
         act.appendChild(makeBtn('Xóa', 'btn btn-danger', async function () {
-          if (!confirm('Xóa "' + n.title + '"? Sinh viên sẽ không còn thấy mục này' + (n.file_path ? ' (tệp đính kèm cũng bị xóa khỏi trang Tài liệu)' : '') + '.')) return;
+          if (!confirm('Xóa "' + n.title + '"? Sinh viên sẽ không còn thấy mục này' + ((n.file_path || n.drive_url) ? ' (tệp đính kèm cũng bị xóa khỏi trang Tài liệu)' : '') + '.')) return;
           if (DEMO) return;
           var d = await sb.from('announcements').delete().eq('id', n.id);
           if (d.error) return alert('Chưa xóa được. Hãy thử lại');
@@ -772,10 +783,13 @@
       var title = $(px + '-title').value.trim();
       var body = $(px + '-body').value.trim();
       var file = pickedPost[kind];
+      var driveUrl = $(px + '-drive').value.trim();
       var target = isDoc ? null : ($('tb-target').value || null);
       if (!title) return alert('Hãy nhập tiêu đề');
       if (!isDoc && !body) return alert('Hãy nhập đủ tiêu đề và nội dung');
-      if (isDoc && !file) return alert('Hãy chọn tệp tài liệu');
+      if (isDoc && !file && !driveUrl) return alert('Hãy chọn tệp tài liệu hoặc dán link Google Drive');
+      if (file && driveUrl) return alert('Chỉ chọn một trong hai: tải tệp lên hoặc dán link Google Drive');
+      if (driveUrl && !docDriveInfo(driveUrl)) return alert('Link Google Drive chưa đúng. Hãy dán link của một tệp (drive.google.com/file/d/... hoặc docs.google.com/...), không dùng link thư mục');
       if (DEMO) return alert('Đang ở chế độ xem thử nên chưa đăng được');
       var ask = isDoc ? 'Đăng tài liệu "' + title + '" cho tất cả sinh viên?'
         : (target ? 'Gửi thông báo riêng cho ' + nameOf(target) + '?' : 'Đăng thông báo chung cho tất cả sinh viên?') +
@@ -785,6 +799,7 @@
       btn.disabled = true;
 
       var row = { kind: kind, title: title, body: body || null, target_student_id: target };
+      if (driveUrl) row.drive_url = driveUrl;
       var uploadedPath = null;
       if (file) {
         var ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -811,6 +826,7 @@
       $(px + '-title').value = '';
       $(px + '-body').value = '';
       $(px + '-file').value = '';
+      $(px + '-drive').value = '';
       if (!isDoc) $('tb-target').value = '';
       pickedPost[kind] = null;
       notices.unshift(res.data);

@@ -244,3 +244,10 @@ body:has(.sidebar) .hero { padding-top: 20px; }
 .tb-attach > span { font-size: 14px; color: var(--muted); }
 .tb-attach-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
 .tb-attach a { font-size: 14px; color: var(--primary); }
+
+/* Khung xem tệp Google Drive (nhúng ngay trên web) */
+.drive-box { position: relative; width: 100%; }
+.drive-box iframe { width: 100%; height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: #fff; display: block; }
+.drive-mask { position: absolute; top: 0; right: 0; width: 64px; height: 64px; }
+.drive-mask[hidden] { display: none; }
+.tb-attach .drive-box { margin: 8px 0; }

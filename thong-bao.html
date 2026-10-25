@@ -154,20 +154,42 @@
       cap.className = 'tb-attach-cap';
       cap.textContent = 'Tài liệu đính kèm';
       var name = document.createElement('strong');
-      name.textContent = item.file_name;
+      name.textContent = docItemName(item);
       var info = document.createElement('span');
-      info.textContent = docLabel(item.file_name) + (item.file_size ? ' · ' + docSize(item.file_size) : '');
+      info.textContent = docItemLabel(item) + (item.file_size ? ' · ' + docSize(item.file_size) : '');
       var acts = document.createElement('div');
       acts.className = 'tb-attach-btns';
-      if (docCanPreview(item.file_name)) {
+      var driveBox = null;
+      if (docItemCanPreview(item)) {
         var v = document.createElement('button');
         v.type = 'button'; v.className = 'btn btn-line'; v.textContent = 'Xem';
-        v.addEventListener('click', function () { docOpenTab(item.file_path, item.file_name); });
+        if (item.drive_url) {
+          // Link Drive: hiện ngay trong trang, không mở sang Drive
+          v.addEventListener('click', function () {
+            if (driveBox) {
+              driveBox.remove(); driveBox = null; v.textContent = 'Xem';
+              return;
+            }
+            var info = docDriveInfo(item.drive_url);
+            driveBox = document.createElement('div');
+            driveBox.className = 'drive-box';
+            var fr = document.createElement('iframe');
+            fr.title = 'Xem tài liệu';
+            fr.src = info.preview;
+            var mk = document.createElement('span');
+            mk.className = 'drive-mask';
+            driveBox.append(fr, mk);
+            acts.after(driveBox);
+            v.textContent = 'Ẩn';
+          });
+        } else {
+          v.addEventListener('click', function () { docOpenTab(item.file_path, item.file_name); });
+        }
         acts.appendChild(v);
       }
       var d = document.createElement('button');
       d.type = 'button'; d.className = 'btn btn-small'; d.textContent = 'Tải về';
-      d.addEventListener('click', function () { docDownload(item.file_path, item.file_name); });
+      d.addEventListener('click', function () { docItemDownload(item); });
       acts.appendChild(d);
       var more = document.createElement('a');
       more.href = 'tai-lieu.html'; more.textContent = 'Xem ở trang Tài liệu & hướng dẫn';
@@ -196,7 +218,7 @@
       detail.appendChild(h);
       detail.appendChild(meta);
       detail.appendChild(body);
-      if (item.file_path) detail.appendChild(attachBox(item));
+      if (docHasFile(item)) detail.appendChild(attachBox(item));
 
       // Trên điện thoại, 2 khung xếp chồng nên tự cuộn xuống phần nội dung
       if (window.matchMedia('(max-width: 900px)').matches) {
@@ -259,6 +281,7 @@
           body: a.body,
           date: fmtDate(a.created_at) + (a.target_student_id ? ' · Dành riêng cho bạn' : ''),
           file_path: a.file_path,
+          drive_url: a.drive_url,
           file_name: a.file_name,
           file_size: a.file_size,
           unread: !readIds[a.id]

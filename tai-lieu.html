@@ -91,7 +91,10 @@
             <button id="viewer-close" class="btn btn-small" type="button">Đóng</button>
           </div>
         </div>
-        <iframe id="viewer-frame" title="Xem tài liệu"></iframe>
+        <div class="drive-box">
+          <iframe id="viewer-frame" title="Xem tài liệu"></iframe>
+          <span class="drive-mask" id="viewer-mask" hidden></span>
+        </div>
       </div>
     </section>
 
@@ -127,6 +130,7 @@
     var title = document.getElementById('viewer-title');
     var openLink = document.getElementById('viewer-open');
     var listBox = document.getElementById('doc-list');
+    var mask = document.getElementById('viewer-mask');
     var blobUrl = null;
 
     function note(text) {
@@ -139,6 +143,7 @@
     function closeViewer() {
       frame.src = '';
       viewer.hidden = true;
+      mask.hidden = true;
       if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; }
     }
 
@@ -147,9 +152,19 @@
       btn.disabled = true;
       btn.textContent = 'Đang mở...';
       try {
-        var u = await docBlobUrl(d.file_path, d.file_name);
-        if (blobUrl) URL.revokeObjectURL(blobUrl);
-        blobUrl = u;
+        var u;
+        if (d.drive_url) {
+          var info = docDriveInfo(d.drive_url);
+          if (!info) throw new Error('Link Drive không hợp lệ');
+          u = info.preview;
+          if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; }
+          mask.hidden = false;
+        } else {
+          u = await docBlobUrl(d.file_path, d.file_name);
+          if (blobUrl) URL.revokeObjectURL(blobUrl);
+          blobUrl = u;
+          mask.hidden = true;
+        }
         frame.src = u;
         openLink.href = u;
         title.textContent = d.title;
@@ -173,7 +188,7 @@
         var h = document.createElement('h3');
         h.textContent = d.title;
         var meta = document.createElement('span');
-        meta.textContent = docLabel(d.file_name) + (d.file_size ? ' · ' + docSize(d.file_size) : '') +
+        meta.textContent = docItemLabel(d) + (d.file_size ? ' · ' + docSize(d.file_size) : '') +
           ' · ' + new Date(d.created_at).toLocaleDateString('vi-VN') +
           (d.kind === 'document' ? '' : ' · Đính kèm thông báo');
         info.append(h, meta);
@@ -185,7 +200,7 @@
         }
         var acts = document.createElement('div');
         acts.className = 'doc-btns';
-        if (docCanPreview(d.file_name)) {
+        if (docItemCanPreview(d)) {
           var v = document.createElement('button');
           v.type = 'button'; v.className = 'btn btn-line'; v.textContent = 'Xem';
           v.addEventListener('click', function () { viewDoc(d, v); });
@@ -193,7 +208,7 @@
         }
         var dl = document.createElement('button');
         dl.type = 'button'; dl.className = 'btn btn-small'; dl.textContent = 'Tải về';
-        dl.addEventListener('click', function () { docDownload(d.file_path, d.file_name); });
+        dl.addEventListener('click', function () { docItemDownload(d); });
         acts.appendChild(dl);
         row.append(info, acts);
         frag.appendChild(row);
@@ -208,14 +223,13 @@
       if (!s.data.session) return;
       var uid = s.data.session.user.id;
       var r = await sb.from('announcements').select('*')
-        .not('file_path', 'is', null)
         .or('target_student_id.is.null,target_student_id.eq.' + uid)
         .order('created_at', { ascending: false });
       if (r.error) {
         console.error('Không tải được tài liệu:', r.error.message);
         return note('Không tải được tài liệu. Hãy tải lại trang');
       }
-      renderDocs(r.data);
+      renderDocs(r.data.filter(docHasFile));
     })();
   </script>
   <script src="js/auth-guard.js"></script>
