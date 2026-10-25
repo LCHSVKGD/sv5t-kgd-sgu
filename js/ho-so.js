@@ -133,10 +133,20 @@
     box.replaceChildren(frag);
   }
 
+  // Bảng mẫu do BCH tải lên (chỉ có ở mục Bảng kê khai thành tích)
+  function renderTemplate(c) {
+    var box = $('hs-tpl');
+    if (!c.tpl) { box.hidden = true; return; }
+    box.hidden = false;
+    $('hs-tpl-name').textContent = c.tpl.name + (c.tpl.size ? ' · ' + fmtSize(c.tpl.size) : '');
+    $('hs-tpl-dl').onclick = function () { docDownload(c.tpl.path, c.tpl.name); };
+  }
+
   function render() {
     var c = crit(cur);
     $('hs-req-title').textContent = 'Yêu cầu: ' + c.name;
     $('hs-req').textContent = c.req;
+    renderTemplate(c);
     renderTabs();
     renderFiles();
     updateSend();

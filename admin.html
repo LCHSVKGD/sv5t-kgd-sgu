@@ -192,6 +192,8 @@
     .tc-box textarea:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
     .tc-msg { color: #1c6b36; font-size: 14px; font-weight: 600; }
     .tc-msg[hidden] { display: none; }
+    .tc-tpl-cur { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+    .tc-box input[type=file] { width: 100%; font: inherit; font-size: 14px; padding: 8px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
     .tc-msg.is-warn { color: #9a4f06; }
   </style>
 </head>
@@ -461,6 +463,19 @@
               <button class="btn btn-small" type="button" id="tc-save">Cập nhật</button>
             </div>
             <p class="tc-msg" id="tc-msg" hidden></p>
+          </div>
+          <div class="tc-box" id="tc-tpl-box" hidden>
+            <h3>3. Bảng mẫu cho sinh viên</h3>
+            <p class="ck-hint" style="margin:0">Tải lên file bảng kê khai mẫu. Sinh viên thấy nút "Tải bảng mẫu" ở mục "Bảng kê khai thành tích cá nhân" trong trang "Hồ sơ của tôi". Tải file mới lên sẽ thay thế file cũ</p>
+            <p id="tc-tpl-cur" class="tc-tpl-cur"></p>
+            <input id="tc-tpl-file" type="file" accept=".doc,.docx,.xls,.xlsx,.pdf">
+            <p class="ck-hint" style="margin:0">Word, Excel hoặc PDF, tối đa 20 MB</p>
+            <div class="ck-btns">
+              <button class="btn btn-small" type="button" id="tc-tpl-up">Tải lên bảng mẫu</button>
+              <button class="btn btn-line" type="button" id="tc-tpl-view" hidden>Tải về kiểm tra</button>
+              <button class="btn btn-line" type="button" id="tc-tpl-del" hidden>Xóa bảng mẫu</button>
+            </div>
+            <p class="tc-msg" id="tc-tpl-msg" hidden></p>
           </div>
         </div>
 
@@ -1583,6 +1598,7 @@
         frag.appendChild(b);
       });
       $('tc-tabs').replaceChildren(frag);
+      tcTplRender();
     }
     function tcShow(key) {
       tcCur = key;
@@ -1633,6 +1649,111 @@
       tcRenderTabs();
       tcMsg('Đã cập nhật yêu cầu "' + tcName(c) + '" lúc ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + '. Sinh viên thấy ngay khi mở trang Hồ sơ của tôi');
     });
+    // --- Bảng mẫu kê khai (chỉ mục "ke-khai"): lưu ở kho "documents", thông tin ở site_content ---
+    var TPL_KEY = 'ke-khai';
+    var TPL_EXT = ['doc', 'docx', 'xls', 'xlsx', 'pdf'];
+    var TPL_MAX = 20 * 1024 * 1024;
+    var TPL_MIME = { pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
+    function tcTplMsg(text, warn) {
+      var m = $('tc-tpl-msg');
+      m.hidden = !text;
+      m.textContent = text || '';
+      m.classList.toggle('is-warn', !!warn);
+    }
+    function tcTplBusy(on) { ['tc-tpl-up', 'tc-tpl-view', 'tc-tpl-del'].forEach(function (id) { $(id).disabled = on; }); }
+    function tcTplRender() {
+      var box = $('tc-tpl-box');
+      var show = tcCur === TPL_KEY;
+      box.hidden = !show;
+      if (!show) return;
+      var r = tcRow(TPL_KEY);
+      var has = !!(r && r.template_path);
+      $('tc-tpl-cur').textContent = has
+        ? 'Bảng mẫu hiện tại: ' + (r.template_name || 'bang-mau') + (r.template_size ? ' (' + fmtSize(r.template_size) + ')' : '')
+        : 'Chưa có bảng mẫu';
+      $('tc-tpl-view').hidden = !has;
+      $('tc-tpl-del').hidden = !has;
+      $('tc-tpl-up').textContent = has ? 'Thay bảng mẫu' : 'Tải lên bảng mẫu';
+    }
+    $('tc-tpl-file').addEventListener('change', function () {
+      var f = this.files[0];
+      if (!f) return;
+      var ext = (f.name.split('.').pop() || '').toLowerCase();
+      if (TPL_EXT.indexOf(ext) === -1) { this.value = ''; return alert('Chỉ nhận Word (DOC, DOCX), Excel (XLS, XLSX) hoặc PDF'); }
+      if (f.size > TPL_MAX) { this.value = ''; return alert('Tệp lớn hơn 20 MB. Hãy chọn tệp nhỏ hơn'); }
+    });
+    // Lấy dòng site_content của mục kê khai; chưa có thì tạo (giống nút "Cập nhật")
+    async function tcTplRowEnsure() {
+      var row = tcRow(TPL_KEY);
+      if (row) return row;
+      var c = CRITERIA.filter(function (x) { return x.key === TPL_KEY; })[0];
+      if (DEMO) { row = { id: 'tc' + TPL_KEY, kind: 'criterion', slug: TPL_KEY, title: c.name, requirements: '' }; tcRows.push(row); return row; }
+      var res = await sb.from('site_content').insert({ kind: 'criterion', slug: TPL_KEY, title: c.name, body: '', requirements: '', sort_order: CRITERIA.indexOf(c) }).select().single();
+      if (res.error || !res.data) throw (res.error || new Error('Không tạo được dòng tiêu chí'));
+      tcRows.push(res.data);
+      return res.data;
+    }
+    $('tc-tpl-up').addEventListener('click', async function () {
+      var f = $('tc-tpl-file').files[0];
+      if (!f) return alert('Hãy chọn file bảng mẫu trước');
+      var ext = (f.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (TPL_EXT.indexOf(ext) === -1) return alert('Chỉ nhận Word, Excel hoặc PDF');
+      if (!confirm('Tải lên bảng mẫu "' + f.name + '"? Sinh viên sẽ tải được ngay' + (tcRow(TPL_KEY) && tcRow(TPL_KEY).template_path ? '. File mẫu cũ sẽ bị thay thế' : ''))) return;
+      tcTplBusy(true);
+      tcTplMsg('Đang tải lên...');
+      if (DEMO) {
+        var dr = await tcTplRowEnsure();
+        dr.template_path = 'demo'; dr.template_name = f.name; dr.template_size = f.size;
+        $('tc-tpl-file').value = '';
+        tcTplBusy(false); tcTplRender();
+        return tcTplMsg('Đang ở chế độ xem thử nên chỉ hiển thị, chưa lưu vào hệ thống', true);
+      }
+      var path = 'mau-ke-khai-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      var up = await sb.storage.from('documents').upload(path, f, { contentType: TPL_MIME[ext] || f.type || 'application/octet-stream', cacheControl: '3600' });
+      if (up.error) {
+        console.error(up.error.message);
+        tcTplBusy(false);
+        return tcTplMsg('Chưa tải được tệp lên: ' + up.error.message, true);
+      }
+      try {
+        var row = await tcTplRowEnsure();
+        var oldPath = row.template_path;
+        var res = await sb.from('site_content').update({ template_path: path, template_name: f.name, template_size: f.size }).eq('id', row.id).select().maybeSingle();
+        if (res.error || !res.data) throw (res.error || new Error('Không lưu được'));
+        Object.assign(row, res.data);
+        if (oldPath) sb.storage.from('documents').remove([oldPath]);
+        $('tc-tpl-file').value = '';
+        tcTplRender();
+        tcTplMsg('Đã cập nhật bảng mẫu "' + f.name + '". Sinh viên thấy nút tải ở trang Hồ sơ của tôi');
+      } catch (e) {
+        console.error(e && e.message);
+        sb.storage.from('documents').remove([path]);
+        tcTplMsg('Chưa lưu được bảng mẫu. Hãy chạy file SQL/mau-ke-khai.sql trong Supabase (nếu chưa chạy) rồi thử lại', true);
+      }
+      tcTplBusy(false);
+    });
+    $('tc-tpl-view').addEventListener('click', function () {
+      var r = tcRow(TPL_KEY);
+      if (!r || !r.template_path) return;
+      if (DEMO) return alert('Đang ở chế độ xem thử');
+      docDownload(r.template_path, r.template_name);
+    });
+    $('tc-tpl-del').addEventListener('click', async function () {
+      var r = tcRow(TPL_KEY);
+      if (!r || !r.template_path) return;
+      if (!confirm('Xóa bảng mẫu "' + (r.template_name || '') + '"? Sinh viên sẽ không còn thấy nút tải bảng mẫu')) return;
+      tcTplBusy(true);
+      if (!DEMO) {
+        var res = await sb.from('site_content').update({ template_path: null, template_name: null, template_size: null }).eq('id', r.id).select().maybeSingle();
+        if (res.error || !res.data) { tcTplBusy(false); console.error(res.error && res.error.message); return tcTplMsg('Chưa xóa được. Hãy thử lại', true); }
+        sb.storage.from('documents').remove([r.template_path]);
+        Object.assign(r, res.data);
+      } else { r.template_path = null; r.template_name = null; r.template_size = null; }
+      tcTplBusy(false);
+      tcTplRender();
+      tcTplMsg('Đã xóa bảng mẫu');
+    });
+
     var tcTab = document.querySelector('#admin-tabs [data-p="tieu-chi"]');
     if (tcTab) tcTab.addEventListener('click', tcLoad);
 

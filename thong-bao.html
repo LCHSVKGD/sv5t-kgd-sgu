@@ -183,7 +183,7 @@
             v.textContent = 'Ẩn';
           });
         } else {
-          v.addEventListener('click', function () { docOpenTab(item.file_path, item.file_name); });
+          v.addEventListener('click', function () { docOpenTab(item.file_path, item.file_name, item.title); });
         }
         acts.appendChild(v);
       }

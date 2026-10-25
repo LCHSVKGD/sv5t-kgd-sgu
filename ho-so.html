@@ -104,6 +104,13 @@
           <section class="hs-box" aria-labelledby="hs-req-title">
             <h2 id="hs-req-title">Yêu cầu</h2>
             <div class="hs-req" id="hs-req">Đang tải...</div>
+            <div class="hs-tpl" id="hs-tpl" hidden>
+              <div class="hs-tpl-info">
+                <span class="hs-tpl-cap">Bảng mẫu</span>
+                <strong id="hs-tpl-name"></strong>
+              </div>
+              <button class="btn btn-small" type="button" id="hs-tpl-dl">Tải bảng mẫu</button>
+            </div>
           </section>
           <section class="hs-box" aria-label="Minh chứng">
             <h2>Tệp đã nộp</h2>
@@ -129,6 +136,7 @@
   <script src="js/footer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
 <script src="js/supabase.js"></script>
+<script src="js/documents.js"></script>
 <script>
   document.getElementById('logout').addEventListener('click', async function (e) {
     e.preventDefault();

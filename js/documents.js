@@ -39,7 +39,8 @@ async function docDownload(path, name) {
   }
 }
 
-async function docOpenTab(path, name) {
+async function docOpenTab(path, name, title) {
+  if (docExt(name) === 'pdf' && docIsMobile()) return docPdfModal(title, path, name);
   var w = window.open('', '_blank');
   try {
     var u = await docBlobUrl(path, name);
@@ -90,4 +91,105 @@ function docItemCanPreview(it) { return it.drive_url ? !!docDriveInfo(it.drive_u
 function docItemDownload(it) {
   if (it.drive_url) return docDriveDownload(it.drive_url);
   return docDownload(it.file_path, it.file_name);
+}
+
+// ===== XEM PDF NHIỀU TRANG TRÊN ĐIỆN THOẠI =====
+// Trình duyệt điện thoại (iOS Safari, Chrome Android) chỉ hiện trang 1 của PDF khi nhúng trong khung iframe
+// và không cuộn được. Nên trên điện thoại, PDF được vẽ từng trang bằng thư viện PDF.js.
+var PDFJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+var _pdfjsLoading = null;
+
+function docIsMobile() {
+  var ua = navigator.userAgent || '';
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+}
+
+function pdfLoadLib() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (_pdfjsLoading) return _pdfjsLoading;
+  _pdfjsLoading = new Promise(function (resolve, reject) {
+    var s = document.createElement('script');
+    s.src = PDFJS_BASE + 'pdf.min.js';
+    s.onload = function () {
+      if (!window.pdfjsLib) { _pdfjsLoading = null; return reject(new Error('Không tải được bộ xem PDF')); }
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    s.onerror = function () { _pdfjsLoading = null; reject(new Error('Không tải được bộ xem PDF')); };
+    document.head.appendChild(s);
+  });
+  return _pdfjsLoading;
+}
+
+// Vẽ toàn bộ các trang của PDF (lấy từ Supabase) vào khung `box`. Trả về { cancel() } để dừng khi đóng khung.
+function docRenderPdf(box, path) {
+  var token = { stop: false, cancel: function () { this.stop = true; } };
+  function msg(text) {
+    var p = document.createElement('p');
+    p.className = 'pdf-msg';
+    p.textContent = text;
+    return p;
+  }
+  box.replaceChildren(msg('Đang tải tài liệu...'));
+  (async function () {
+    try {
+      var lib = await pdfLoadLib();
+      var res = await fetch(await docSignedUrl(path));
+      if (!res.ok) throw new Error('Không tải được tệp');
+      var data = await res.arrayBuffer();
+      if (token.stop) return;
+      var pdf = await lib.getDocument({ data: data }).promise;
+      var width = box.clientWidth || 360;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      box.replaceChildren();
+      for (var i = 1; i <= pdf.numPages; i++) {
+        if (token.stop) return;
+        var page = await pdf.getPage(i);
+        var base = page.getViewport({ scale: 1 });
+        var vp = page.getViewport({ scale: (width / base.width) * dpr });
+        var cv = document.createElement('canvas');
+        cv.className = 'pdf-page';
+        cv.width = Math.floor(vp.width);
+        cv.height = Math.floor(vp.height);
+        box.appendChild(cv);
+        await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+      }
+      if (pdf.numPages > 1) {
+        var end = msg('Hết tài liệu (' + pdf.numPages + ' trang)');
+        end.className = 'pdf-msg pdf-end';
+        box.appendChild(end);
+      }
+    } catch (e) {
+      console.error(e);
+      if (!token.stop) box.replaceChildren(msg('Chưa hiển thị được tài liệu. Hãy bấm Tải về để xem'));
+    }
+  })();
+  return token;
+}
+
+// Mở PDF toàn màn hình (dùng cho điện thoại ở trang Thông báo)
+function docPdfModal(title, path, name) {
+  var ov = document.createElement('div');
+  ov.className = 'pdf-modal';
+  var bar = document.createElement('div');
+  bar.className = 'pdf-modal-bar';
+  var h = document.createElement('strong');
+  h.textContent = title || name || 'Tài liệu';
+  var dl = document.createElement('button');
+  dl.type = 'button'; dl.className = 'btn btn-line'; dl.textContent = 'Tải về';
+  dl.addEventListener('click', function () { docDownload(path, name); });
+  var cl = document.createElement('button');
+  cl.type = 'button'; cl.className = 'btn btn-small'; cl.textContent = 'Đóng';
+  var box = document.createElement('div');
+  box.className = 'pdf-pages pdf-modal-body';
+  bar.append(h, dl, cl);
+  ov.append(bar, box);
+  document.body.appendChild(ov);
+  document.body.style.overflow = 'hidden';
+  var tok = docRenderPdf(box, path);
+  cl.addEventListener('click', function () {
+    tok.cancel();
+    ov.remove();
+    document.body.style.overflow = '';
+  });
 }

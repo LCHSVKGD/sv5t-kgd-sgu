@@ -12,15 +12,16 @@ var DEFAULT_REQ = 'Yêu cầu chi tiết của tiêu chí này do Ban Chấp hà
 
 // Lấy tên + yêu cầu từ site_content; trả về mảng cùng thứ tự CRITERIA
 async function loadCriteria() {
-  var out = CRITERIA.map(function (c) { return { key: c.key, name: c.name, req: c.req || DEFAULT_REQ }; });
+  var out = CRITERIA.map(function (c) { return { key: c.key, name: c.name, req: c.req || DEFAULT_REQ, tpl: null }; });
   try {
-    var r = await sb.from('site_content').select('slug, title, requirements').eq('kind', 'criterion');
+    var r = await sb.from('site_content').select('*').eq('kind', 'criterion');
     if (!r.error && r.data) {
       r.data.forEach(function (x) {
         var c = out.filter(function (o) { return o.key === x.slug; })[0];
         if (!c) return;
         if (x.title) c.name = x.title;
         if (x.requirements && x.requirements.trim()) c.req = x.requirements;
+        if (x.template_path) c.tpl = { path: x.template_path, name: x.template_name || 'bang-mau', size: x.template_size || 0 };
       });
     }
   } catch (e) {}

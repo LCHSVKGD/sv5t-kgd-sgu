@@ -93,6 +93,7 @@
         </div>
         <div class="drive-box">
           <iframe id="viewer-frame" title="Xem tài liệu"></iframe>
+          <div id="viewer-pdf" class="pdf-pages" hidden></div>
           <span class="drive-mask" id="viewer-mask" hidden></span>
         </div>
       </div>
@@ -131,6 +132,8 @@
     var openLink = document.getElementById('viewer-open');
     var listBox = document.getElementById('doc-list');
     var mask = document.getElementById('viewer-mask');
+    var pdfBox = document.getElementById('viewer-pdf');
+    var pdfTok = null;
     var blobUrl = null;
 
     function note(text) {
@@ -141,6 +144,10 @@
     }
 
     function closeViewer() {
+      if (pdfTok) { pdfTok.cancel(); pdfTok = null; }
+      pdfBox.replaceChildren();
+      pdfBox.hidden = true;
+      frame.hidden = false;
       frame.src = '';
       viewer.hidden = true;
       mask.hidden = true;
@@ -153,7 +160,19 @@
       btn.textContent = 'Đang mở...';
       try {
         var u;
-        if (d.drive_url) {
+        if (pdfTok) { pdfTok.cancel(); pdfTok = null; }
+        pdfBox.hidden = true;
+        frame.hidden = false;
+        if (!d.drive_url && docExt(d.file_name) === 'pdf' && docIsMobile()) {
+          // Điện thoại: vẽ từng trang PDF để kéo xuống xem được tất cả các trang
+          u = await docSignedUrl(d.file_path);
+          if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; }
+          mask.hidden = true;
+          frame.src = '';
+          frame.hidden = true;
+          pdfBox.hidden = false;
+          pdfTok = docRenderPdf(pdfBox, d.file_path);
+        } else if (d.drive_url) {
           var info = docDriveInfo(d.drive_url);
           if (!info) throw new Error('Link Drive không hợp lệ');
           u = info.preview;
@@ -165,7 +184,7 @@
           blobUrl = u;
           mask.hidden = true;
         }
-        frame.src = u;
+        if (!pdfTok) frame.src = u;
         openLink.href = u;
         title.textContent = d.title;
         viewer.hidden = false;

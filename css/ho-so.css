@@ -86,3 +86,10 @@
 .fb-file.approved .hs-file-meta, .fb-file.rejected .hs-file-meta { color: #4a5568; }
 /* Vùng bị vô hiệu hóa (ngoài thời gian xét duyệt) */
 .is-disabled { opacity: 0.45; filter: grayscale(0.4); pointer-events: none; user-select: none; }
+
+/* Bảng mẫu kê khai (sinh viên tải về) */
+.hs-tpl { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; background: #fff7e6; border: 1px solid var(--footer-line); border-radius: 12px; }
+.hs-tpl[hidden] { display: none; }
+.hs-tpl-info { min-width: 0; display: grid; gap: 2px; }
+.hs-tpl-cap { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--footer-label); }
+.hs-tpl-info strong { font-size: 14.5px; overflow-wrap: anywhere; }
