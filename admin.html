@@ -2180,6 +2180,18 @@
     if (r.error) return note('Không tải được danh sách: ' + r.error.message);
     everyone = r.data.slice();   // gồm cả tài khoản admin, để tin nhắn hiện đúng tên tài khoản
     all = r.data.filter(function (p) { return p.role !== 'admin'; });
+    // Ẩn tài khoản CHƯA xác nhận email (đăng ký nhưng không nhập được mã, ví dụ email giả).
+    // Cần đã chạy SQL/loc-tk-chua-xac-nhan.sql; nếu chưa chạy thì giữ nguyên, không ẩn gì.
+    if (!DEMO) {
+      var un = await sb.rpc('sv5t_unconfirmed_ids');
+      if (!un.error && Array.isArray(un.data)) {
+        var hide = {};
+        un.data.forEach(function (x) { hide[(x && typeof x === 'object') ? Object.values(x)[0] : x] = true; });
+        all = all.filter(function (p) { return !hide[p.id]; });
+      } else if (un.error) {
+        console.warn('Chưa lọc được tài khoản chưa xác nhận email (đã chạy SQL/loc-tk-chua-xac-nhan.sql chưa?):', un.error.message);
+      }
+    }
     all.sort(function (a, b) { return String(a.created_at || '').localeCompare(String(b.created_at || '')); });
     render();
     fillTargets();
