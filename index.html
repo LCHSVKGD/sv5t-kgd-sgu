@@ -17,44 +17,21 @@
     <h1 class="sr-only">Ngọn lửa Tiên phong khoa Giáo dục</h1>
 
     <div class="intro">
-      <button class="logo-btn" id="logo-btn" type="button" aria-expanded="false" aria-controls="landing-actions" aria-label="Bấm để đăng nhập hoặc đăng ký">
+      <button class="logo-btn" id="logo-btn" type="button" aria-label="Bấm để vào trang tổng quan">
         <img src="images/logoclb.png" alt="Logo CLB Ngọn lửa Tiên phong">
       </button>
 
       <p class="tagline">Ngọn lửa Tiên phong<br>khoa Giáo dục</p>
-
-      <div class="landing-actions" id="landing-actions">
-        <a class="btn btn-line" href="dang-nhap.html">Đăng nhập</a>
-        <a class="btn btn-primary" href="dang-ky.html">Đăng ký</a>
-      </div>
-    </div>
+</div>
   </main>
 
   <script>
-    var landing = document.getElementById('landing');
-    var logoBtn = document.getElementById('logo-btn');
-
-// Hiện nút Đăng nhập / Đăng ký
-function moNut() {
-  landing.classList.add('open');
-  logoBtn.setAttribute('aria-expanded', 'true');
-}
-
-// Tự hiện sau 2 giây (2000 = 2 giây, muốn nhanh hay chậm hơn thì đổi số này)
-setTimeout(moNut, 2000);
-
-// Bấm vào logo trước 2 giây thì hiện ngay
-logoBtn.addEventListener('click', moNut);
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.1"></script>
-  <script src="js/supabase.js"></script>
-  <script>
-    // Đã đăng nhập thì vào thẳng trang tổng quan
-    sb.auth.getSession().then(function (r) {
-      if (!r.data.session) return;
-      if (svSessionLeftMs(r.data.session) > 0) location.replace('tong-quan.html');
-      else sb.auth.signOut();   // phiên cũ đã quá thời hạn
-    });
+    // Hiện trang chào 3 giây rồi tự vào Tổng quan (3000 = 3 giây, muốn nhanh hay chậm hơn thì đổi số này).
+    // Dùng replace để nút Quay lại của trình duyệt không bị kẹt ở trang chào.
+    function vaoTongQuan() { location.replace('tong-quan.html'); }
+    setTimeout(vaoTongQuan, 3000);
+    // Bấm vào logo thì vào ngay
+    document.getElementById('logo-btn').addEventListener('click', vaoTongQuan);
   </script>
 </body>
 </html>

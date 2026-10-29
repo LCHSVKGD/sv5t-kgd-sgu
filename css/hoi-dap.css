@@ -63,3 +63,10 @@
   .chat { height: 70vh; min-height: 420px; }
   .msg { max-width: 88%; }
 }
+
+
+/* Khung liên hệ (thay cho khung chat) */
+.qa-contact { align-self: start; }
+.qa-contact p { margin-bottom: 12px; }
+.contact-list { list-style: none; padding: 0; display: grid; gap: 8px; }
+.contact-list a { color: var(--primary); font-weight: 700; text-decoration: underline; }
